@@ -69,3 +69,7 @@ services:
 #      - damap-db-data:/var/lib/postgresql/data
 #volumes:
 #  damap-db-data:
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    ports:
+      - "3000:3000"
