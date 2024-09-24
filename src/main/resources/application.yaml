@@ -24,6 +24,7 @@ damap:
   projects-url: http://api-mock:80
   persons-url: http://api-mock:80
   fits-url: http://fits-service:8080/fits
+  gotenberg-url: http://gotenberg:3000
   person-services:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
@@ -88,6 +89,7 @@ rest:
   projects/mp-rest/url: ${damap.projects-url}
   persons/mp-rest/url: ${damap.persons-url}
   fits/mp-rest/url: ${damap.fits-url}
+  gotenberg/mp-rest/url: ${damap.gotenberg-url}
   r3data:
     repositories/mp-rest/url: https://www.re3data.org/api
     repositories/mp-rest/scope: jakarta.inject.Singleton
@@ -108,6 +110,7 @@ rest:
     projects-url: http://localhost:8091
     persons-url: http://localhost:8091
     fits-url: http://localhost:8089/fits
+    gotenberg-url: http://localhost:3000
 
 "%oracle":
   quarkus:
