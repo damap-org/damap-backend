@@ -72,4 +72,37 @@ class DmpDocumentResourceTest {
     DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
     given().when().get("/" + dmpDO.getId() + "?template=invalid").then().statusCode(404);
   }
+
+  @Test
+  @TestSecurity(user = "userJwt", roles = "user")
+  void testExportEndpointForPDFWithTemplateTypeScienceEurope_Valid() {
+    DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
+    given()
+        .when()
+        .get("/" + dmpDO.getId() + "/export?template=SCIENCE_EUROPE&fileType=docx")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  @TestSecurity(user = "userJwt", roles = "user")
+  void testExportEndpointForPDFWithTemplateTypeHorizonEurope_Valid() {
+    DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
+    given()
+        .when()
+        .get("/" + dmpDO.getId() + "/export?template=HORIZON_EUROPE&fileType=docx")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  @TestSecurity(user = "userJwt", roles = "user")
+  void testExportEndpointForPDFWithTemplateTypeFWF_Valid() {
+    DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
+    given()
+        .when()
+        .get("/" + dmpDO.getId() + "/export?template=FWF&fileType=docx")
+        .then()
+        .statusCode(200);
+  }
 }
