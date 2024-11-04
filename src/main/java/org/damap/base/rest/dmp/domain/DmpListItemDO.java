@@ -24,4 +24,8 @@ public class DmpListItemDO {
   private String description;
   private ProjectDO project;
   private EFunctionRole accessType;
+
+  private Long versionCount;
+
+  private String latestVersionName;
 }

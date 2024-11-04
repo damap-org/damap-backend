@@ -65,7 +65,8 @@ public class DmpService {
     dmpList.forEach(
         dmp ->
             dmpListItemDOList.add(
-                DmpListItemDOMapper.mapEntityToDO(null, dmp, new DmpListItemDO())));
+                DmpListItemDOMapper.mapEntityToDO(
+                    null, dmp, new DmpListItemDO(), versionService.getDmpVersions(dmp.id))));
     return dmpListItemDOList;
   }
 
@@ -84,7 +85,11 @@ public class DmpService {
     accessList.forEach(
         access ->
             dmpListItemDOS.add(
-                DmpListItemDOMapper.mapEntityToDO(access, access.getDmp(), new DmpListItemDO())));
+                DmpListItemDOMapper.mapEntityToDO(
+                    access,
+                    access.getDmp(),
+                    new DmpListItemDO(),
+                    versionService.getDmpVersions(access.getDmp().id))));
     return dmpListItemDOS;
   }
 
