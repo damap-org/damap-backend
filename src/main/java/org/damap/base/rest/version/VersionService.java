@@ -45,6 +45,12 @@ public class VersionService {
    */
   @Transactional
   public VersionDO createOrUpdate(VersionDO versionDO) {
+
+    if (versionDO.getVersionName().length() > 255) {
+      throw new IllegalArgumentException(
+          "Version name must be less than or equal to 255 characters");
+    }
+
     if (versionDO.getId() != null) return update(versionDO);
     else return create(versionDO);
   }
