@@ -106,7 +106,7 @@ public class InternalStorageService
   @Override
   @Transactional
   public InternalStorageDO update(String id, InternalStorageDO data) {
-    InternalStorageValidator.validateForUpdate(id, internalStorageRepo);
+    InternalStorageValidator.validateForUpdate(id, internalStorageRepo, data);
 
     InternalStorage internalStorage = internalStorageRepo.findById(Long.parseLong(id));
     InternalStorageDOMapper.mapDOToEntity(data, internalStorage);

@@ -5,6 +5,7 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import lombok.experimental.UtilityClass;
@@ -18,6 +19,12 @@ public class InternalStorageValidator {
 
   public void validateForCreation(InternalStorageDO internalStorageDO) {
 
+    try {
+      URI.create(internalStorageDO.getUrl());
+    } catch (IllegalArgumentException e) {
+      throw new ClientErrorException("Invalid URL format", Response.Status.BAD_REQUEST);
+    }
+
     if (internalStorageDO.getTranslations() == null
         || internalStorageDO.getTranslations().isEmpty()) {
       throw new ClientErrorException(
@@ -26,8 +33,16 @@ public class InternalStorageValidator {
     }
   }
 
-  public void validateForUpdate(String id, InternalStorageRepo internalStorageRepo)
+  public void validateForUpdate(
+      String id, InternalStorageRepo internalStorageRepo, InternalStorageDO internalStorageDO)
       throws NotFoundException {
+
+    try {
+      URI.create(internalStorageDO.getUrl());
+    } catch (IllegalArgumentException e) {
+      throw new ClientErrorException("Invalid URL format", Response.Status.BAD_REQUEST);
+    }
+
     InternalStorage internalStorage = internalStorageRepo.findById(Long.parseLong(id));
 
     if (internalStorage == null) {
