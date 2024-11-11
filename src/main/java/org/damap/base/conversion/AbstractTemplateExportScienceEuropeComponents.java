@@ -424,9 +424,10 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
                       + " "
                       + loadResourceService.loadVariableFromResource(prop, "distributionStorage")
                       + " "
-                      + hostVar
-                      + ": "
-                      + storageDescription);
+                      + hostVar);
+          if (storageDescription != null && !storageDescription.isEmpty()) {
+            storageVar = storageVar.concat(": " + storageDescription);
+          }
         }
       } else if (ExternalStorage.class.isAssignableFrom(
           host.getClass())) { // case for external storage, will have null host Id
