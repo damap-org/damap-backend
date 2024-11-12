@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 17
+      author: Geoffrey Karnbach
+      changes:
+        - createSequence:
+            sequenceName: banner_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: banner
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueComputed: "nextval('banner_seq')"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: dismissible
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: color
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+      rollback:
+        - dropTable:
+            tableName: banner
+        - dropSequence:
+            sequenceName: banner_seq
