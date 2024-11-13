@@ -117,7 +117,7 @@ rest:
     datasource:
       db-kind: oracle
     hibernate-orm:
-      dialect: org.hibernate.dialect.OraclecDialect
+      dialect: org.hibernate.dialect.OracleDialect
 
 "%postgres":
   quarkus:
