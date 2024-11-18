@@ -23,6 +23,8 @@ public enum EContributorRole {
   SPONSOR("Sponsor"),
   SUPERVISOR("Supervisor"),
   WORK_PACKAGE_LEADER("Work Package Leader"),
+  PRINCIPAL_INVESTIGATOR("Principal Investigator"),
+  PROJECT_COORDINATOR("Project Coordinator"),
   OTHER("Other");
 
   private final String role;

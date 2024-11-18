@@ -38,7 +38,7 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
   protected Properties prop = null;
   protected List<XWPFParagraph> xwpfParagraphs = null;
   protected List<XWPFTable> xwpfTables = null;
-  protected ContributorDO projectCoordinator = null;
+  protected List<ContributorDO> projectCoordinators = new ArrayList<>();
 
   /**
    * exportSetup.
@@ -53,21 +53,31 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
     costList = dmp.getCosts();
 
     // determine project leader/coordinator/principal investigator
-    Optional<Contributor> projectLeaderOpt =
+    projectCoordinators =
         dmp.getContributorList().stream()
             .filter(
-                contributor -> contributor.getContributorRole() == EContributorRole.PROJECT_LEADER)
-            .findFirst();
-    if (projectLeaderOpt.isPresent())
-      projectCoordinator =
-          ContributorDOMapper.mapEntityToDO(projectLeaderOpt.get(), new ContributorDO());
-    else
+                contributor ->
+                    contributor.getContributorRole() == EContributorRole.PROJECT_LEADER
+                        || contributor.getContributorRole() == EContributorRole.PROJECT_COORDINATOR
+                        || contributor.getContributorRole()
+                            == EContributorRole.PRINCIPAL_INVESTIGATOR)
+            .map(contributor -> ContributorDOMapper.mapEntityToDO(contributor, new ContributorDO()))
+            .toList();
+
+    if (projectCoordinators.isEmpty()) {
       try {
-        if (dmp.getProject() != null && dmp.getProject().getUniversityId() != null)
-          projectCoordinator = projectService.getProjectLeader(dmp.getProject().getUniversityId());
+        if (dmp.getProject() != null && dmp.getProject().getUniversityId() != null) {
+          ContributorDO projectLeader =
+              projectService.getProjectLeader(dmp.getProject().getUniversityId());
+          if (projectLeader.getRole() == null) {
+            projectLeader.setRole(EContributorRole.PROJECT_LEADER);
+          }
+          projectCoordinators = List.of(projectLeader);
+        }
       } catch (Exception e) {
         log.error("Project API not functioning");
       }
+    }
   }
 
   private List<Dataset> getDeletedDatasets(List<Dataset> datasets) {

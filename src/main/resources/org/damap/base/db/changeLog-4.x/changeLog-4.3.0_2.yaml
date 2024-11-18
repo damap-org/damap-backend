@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16
+      author: Geoffrey Karnbach
+      changes:
+        - insert:
+            tableName: e_contributor_role
+            columns:
+              - column:
+                  name: role
+                  value: PRINCIPAL_INVESTIGATOR
+        - insert:
+            tableName: e_contributor_role
+            columns:
+              - column:
+                  name: role
+                  value: PROJECT_COORDINATOR
+
+      rollback:
+        - delete:
+            tableName: e_contributor_role
+            where: "role IN ('PRINCIPAL_INVESTIGATOR', 'PROJECT_COORDINATOR')"
