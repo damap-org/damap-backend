@@ -9,7 +9,9 @@ import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.*;
 import org.damap.base.domain.*;
 import org.damap.base.enums.*;
+import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
+import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 
 /**
@@ -21,6 +23,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     extends AbstractTemplateExportSetup {
 
   protected Map<Long, String> datasetTableIDs = new HashMap<>();
+  private List<String> projectCoordinatorOrInvestigatorIds = new ArrayList<>();
 
   /** {@inheritDoc} */
   @Override
@@ -194,47 +197,65 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   }
 
   private void projectCoordinatorInformation() {
-    // mapping project coordinator information
-    List<String> coordinatorProperties = new ArrayList<>();
-    String coordinatorIdentifierId = "";
-    String coordinatorAffiliationIdentifierId = "";
 
-    if (projectCoordinator == null) {
-      addReplacement(replacements, "[coordinator]", joinWithComma(coordinatorProperties));
+    if (projectCoordinators == null) {
+      addReplacement(replacements, "[coordinator]", "");
       return;
     }
 
-    if (projectCoordinator.getFirstName() != null && projectCoordinator.getLastName() != null)
-      coordinatorProperties.add(
-          projectCoordinator.getFirstName() + " " + projectCoordinator.getLastName());
+    StringBuilder coordinatorInfos = new StringBuilder();
+    // mapping project coordinator information
+    for (ContributorDO contributor : projectCoordinators) {
 
-    if (projectCoordinator.getMbox() != null)
-      coordinatorProperties.add(projectCoordinator.getMbox());
+      List<String> coordinatorProperties = new ArrayList<>();
+      String coordinatorIdentifierId = "";
+      String coordinatorAffiliationIdentifierId = "";
 
-    if (projectCoordinator.getPersonId() != null) {
-      coordinatorIdentifierId = projectCoordinator.getPersonId().getIdentifier();
-
-      if (projectCoordinator.getPersonId().getType().toString().equals("orcid")) {
-        String coordinatorId = "ORCID iD: " + coordinatorIdentifierId;
-        coordinatorProperties.add(coordinatorId);
+      if (contributor == null) {
+        addReplacement(replacements, "[coordinator]", joinWithComma(coordinatorProperties));
+        return;
       }
+
+      if (contributor.getFirstName() != null && contributor.getLastName() != null)
+        coordinatorProperties.add(contributor.getFirstName() + " " + contributor.getLastName());
+
+      if (contributor.getMbox() != null) coordinatorProperties.add(contributor.getMbox());
+
+      if (contributor.getPersonId() != null) {
+        coordinatorIdentifierId = contributor.getPersonId().getIdentifier();
+
+        if (contributor.getPersonId().getType().toString().equals("orcid")) {
+          String coordinatorId = "ORCID iD: " + coordinatorIdentifierId;
+          coordinatorProperties.add(coordinatorId);
+        }
+      }
+
+      if (contributor.getAffiliation() != null)
+        coordinatorProperties.add(contributor.getAffiliation());
+
+      if (contributor.getAffiliationId() != null) {
+        coordinatorAffiliationIdentifierId = contributor.getAffiliationId().getIdentifier();
+
+        if (contributor.getAffiliationId().getType().toString().equals("ror")) {
+          String coordinatorAffiliationIdentifierType = "ROR: ";
+          String coordinatorAffiliationId =
+              coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
+          coordinatorProperties.add(coordinatorAffiliationId);
+        }
+      }
+
+      if (contributor.getRole() != null) {
+        String coordinatorRole = contributor.getRole().toString();
+        coordinatorProperties.add(coordinatorRole);
+      }
+
+      coordinatorInfos.append(joinWithComma(coordinatorProperties));
+      coordinatorInfos.append(";");
+
+      this.projectCoordinatorOrInvestigatorIds.add(contributor.getUniversityId());
     }
 
-    if (projectCoordinator.getAffiliation() != null)
-      coordinatorProperties.add(projectCoordinator.getAffiliation());
-
-    if (projectCoordinator.getAffiliationId() != null) {
-      coordinatorAffiliationIdentifierId = projectCoordinator.getAffiliationId().getIdentifier();
-
-      if (projectCoordinator.getAffiliationId().getType().toString().equals("ror")) {
-        String coordinatorAffiliationIdentifierType = "ROR: ";
-        String coordinatorAffiliationId =
-            coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
-        coordinatorProperties.add(coordinatorAffiliationId);
-      }
-    }
-
-    addReplacement(replacements, "[coordinator]", joinWithComma(coordinatorProperties));
+    addReplacement(replacements, "[coordinator]", coordinatorInfos.toString());
   }
 
   private void dmpContributorInformation() {
@@ -283,6 +304,14 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       if (contributor.getContributorRole() != null) {
         contributorRole = contributor.getContributorRole().getRole();
         contributorProperties.add(contributorRole);
+      }
+
+      if ((contributor.getContributorRole() != null
+              && (contributor.getContributorRole().equals(EContributorRole.PRINCIPAL_INVESTIGATOR)
+                  || contributor.getContributorRole().equals(EContributorRole.PROJECT_LEADER)
+                  || contributor.getContributorRole().equals(EContributorRole.PROJECT_COORDINATOR)))
+          || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
+        continue;
       }
 
       contributorPerson = joinWithComma(contributorProperties);
@@ -363,13 +392,70 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
   /** storageIntroInformation */
   public void storageIntroInformation() {
-    String coordinatorFullName;
+    String coordinatorFullName = null;
 
-    if (projectCoordinator != null) {
-      coordinatorFullName =
-          projectCoordinator.getFirstName() + " " + projectCoordinator.getLastName();
-    } else {
-      coordinatorFullName = "Coordinator";
+    List<Contributor> contributorPool = dmp.getContributorList();
+    for (ContributorDO contributorDO : projectCoordinators) {
+      contributorPool.add(ContributorDOMapper.mapDOtoEntity(contributorDO, new Contributor()));
+    }
+
+    // Data Manager
+    for (Contributor contributor : contributorPool) {
+      if (contributor != null
+          && contributor.getContributorRole() != null
+          && contributor.getContributorRole().equals(EContributorRole.DATA_MANAGER)) {
+        coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+        break;
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Project Leader
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && contributor.getContributorRole() != null
+            && contributor.getContributorRole().equals(EContributorRole.PROJECT_LEADER)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Principal Investigator
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && contributor.getContributorRole() != null
+            && contributor.getContributorRole().equals(EContributorRole.PRINCIPAL_INVESTIGATOR)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Project Coordinator
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && contributor.getContributorRole() != null
+            && contributor.getContributorRole().equals(EContributorRole.PROJECT_COORDINATOR)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Contact person as fallback option 1
+      if (dmp.getContact() != null) {
+        coordinatorFullName =
+            dmp.getContact().getFirstName() + " " + dmp.getContact().getLastName();
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Generic string as fallback option 2
+      coordinatorFullName = "the project leader ";
     }
 
     boolean usesExternalStorage =
