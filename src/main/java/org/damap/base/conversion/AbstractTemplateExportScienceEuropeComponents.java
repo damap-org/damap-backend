@@ -102,6 +102,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
   private void titlePageFunding(Project project, ProjectDO projectCRIS) {
     List<String> fundingItems = new ArrayList<>();
+    List<String> fundingNumberItems = new ArrayList<>();
     if (projectCRIS != null
         && projectCRIS.getFunding() != null
         && projectCRIS.getFunding().getFundingProgram() != null) {
@@ -111,6 +112,16 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     if (project.getFunding() != null
         && project.getFunding().getGrantIdentifier().getIdentifier() != null) {
       fundingItems.add(project.getFunding().getGrantIdentifier().getIdentifier());
+    }
+    // add funder number
+    if (project.getFunding() != null
+        && project.getFunding().getFunderIdentifier().getIdentifier() != null) {
+      fundingNumberItems.add(project.getFunding().getFunderIdentifier().getIdentifier());
+    }
+    if (!fundingNumberItems.isEmpty()) {
+      addReplacement(replacements, "[funderid]", String.join(", ", fundingNumberItems));
+    } else {
+      addReplacement(replacements, "[funderid]", "");
     }
     // variable project funding, combination from funding item variables
     if (!fundingItems.isEmpty()) {
