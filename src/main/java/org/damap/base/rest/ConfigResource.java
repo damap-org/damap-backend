@@ -39,6 +39,9 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.fits-url")
   Optional<URL> fitsUrl;
 
+  @ConfigProperty(name = "damap.gotenberg-url")
+  Optional<URL> gotenbergUrl;
+
   /**
    * config.
    *
@@ -54,11 +57,16 @@ public class ConfigResource {
     configDO.setEnv(env);
     configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());
     configDO.setFitsServiceAvailable(getFitsServiceAvailability());
+    configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
 
     return configDO;
   }
 
   private boolean getFitsServiceAvailability() {
     return fitsUrl.isPresent();
+  }
+
+  private boolean getGotenbergServiceAvailability() {
+    return gotenbergUrl.isPresent();
   }
 }
