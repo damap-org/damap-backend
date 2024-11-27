@@ -153,6 +153,7 @@ public class Dmp extends PanacheEntity {
       cascade = {CascadeType.ALL},
       orphanRemoval = true,
       fetch = FetchType.EAGER)
+  @OrderBy("id")
   private List<Contributor> contributorList = new ArrayList<>();
 
   @OneToMany(
@@ -160,6 +161,7 @@ public class Dmp extends PanacheEntity {
       cascade = {CascadeType.ALL},
       orphanRemoval = true,
       fetch = FetchType.EAGER)
+  @OrderBy("id")
   private List<Dataset> datasetList = new ArrayList<>();
 
   @OneToMany(
@@ -189,6 +191,7 @@ public class Dmp extends PanacheEntity {
       cascade = {CascadeType.ALL},
       orphanRemoval = true,
       fetch = FetchType.EAGER)
+  @OrderBy("id")
   private List<Cost> costs = new ArrayList<>();
 
   private String documentation;

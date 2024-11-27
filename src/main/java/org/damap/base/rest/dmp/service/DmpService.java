@@ -5,11 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Access;
 import org.damap.base.domain.Contributor;
@@ -67,6 +63,7 @@ public class DmpService {
             dmpListItemDOList.add(
                 DmpListItemDOMapper.mapEntityToDO(
                     null, dmp, new DmpListItemDO(), versionService.getDmpVersions(dmp.id))));
+
     return dmpListItemDOList;
   }
 
@@ -90,6 +87,9 @@ public class DmpService {
                     access.getDmp(),
                     new DmpListItemDO(),
                     versionService.getDmpVersions(access.getDmp().id))));
+
+    dmpListItemDOS.sort(Comparator.comparing(DmpListItemDO::getId));
+
     return dmpListItemDOS;
   }
 

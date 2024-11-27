@@ -1,6 +1,7 @@
 package org.damap.base.repo.base;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.panache.common.Sort;
 import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,6 @@ public interface RepoSearch<T> extends PanacheRepository<T> {
       counter++;
     }
 
-    return list(query.toString(), params);
+    return find(query.toString(), Sort.by("id"), params).list();
   }
 }

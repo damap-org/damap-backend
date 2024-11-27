@@ -1,9 +1,6 @@
 package org.damap.base.rest.dmp.mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import lombok.experimental.UtilityClass;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.*;
