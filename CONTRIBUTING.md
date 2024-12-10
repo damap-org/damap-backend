@@ -60,7 +60,7 @@ Before creating a pull request, the changes should be tested locally as describe
 
 To request the lead developers to pull in code change proposals, fork the repository, create a branch and push the code
 to your own fork. Create a Pull Request with `tuwien-csd/damap-backend` as base and write a meaningful description
-of your changes.
+of your changes. 
 
 If you are working with the main repository, the naming convention for branches is `<contributor initials>/<short-description-separated-with-hyphens>` e.g.:
 
@@ -70,10 +70,19 @@ xy/file-upload
 
 Once the PR is merged, delete the source branch.
 
-Generally Pull Request should cover only a specific topic in form of one or a few commits. The commit message should
-follow common good practices and should be composed of a meaningful subject line with a short description of the
-changes and an optional body to explain the changes and the reasons behind them. A blank line splits the subject line
-from the body message.
+Generally Pull Request should cover only a specific topic in form of one or a few commits. 
+
+### Commit message
+The commit message should follow the good practices of https://cbea.ms/git-commit/ and consist of a meaningful subject line with 
+a short description of the changes, and an optional body to explain the changes and the reasons for them. 
+A blank line separates the subject line from the body.<br>
+For commits, try to avoid redundant commits, and squash  them into the previous commit for the same implementation. 
+It makes sense to have different commits if you are working on different aspects. For example, commit 1 deals with the implementation, 
+commit 2 adds test cases. Each commit should also try to leave the application in a stable state.
+
+For example: Export: Fix bug where export fails without project end date
+
+
 
 ## Documentation
 
