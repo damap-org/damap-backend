@@ -42,6 +42,9 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.gotenberg-url")
   Optional<URL> gotenbergUrl;
 
+  @ConfigProperty(name = "damap.fields.ethical-report-enabled")
+  boolean ethicalReportEnabled;
+
   @ConfigProperty(name = "damap.title", defaultValue = "DAMAP Tool")
   String appTitle;
 
@@ -62,6 +65,7 @@ public class ConfigResource {
     configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());
     configDO.setFitsServiceAvailable(getFitsServiceAvailability());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
+    configDO.setEthicalReportEnabled(ethicalReportEnabled);
 
     return configDO;
   }

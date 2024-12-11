@@ -49,6 +49,7 @@ legalRights.contact.default=Our institution has rights to the produced data and 
 
 ethical.no=No particular ethical issue is foreseen with the data to be used or produced by the project. This section will be updated if issues arise.
 ethicalReviewed.avail=The research plan of the project was reviewed by an ethics committee / a similar body.
+ethicalReportIntro=Ethical issue report number:
 ethicalStatement=Ethical issues in the project have been identified and discussed with the Ethics Coordinator. They are described in detail in separate documents.
 
 closeddatasetreasons.intro=Closed Dataset Reasons:

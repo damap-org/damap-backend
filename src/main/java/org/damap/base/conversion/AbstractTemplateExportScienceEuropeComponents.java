@@ -969,6 +969,14 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     if (Boolean.TRUE.equals(dmp.getCommitteeReviewed())) {
       ethicalStatement +=
           loadResourceService.loadVariableFromResource(prop, "ethicalReviewed.avail");
+
+      if (dmp.getEthicalIssuesReport() != null && !dmp.getEthicalIssuesReport().isEmpty()) {
+        ethicalStatement +=
+            " "
+                + loadResourceService.loadVariableFromResource(prop, "ethicalReportIntro")
+                + " "
+                + dmp.getEthicalIssuesReport();
+      }
     }
 
     addReplacement(replacements, "[ethicalissues]", ethicalStatement);

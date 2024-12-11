@@ -69,6 +69,7 @@ public class DmpDOMapper {
     dmpDO.setCostsExist(dmp.getCostsExist());
     dmpDO.setCostsExistCris(dmp.getCostsExistCris());
     dmpDO.setDocumentation(dmp.getDocumentation());
+    dmpDO.setEthicalIssuesReport(dmp.getEthicalIssuesReport());
 
     List<ContributorDO> contributorDOList = new ArrayList<>();
     dmp.getContributorList()
@@ -218,6 +219,7 @@ public class DmpDOMapper {
     dmp.setCostsExist(dmpDO.getCostsExist());
     dmp.setCostsExistCris(dmpDO.getCostsExistCris());
     dmp.setDocumentation(dmpDO.getDocumentation());
+    dmp.setEthicalIssuesReport(dmpDO.getEthicalIssuesReport());
 
     // TODO also check for existing contributors based on Identifier, not just
     // universityId

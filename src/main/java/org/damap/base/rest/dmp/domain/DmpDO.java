@@ -96,6 +96,10 @@ public class DmpDO {
   private Boolean ethicalIssuesExistCris;
   private Boolean committeeReviewed;
   private Boolean committeeReviewedCris;
+
+  @Size(max = 255)
+  private String ethicalIssuesReport;
+
   private List<DatasetDO> datasets = new ArrayList<>();
   private List<RepositoryDO> repositories = new ArrayList<>();
   private List<StorageDO> storage = new ArrayList<>();

@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 19
+      author: Geoffrey Karnbach
+      changes:
+          - addColumn:
+                tableName: dmp
+                columns:
+                    - column:
+                          name: ethical_issues_report
+                          type: VARCHAR(255)
+          - addColumn:
+              tableName: dmp_aud
+              columns:
+                - column:
+                    name: ethical_issues_report
+                    type: VARCHAR(255)
+      rollback:
+          - dropColumn:
+                tableName: dmp
+                columnName: ethical_issues_report
+          - dropColumn:
+                tableName: dmp_aud
+                columnName: ethical_issues_report

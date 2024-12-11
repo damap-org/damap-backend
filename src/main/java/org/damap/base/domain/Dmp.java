@@ -148,6 +148,9 @@ public class Dmp extends PanacheEntity {
   @Column(name = "committee_reviewed_cris")
   private Boolean committeeReviewedCris;
 
+  @Column(name = "ethical_issues_report")
+  private String ethicalIssuesReport;
+
   @OneToMany(
       mappedBy = "dmp",
       cascade = {CascadeType.ALL},

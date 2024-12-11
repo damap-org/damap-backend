@@ -33,6 +33,8 @@ damap:
     - display-text: 'ORCID'
       query-value: 'ORCID'
       class-name: 'org.damap.base.rest.persons.orcid.ORCIDPersonServiceImpl'
+  fields:
+    ethical-report-enabled: true
 
 invenio:
   disabled: true
