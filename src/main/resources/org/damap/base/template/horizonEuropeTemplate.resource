@@ -59,3 +59,5 @@ ethicalStatement=Ethical issues in the project have been identified and discusse
 
 closeddatasetreasons.intro=Closed Dataset Reasons:
 restricteddatasetreasons.intro=Restricted Dataset Reasons:
+
+costCoverage=Coverage of costs:;...

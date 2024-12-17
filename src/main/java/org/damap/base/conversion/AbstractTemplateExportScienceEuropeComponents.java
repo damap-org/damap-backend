@@ -313,16 +313,24 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       addReplacement(replacements, "[costsDescriptions]", "");
     }
     if (!costList.isEmpty()) {
+      boolean longDescriptionExists = false;
       for (Cost cost : costList) {
         if (cost.getDescription() != null && cost.getDescription().length() >= 255) {
           newDescription.append("Description for \"");
           newDescription.append(cost.getTitle()).append("\": ");
           newDescription.append(cost.getDescription()).append(";");
+          longDescriptionExists = true;
         }
         addReplacement(replacements, "[costsDescriptions]", newDescription.toString());
       }
+      addReplacement(
+          replacements,
+          "[costCoverage]",
+          (longDescriptionExists ? ";" : "")
+              + loadResourceService.loadVariableFromResource(prop, "costCoverage"));
     } else {
       addReplacement(replacements, "[costsDescriptions]", "");
+      addReplacement(replacements, "[costCoverage]", "");
     }
   }
 
