@@ -128,10 +128,10 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     String identifier = null;
     Identifier personIdentifier = contributor != null ? contributor.getPersonIdentifier() : null;
 
-    if (personIdentifier != null) {
+    if (personIdentifier != null && personIdentifier.getIdentifier() != null) {
       String contactIdentifierId = personIdentifier.getIdentifier();
       if (personIdentifier.getIdentifierType().equals(EIdentifierType.ORCID)) {
-        identifier = "ORCID iD: " + contactIdentifierId;
+        identifier = "ORCID: " + contactIdentifierId;
       }
     }
 
