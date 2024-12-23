@@ -1175,7 +1175,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         docVar.add(datasetTableIDs.get(dataset.id));
         docVar.add(Optional.ofNullable(dataset.getTitle()).orElse(""));
 
-        if (dataset.getDatasetIdentifier() != null) {
+        if (dataset.getDatasetIdentifier() != null
+            && dataset.getDatasetIdentifier().getIdentifier() != null) {
           docVar.add(dataset.getDatasetIdentifier().getIdentifier());
         } else {
           docVar.add("");
