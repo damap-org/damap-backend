@@ -297,7 +297,10 @@ public class DmpService {
 
     Optional<Contributor> alreadyExistingContributorLeader =
         dmpContributors.stream()
-            .filter(c -> c.getUniversityId().equals(projectLeaderDO.getUniversityId()))
+            .filter(
+                c ->
+                    c.getUniversityId() != null
+                        && c.getUniversityId().equals(projectLeaderDO.getUniversityId()))
             .findFirst();
 
     Contributor projectLeaderContributor =
