@@ -45,7 +45,11 @@ public class MockProjectServiceImpl implements ProjectService {
   /** {@inheritDoc} */
   @Override
   public ContributorDO getProjectLeader(String projectId) {
-    return mockPersonRestService.getContributorSearchResult().get(0);
+    List<ContributorDO> response = mockPersonRestService.getContributorSearchResult();
+    if (response.isEmpty()) {
+      return null;
+    }
+    return response.get(0);
   }
 
   /** {@inheritDoc} */
@@ -60,7 +64,11 @@ public class MockProjectServiceImpl implements ProjectService {
   /** {@inheritDoc} */
   @Override
   public ProjectDO read(String id, MultivaluedMap<String, String> queryParams) {
-    return mockProjectRestService.getProjectDetails(id).get(0);
+    List<ProjectDO> response = mockProjectRestService.getProjectDetails(id);
+    if (response.isEmpty()) {
+      return null;
+    }
+    return response.get(0);
   }
 
   /** {@inheritDoc} */
