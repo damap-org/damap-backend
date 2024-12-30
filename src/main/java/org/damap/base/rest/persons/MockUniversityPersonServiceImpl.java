@@ -3,6 +3,7 @@ package org.damap.base.rest.persons;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedMap;
+import java.util.List;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
 import org.damap.base.rest.dmp.domain.ContributorDO;
@@ -21,7 +22,11 @@ public class MockUniversityPersonServiceImpl implements PersonService {
   /** {@inheritDoc} */
   @Override
   public ContributorDO read(String id, MultivaluedMap<String, String> queryParams) {
-    return mockPersonRestService.getContributorDetails(id).get(0);
+    List<ContributorDO> response = mockPersonRestService.getContributorDetails(id);
+    if (response.isEmpty()) {
+      return null;
+    }
+    return response.get(0);
   }
 
   /** {@inheritDoc} */
