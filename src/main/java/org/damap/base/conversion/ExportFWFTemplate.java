@@ -34,7 +34,7 @@ public class ExportFWFTemplate extends AbstractTemplateExportScienceEuropeCompon
     xwpfParagraphs = document.getParagraphs();
     xwpfTables = document.getTables();
     // get template table containing all information that needs to be replaced.
-    XWPFTable templateTable = xwpfTables.get(3);
+    XWPFTable templateTable = xwpfTables.get(2);
     // get tables within template table
     List<XWPFTable> templateXwpfTables = parseContentTables(templateTable);
 
