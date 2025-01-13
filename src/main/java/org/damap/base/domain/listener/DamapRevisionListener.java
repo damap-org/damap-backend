@@ -16,7 +16,7 @@ public class DamapRevisionListener implements RevisionListener {
     if (revisionEntity instanceof DamapRevisionEntity) {
 
       final String userId = CDI.current().select(SecurityService.class).get().getUserId();
-      final String username = CDI.current().select(SecurityService.class).get().getUserName();
+      final String username = CDI.current().select(SecurityService.class).get().getDisplayName();
       ((DamapRevisionEntity) revisionEntity).setChangedById(userId);
       ((DamapRevisionEntity) revisionEntity).setChangedBy(username);
     }

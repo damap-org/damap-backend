@@ -55,6 +55,33 @@ public class SecurityService {
     return ((OidcJwtCallerPrincipal) principal).getName();
   }
 
+  public String getDisplayName() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) {
+      return null;
+    }
+
+    OidcJwtCallerPrincipal oidcPrincipal = (OidcJwtCallerPrincipal) principal;
+
+    String name = getClaimValueAsString(oidcPrincipal, "name");
+    if (name != null) {
+      return name;
+    }
+
+    String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
+    String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
+    if (firstName != null && lastName != null) {
+      return firstName + " " + lastName;
+    }
+
+    return getClaimValueAsString(oidcPrincipal, "email");
+  }
+
+  private String getClaimValueAsString(OidcJwtCallerPrincipal oidcPrincipal, String claimKey) {
+    Object claimValue = oidcPrincipal.getClaims().getClaimValue(claimKey);
+    return claimValue != null ? claimValue.toString() : null;
+  }
+
   /**
    * isAdmin.
    *

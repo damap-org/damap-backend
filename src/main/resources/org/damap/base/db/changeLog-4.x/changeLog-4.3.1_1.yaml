@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 18
+      author: Geoffrey Karnbach
+      changes:
+        - update:
+            tableName: revinfo
+            columns:
+              - column:
+                  name: changed_by
+                  value: ""
+            where: "id IN (SELECT revision_entity_id FROM dmp_version WHERE revision_entity_id IS NOT NULL)"
