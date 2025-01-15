@@ -17,4 +17,13 @@ public class ConfigDO {
   private List<ServiceConfig> personSearchServiceConfigs;
   private boolean fitsServiceAvailable;
   private boolean livePreviewAvailable;
+  private String appTitle;
+
+  public void setAppTitle(String appTitle) {
+    this.appTitle = appTitle;
+  }
+
+  public String getAppTitle() {
+    return appTitle;
+  }
 }

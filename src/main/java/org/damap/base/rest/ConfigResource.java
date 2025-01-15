@@ -42,6 +42,9 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.gotenberg-url")
   Optional<URL> gotenbergUrl;
 
+  @ConfigProperty(name = "damap.title", defaultValue = "DAMAP Tool")
+  String appTitle;
+
   /**
    * config.
    *
@@ -55,6 +58,7 @@ public class ConfigResource {
     configDO.setAuthScope(authScope);
     configDO.setAuthUser(authUser);
     configDO.setEnv(env);
+    configDO.setAppTitle(appTitle);
     configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());
     configDO.setFitsServiceAvailable(getFitsServiceAvailability());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());

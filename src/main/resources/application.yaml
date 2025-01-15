@@ -1,6 +1,7 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
+  title: ${DAMAP_TITLE:DAMAP Tool}
   env: DEV # override in your custom project with PROD for production deployment
   origins: http://localhost:8085 # https://your.frontend.com,https://*.yourdomain.com
   auth:
@@ -99,6 +100,7 @@ rest:
 
 "%dev":
   damap:
+    title: "DAMAP (Development)"
     origins: http://localhost:4200
     auth:
       backend:
@@ -128,6 +130,7 @@ rest:
 
 "%test":
   damap:
+    title: "DAMAP (Testing)"
     repositories:
       recommendation: ['r3d100010468'] # Re3Data id(s)
   quarkus:

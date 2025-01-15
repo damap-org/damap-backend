@@ -26,6 +26,8 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
+    environment:
+      DAMAP_TITLE: "DAMAP Tool"
 
   damap-fe:
     # Since DAMAP containers are publicly available on Github packages one can
