@@ -10,8 +10,10 @@ import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.InternalStorage;
 import org.damap.base.domain.InternalStorageTranslation;
+import org.damap.base.domain.Storage;
 import org.damap.base.repo.InternalStorageRepo;
 import org.damap.base.repo.InternalStorageTranslationRepo;
+import org.damap.base.repo.StorageRepo;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.service.ServiceCreate;
 import org.damap.base.rest.base.service.ServiceDelete;
@@ -32,6 +34,11 @@ public class InternalStorageTranslationService
 
   @Inject InternalStorageRepo internalStorageRepo;
 
+  @Inject StorageRepo storageRepo;
+
+  // TODO the language code should be sourced from the language thats most likely to be the main one
+  static final String DEFAULT_LANGUAGE_CODE = "eng";
+
   @Override
   @Transactional
   public InternalStorageTranslationDO create(InternalStorageTranslationDO data)
@@ -45,6 +52,13 @@ public class InternalStorageTranslationService
         InternalStorageTranslationDOMapper.mapDOToTranslationEntityForCreation(
             data, internalStorage);
     internalStorageTranslation.persistAndFlush();
+
+    List<InternalStorageTranslation> translations =
+        internalStorageTranslationRepo.getAllInternalStorageTranslationsByStorageId(
+            internalStorageTranslation.getInternalStorageId().id);
+
+    enforceHostTitleConsistencyWithTranslations(
+        translations, internalStorageTranslation.getInternalStorageId());
 
     return getInternalStorageTranslationById(internalStorageTranslation.id);
   }
@@ -82,6 +96,13 @@ public class InternalStorageTranslationService
         InternalStorageTranslationDOMapper.mapDOToEntity(data, internalStorageTranslation);
     internalStorageTranslation.persistAndFlush();
 
+    List<InternalStorageTranslation> translations =
+        internalStorageTranslationRepo.getAllInternalStorageTranslationsByStorageId(
+            internalStorageTranslation.getInternalStorageId().id);
+
+    enforceHostTitleConsistencyWithTranslations(
+        translations, internalStorageTranslation.getInternalStorageId());
+
     return getInternalStorageTranslationById(internalStorageTranslation.id);
   }
 
@@ -96,16 +117,20 @@ public class InternalStorageTranslationService
       throw new NotFoundException("No internal storage translation found for id " + id);
     }
 
-    if (internalStorageTranslationRepo
-            .getAllInternalStorageTranslationsByStorageId(
-                internalStorageTranslation.getInternalStorageId().id)
-            .size()
-        == 1) {
+    List<InternalStorageTranslation> translations =
+        internalStorageTranslationRepo.getAllInternalStorageTranslationsByStorageId(
+            internalStorageTranslation.getInternalStorageId().id);
+
+    if (translations.size() == 1) {
       throw new ClientErrorException(
           "Cannot delete the last translation for an internal storage", 400);
     }
 
     internalStorageTranslationRepo.delete(internalStorageTranslation);
+    translations.remove(internalStorageTranslation);
+
+    enforceHostTitleConsistencyWithTranslations(
+        translations, internalStorageTranslation.getInternalStorageId());
   }
 
   @Override
@@ -138,5 +163,27 @@ public class InternalStorageTranslationService
     return InternalStorageTranslationDOMapper.mapEntityToDO(
         internalStorageTranslationRepo.findById(internalStorageTranslationId),
         new InternalStorageTranslationDO());
+  }
+
+  private String getMainTitle(List<InternalStorageTranslation> translations) {
+    for (InternalStorageTranslation translation : translations) {
+      if (translation.getLanguageCode().equals(DEFAULT_LANGUAGE_CODE)) {
+        return translation.getTitle();
+      }
+    }
+    // There is always one translation, so this is safe
+    return translations.get(0).getTitle();
+  }
+
+  private void enforceHostTitleConsistencyWithTranslations(
+      List<InternalStorageTranslation> translations, InternalStorage internalStorage) {
+    // update Host table title
+    List<Storage> storagesToUpdate = storageRepo.findByInternalStorageId(internalStorage);
+    String newTitle = getMainTitle(translations);
+    for (Storage storage : storagesToUpdate) {
+      storage.setTitle(newTitle);
+      storage.persist();
+    }
+    storageRepo.flush();
   }
 }
