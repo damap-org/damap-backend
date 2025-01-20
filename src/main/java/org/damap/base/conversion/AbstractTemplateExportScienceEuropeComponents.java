@@ -1114,6 +1114,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           docVar.add("no");
         }
 
+        docVar.add(Optional.ofNullable(dataset.getDescription()).orElse(""));
+
         insertTableCells(xwpfTable, newRow, docVar);
       }
       xwpfTable.removeRow(xwpfTable.getRows().size() - 1);
