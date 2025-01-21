@@ -31,6 +31,15 @@ In order to run the command for the code in the test folder, run `mvn javadoc:te
 
 After that, also make sure to format the code ([see Code Formatting](#code-formatting)).
 
+
+## Changelog
+We keep a changelog to keep stakeholders up to date on current changes in DAMAP and to make it easier to maintain custom 
+templates. Our changelog workflow is inspired by [here](https://keepachangelog.com/en/1.1.0/#what). In short, everytime 
+we finish an issue, we write the changes in an .md changelog file. The changes are grouped by release and by type. The
+types are Added, Changed, Deprecated, Removed, Fixed, Security, Template and Resource Files. Especially the last two 
+should be a big help to maintainers, since then they can see on first glance, what has changed in the export. It is also
+important to note, that one issue can create multiple entries in the changelog, if this improves readability.
+
 ## Code Formatting
 
 This project uses a configured opinionated code formatter [spotless](https://github.com/diffplug/spotless). Letting a specific tool take care of the formatting lets developers

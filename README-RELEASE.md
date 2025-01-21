@@ -14,6 +14,11 @@ A version number consists of three parts: major.minor.patch: \
 For each subsequent release of the same type (major, minor, patch), the version number is increased by one. \
 If we make a new release with a higher version number, we reset the lower version numbers to 0. (e.g. 1.2.3 -> 2.0.0, 1.2.3->1.3.0, 1.2.3->1.2.4) \
 
+### Changelog
+We keep changelogs to make changes more accessible to stakeholders. During the release process, you should create a new 
+Unreleased section for new changes. The old Unreleased should be replaced with the version number and next to it
+you should write the release date. You should also add the changelog to the GitHub release notes.
+
 ## Creating a release in the backend
 
 In order to create a new backend release, we first need to create a new branch from the "next" branch. \
