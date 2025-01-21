@@ -115,6 +115,15 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         && project.getFunding().getGrantIdentifier().getIdentifier() != null) {
       fundingItems.add(project.getFunding().getGrantIdentifier().getIdentifier());
     }
+
+    if (project.getFunding() != null
+        && project.getFunding().getFunderIdentifier().getIdentifier() != null) {
+      addReplacement(
+          replacements, "[funderid]", project.getFunding().getFunderIdentifier().getIdentifier());
+    } else {
+      addReplacement(replacements, "[funderid]", "");
+    }
+
     // variable project funding, combination from funding item variables
     if (!fundingItems.isEmpty()) {
       addReplacement(replacements, "[grantid]", String.join(", ", fundingItems));
