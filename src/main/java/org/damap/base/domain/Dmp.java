@@ -209,4 +209,17 @@ public class Dmp extends PanacheEntity {
             .findFirst();
     return contact.orElse(null);
   }
+
+  /**
+   * Return the value of the chain getProject().getUniversityId();
+   *
+   * @return the value of the chain getProject().getUniversityId() or null if any part of the chain
+   *     is null.
+   */
+  public String getProjectUniversityId() {
+    if (this.getProject() == null || this.getProject().getUniversityId() == null) {
+      return null;
+    }
+    return this.getProject().getUniversityId();
+  }
 }

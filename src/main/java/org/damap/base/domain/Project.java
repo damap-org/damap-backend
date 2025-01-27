@@ -41,4 +41,33 @@ public class Project extends PanacheEntity {
 
   @Column(name = "acronym")
   private String acronym;
+
+  /**
+   * Return the final value in the chain project.getFunding().getGrantIdentifier().getIdentifier()
+   *
+   * @return the value of the chain or null if any part of the chain is null.
+   */
+  public String getFundingGrantIdentifierIdentifier() {
+    if (this.getFunding() == null
+        || this.getFunding().getGrantIdentifier() == null
+        || this.getFunding().getGrantIdentifier().getIdentifier() == null) {
+      return null;
+    }
+    return this.getFunding().getGrantIdentifier().getIdentifier();
+  }
+
+  /**
+   * Return the final value in the chain project.getFunding().getFunderIdentifier().getIdentifier().
+   *
+   * @return the value of the chain project.getFunding().getFunderIdentifier().getIdentifier() or
+   *     null if any part of the chain is null.
+   */
+  public String getFundingFunderIdentifierIdentifier() {
+    if (this.getFunding() == null
+        || this.getFunding().getFunderIdentifier() == null
+        || this.getFunding().getFunderIdentifier().getIdentifier() == null) {
+      return null;
+    }
+    return this.getFunding().getFunderIdentifier().getIdentifier();
+  }
 }

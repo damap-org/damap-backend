@@ -1,5 +1,7 @@
 package org.damap.base.conversion;
 
+import static org.damap.base.utils.EqualityUtils.nullExclusiveEquals;
+
 import java.text.NumberFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -52,10 +54,10 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     int reuseIDprogression = 0;
 
     for (Dataset dataset : datasets) {
-      if (dataset.getSource().equals(EDataSource.NEW)) {
+      if (nullExclusiveEquals(dataset.getSource(), EDataSource.NEW)) {
         datasetTableIDs.put(dataset.id, "P" + ++newIDprogression);
       }
-      if (dataset.getSource().equals(EDataSource.REUSED)) {
+      if (nullExclusiveEquals(dataset.getSource(), EDataSource.REUSED)) {
         datasetTableIDs.put(dataset.id, "R" + ++reuseIDprogression);
       }
     }
@@ -111,15 +113,12 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       fundingItems.add(projectCRIS.getFunding().getFundingProgram());
     }
     // add grant number to funding item variables
-    if (project.getFunding() != null
-        && project.getFunding().getGrantIdentifier().getIdentifier() != null) {
-      fundingItems.add(project.getFunding().getGrantIdentifier().getIdentifier());
+    if (project.getFundingGrantIdentifierIdentifier() != null) {
+      fundingItems.add(project.getFundingGrantIdentifierIdentifier());
     }
 
-    if (project.getFunding() != null
-        && project.getFunding().getFunderIdentifier().getIdentifier() != null) {
-      addReplacement(
-          replacements, "[funderid]", project.getFunding().getFunderIdentifier().getIdentifier());
+    if (project.getFundingFunderIdentifierIdentifier() != null) {
+      addReplacement(replacements, "[funderid]", project.getFundingFunderIdentifierIdentifier());
     } else {
       addReplacement(replacements, "[funderid]", "");
     }
@@ -139,7 +138,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     if (personIdentifier != null && personIdentifier.getIdentifier() != null) {
       String contactIdentifierId = personIdentifier.getIdentifier();
-      if (personIdentifier.getIdentifierType().equals(EIdentifierType.ORCID)) {
+      if (nullExclusiveEquals(personIdentifier.getIdentifierType(), EIdentifierType.ORCID)) {
         identifier = "ORCID: " + contactIdentifierId;
       }
     }
@@ -153,7 +152,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     if (affiliationIdentifier != null) {
       String contactAffiliationIdentifierId = affiliationIdentifier.getIdentifier();
-      if (affiliationIdentifier.getIdentifierType().equals(EIdentifierType.ROR)) {
+      if (nullExclusiveEquals(affiliationIdentifier.getIdentifierType(), EIdentifierType.ROR)) {
         identifier = "ROR: " + contactAffiliationIdentifierId;
       }
     }
@@ -233,7 +232,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       if (contributor.getPersonId() != null) {
         coordinatorIdentifierId = contributor.getPersonId().getIdentifier();
 
-        if (Objects.equals(contributor.getPersonId().getType(), EIdentifierType.ORCID)) {
+        if (nullExclusiveEquals(contributor.getPersonId().getType(), EIdentifierType.ORCID)) {
           String coordinatorId = "ORCID iD: " + coordinatorIdentifierId;
           coordinatorProperties.add(coordinatorId);
         }
@@ -245,7 +244,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       if (contributor.getAffiliationId() != null) {
         coordinatorAffiliationIdentifierId = contributor.getAffiliationId().getIdentifier();
 
-        if (Objects.equals(contributor.getAffiliationId().getType(), EIdentifierType.ROR)) {
+        if (nullExclusiveEquals(contributor.getAffiliationId().getType(), EIdentifierType.ROR)) {
           String coordinatorAffiliationIdentifierType = "ROR: ";
           String coordinatorAffiliationId =
               coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
@@ -315,10 +314,12 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         contributorProperties.add(contributorRole);
       }
 
-      if ((contributor.getContributorRole() != null
-              && (contributor.getContributorRole().equals(EContributorRole.PRINCIPAL_INVESTIGATOR)
-                  || contributor.getContributorRole().equals(EContributorRole.PROJECT_LEADER)
-                  || contributor.getContributorRole().equals(EContributorRole.PROJECT_COORDINATOR)))
+      if ((nullExclusiveEquals(
+                  contributor.getContributorRole(), EContributorRole.PRINCIPAL_INVESTIGATOR)
+              || nullExclusiveEquals(
+                  contributor.getContributorRole(), EContributorRole.PROJECT_LEADER)
+              || nullExclusiveEquals(
+                  contributor.getContributorRole(), EContributorRole.PROJECT_COORDINATOR))
           || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
         continue;
       }
@@ -340,7 +341,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   /** costInformation. */
   public void costInformation() {
     StringBuilder newDescription = new StringBuilder();
-    if (Boolean.TRUE.equals(dmp.getCostsExist())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getCostsExist())) {
       addReplacement(
           replacements,
           "[costs]",
@@ -420,7 +421,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     for (Contributor contributor : contributorPool) {
       if (contributor != null
           && contributor.getContributorRole() != null
-          && contributor.getContributorRole().equals(EContributorRole.DATA_MANAGER)) {
+          && nullExclusiveEquals(contributor.getContributorRole(), EContributorRole.DATA_MANAGER)) {
         coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
         break;
       }
@@ -431,7 +432,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       for (Contributor contributor : contributorPool) {
         if (contributor != null
             && contributor.getContributorRole() != null
-            && contributor.getContributorRole().equals(EContributorRole.PROJECT_LEADER)) {
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PROJECT_LEADER)) {
           coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
           break;
         }
@@ -443,7 +445,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       for (Contributor contributor : contributorPool) {
         if (contributor != null
             && contributor.getContributorRole() != null
-            && contributor.getContributorRole().equals(EContributorRole.PRINCIPAL_INVESTIGATOR)) {
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PRINCIPAL_INVESTIGATOR)) {
           coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
           break;
         }
@@ -454,8 +457,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       // Project Coordinator
       for (Contributor contributor : contributorPool) {
         if (contributor != null
-            && contributor.getContributorRole() != null
-            && contributor.getContributorRole().equals(EContributorRole.PROJECT_COORDINATOR)) {
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PROJECT_COORDINATOR)) {
           coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
           break;
         }
@@ -625,7 +628,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           loadResourceService.loadVariableFromResource(prop, "dataQualityControl.avail"));
       List<String> dataQualityList = new ArrayList<>();
       for (int i = 0; i < dmp.getDataQuality().size(); i++) {
-        if (dmp.getDataQuality().get(i).equals(EDataQualityType.OTHERS)
+        if (nullExclusiveEquals(dmp.getDataQuality().get(i), EDataQualityType.OTHERS)
             && dmp.getOtherDataQuality() != null
             && !dmp.getOtherDataQuality().isEmpty()) dataQualityList.add(dmp.getOtherDataQuality());
         else dataQualityList.add(dmp.getDataQuality().get(i).toString());
@@ -645,7 +648,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     log.debug("sensitive data part");
 
     String sensitiveData = "";
-    if (Boolean.TRUE.equals(dmp.getSensitiveData())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getSensitiveData())) {
       String sensitiveDataSentence =
           loadResourceService.loadVariableFromResource(prop, "sensitive.avail");
       String sensitiveDataset = "";
@@ -673,7 +676,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
       if (dmp.getSensitiveDataSecurity() != null) {
         for (ESecurityMeasure securityMeasure : dmp.getSensitiveDataSecurity()) {
-          if (securityMeasure.equals(ESecurityMeasure.OTHER)
+          if (nullExclusiveEquals(securityMeasure, ESecurityMeasure.OTHER)
               && dmp.getOtherDataSecurityMeasures() != null
               && !dmp.getOtherDataSecurityMeasures().isEmpty())
             dataSecurityList.add(dmp.getOtherDataSecurityMeasures());
@@ -791,7 +794,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     closeAndRestrictedDataInformation();
 
     if (dmp.getTools() != null) {
-      if (!Objects.equals(dmp.getTools(), "")) {
+      if (!nullExclusiveEquals(dmp.getTools(), "")) {
         addReplacement(
             replacements,
             "[tools]",
@@ -810,7 +813,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
 
     if (dmp.getRestrictedDataAccess() != null) {
-      if (!Objects.equals(dmp.getRestrictedDataAccess(), "")) {
+      if (!nullExclusiveEquals(dmp.getRestrictedDataAccess(), "")) {
         addReplacement(
             replacements,
             "[restrictedAccessInfo]",
@@ -842,12 +845,12 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   public void personalDataText() {
     log.debug("personal data part");
     String personalData = "";
-    if (Boolean.TRUE.equals(dmp.getPersonalData())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getPersonalData())) {
       personalData = loadResourceService.loadVariableFromResource(prop, "personal.avail") + " ";
 
       List<String> personalDatasetList = new ArrayList<>();
       for (Dataset dataset : datasets) {
-        if (Boolean.TRUE.equals(dataset.getPersonalData())) {
+        if (nullExclusiveEquals(Boolean.TRUE, dataset.getPersonalData())) {
           personalDatasetList.add(
               datasetTableIDs.get(dataset.getId()) + " (" + dataset.getTitle() + ")");
         }
@@ -862,7 +865,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       if (!dmp.getPersonalDataCompliance().isEmpty()) {
         List<String> dataComplianceList = new ArrayList<>();
         for (EComplianceType personalCompliance : dmp.getPersonalDataCompliance()) {
-          if (personalCompliance.equals(EComplianceType.OTHER)
+          if (nullExclusiveEquals(personalCompliance, EComplianceType.OTHER)
               && dmp.getOtherPersonalDataCompliance() != null
               && !dmp.getOtherPersonalDataCompliance().isEmpty())
             dataComplianceList.add(dmp.getOtherPersonalDataCompliance());
@@ -885,7 +888,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     String legalRestrictionText = "";
 
-    if (Boolean.TRUE.equals(dmp.getLegalRestrictions())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getLegalRestrictions())) {
 
       // determine document list
       if (!dmp.getLegalRestrictionsDocuments().isEmpty()) {
@@ -893,7 +896,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
             loadResourceService.loadVariableFromResource(prop, "legal.avail") + " ";
         List<String> agreementList = new ArrayList<>();
         for (EAgreement agreement : dmp.getLegalRestrictionsDocuments()) {
-          if (agreement.equals(EAgreement.OTHER)
+          if (nullExclusiveEquals(agreement, EAgreement.OTHER)
               && dmp.getOtherLegalRestrictionsDocument() != null
               && !dmp.getOtherLegalRestrictionsDocument().isEmpty())
             agreementList.add(dmp.getOtherLegalRestrictionsDocument());
@@ -908,7 +911,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       // determine dataset list
       List<String> datasetList = new ArrayList<>();
       for (Dataset dataset : datasets) {
-        if (Boolean.TRUE.equals(dataset.getLegalRestrictions())) {
+        if (nullExclusiveEquals(Boolean.TRUE, dataset.getLegalRestrictions())) {
           datasetList.add(datasetTableIDs.get(dataset.getId()) + " (" + dataset.getTitle() + ")");
         }
       }
@@ -958,15 +961,15 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     log.debug("ethical part");
     String ethicalStatement = "";
 
-    if (Boolean.TRUE.equals(dmp.getHumanParticipants())
-        || Boolean.TRUE.equals(dmp.getEthicalIssuesExist())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getHumanParticipants())
+        || nullExclusiveEquals(Boolean.TRUE, dmp.getEthicalIssuesExist())) {
       ethicalStatement =
           loadResourceService.loadVariableFromResource(prop, "ethicalStatement") + " ";
     } else {
       ethicalStatement = loadResourceService.loadVariableFromResource(prop, "ethical.no") + " ";
     }
 
-    if (Boolean.TRUE.equals(dmp.getCommitteeReviewed())) {
+    if (nullExclusiveEquals(Boolean.TRUE, dmp.getCommitteeReviewed())) {
       ethicalStatement +=
           loadResourceService.loadVariableFromResource(prop, "ethicalReviewed.avail");
     }
@@ -1113,12 +1116,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           docVar.add("");
         }
 
-        if (dataset.getSensitiveData() != null) {
-          if (Boolean.TRUE.equals(dataset.getSensitiveData())) {
-            docVar.add("yes");
-          } else {
-            docVar.add("no");
-          }
+        if (nullExclusiveEquals(Boolean.TRUE, dataset.getSensitiveData())) {
+          docVar.add("yes");
         } else {
           docVar.add("no");
         }
@@ -1145,7 +1144,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
    */
   public List<Dataset> getNewDatasets() {
     return datasets.stream()
-        .filter(dataset -> dataset.getSource().equals(EDataSource.NEW))
+        .filter(dataset -> nullExclusiveEquals(dataset.getSource(), EDataSource.NEW))
         .toList();
   }
 
@@ -1156,7 +1155,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
    */
   public List<Dataset> getReusedDatasets() {
     return datasets.stream()
-        .filter(dataset -> dataset.getSource().equals(EDataSource.REUSED))
+        .filter(dataset -> nullExclusiveEquals(dataset.getSource(), EDataSource.REUSED))
         .toList();
   }
 
@@ -1202,7 +1201,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         }
 
         if (dataset.getSensitiveData() != null) {
-          if (Boolean.TRUE.equals(dataset.getSensitiveData())) {
+          if (nullExclusiveEquals(Boolean.TRUE, dataset.getSensitiveData())) {
             docVar.add("yes");
           } else {
             docVar.add("no");
@@ -1343,14 +1342,14 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
         // suppress license information for closed datasets
         if (newDatasets.get(i).getLicense() != null
-            && !newDatasets.get(i).getDataAccess().equals(EDataAccessType.CLOSED))
+            && !nullExclusiveEquals(newDatasets.get(i).getDataAccess(), EDataAccessType.CLOSED))
           docVar.add(newDatasets.get(i).getLicense().getAcronym());
         else docVar.add("");
 
         insertTableCells(xwpfTable, newRow, docVar);
 
         if (newDatasets.get(i).getLicense() != null
-            && !newDatasets.get(i).getDataAccess().equals(EDataAccessType.CLOSED)) {
+            && !nullExclusiveEquals(newDatasets.get(i).getDataAccess(), EDataAccessType.CLOSED)) {
 
           ELicense license = newDatasets.get(i).getLicense();
           XWPFParagraph paragraph = newRow.getCell(5).getParagraphs().get(0);
@@ -1400,8 +1399,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           docVar.add(newDatasets.get(i).getRetentionPeriod() + " years");
         else docVar.add("");
 
-        if (newDatasets.get(i).getDmp().getTargetAudience() != null)
-          docVar.add(newDatasets.get(i).getDmp().getTargetAudience());
+        if (newDatasets.get(i).getDmpTargetAudience() != null)
+          docVar.add(newDatasets.get(i).getDmpTargetAudience());
         else docVar.add("");
 
         insertTableCells(xwpfTable, newRow, docVar);

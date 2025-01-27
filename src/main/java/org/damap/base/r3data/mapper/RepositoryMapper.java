@@ -1,5 +1,7 @@
 package org.damap.base.r3data.mapper;
 
+import static org.damap.base.utils.EqualityUtils.nullExclusiveEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.experimental.UtilityClass;
@@ -63,7 +65,7 @@ public class RepositoryMapper {
     List<PidSystems> pidSystems = repo.getPidSystem();
     List<EIdentifierType> pidIdentifiers = new ArrayList<>();
     for (PidSystems pidSystem : pidSystems) {
-      if (!pidSystem.name().equals("NONE")) {
+      if (!nullExclusiveEquals(pidSystem.name(), ("NONE"))) {
         pidIdentifiers.add(EIdentifierType.valueOf(pidSystem.name()));
       }
     }
@@ -82,6 +84,6 @@ public class RepositoryMapper {
     if (value == null) {
       return null;
     }
-    return value.value().equals(Yesno.YES.value());
+    return nullExclusiveEquals(value.value(), Yesno.YES.value());
   }
 }

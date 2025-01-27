@@ -66,9 +66,9 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
 
     if (projectCoordinators.isEmpty()) {
       try {
-        if (dmp.getProject() != null && dmp.getProject().getUniversityId() != null) {
+        if (dmp.getProjectUniversityId() != null) {
           ContributorDO projectLeader =
-              projectService.getProjectLeader(dmp.getProject().getUniversityId());
+              projectService.getProjectLeader(dmp.getProjectUniversityId());
           if (projectLeader.getRole() == null) {
             projectLeader.setRole(EContributorRole.PROJECT_LEADER);
           }

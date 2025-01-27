@@ -1,5 +1,7 @@
 package org.damap.base.rest.access.service;
 
+import static org.damap.base.utils.EqualityUtils.nullExclusiveEquals;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -73,7 +75,10 @@ public class AccessService {
               if (contributor.getUniversityId() != null
                   && !contributor.getUniversityId().isEmpty()
                   && accessDOList.stream()
-                      .noneMatch(a -> a.getUniversityId().equals(contributor.getUniversityId()))) {
+                      .noneMatch(
+                          a ->
+                              nullExclusiveEquals(
+                                  a.getUniversityId(), contributor.getUniversityId()))) {
                 ContributorDO contributorDO = new ContributorDO();
                 ContributorDOMapper.mapEntityToDO(contributor, contributorDO);
                 // Set id null, so it's not confused with access id

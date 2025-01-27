@@ -1,5 +1,7 @@
 package org.damap.base.conversion;
 
+import static org.damap.base.utils.EqualityUtils.nullExclusiveEquals;
+
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +70,7 @@ public abstract class AbstractTemplateExportFunctions {
             }
             // general case for non contributor list
             else {
-              if (entry.getKey().equals("[projectname]")
+              if (nullExclusiveEquals(entry.getKey(), "[projectname]")
                   && entry.getValue().contains("#oversize")) { // resize title to be smaller
                 xwpfRun.setFontSize(xwpfRun.getFontSize() - 4);
                 xwpfRunText =
@@ -414,7 +416,7 @@ public abstract class AbstractTemplateExportFunctions {
   private void removeNestedTable(XWPFDocument doc, XWPFTable table) {
     for (XWPFTableCell cell : getAllOuterTableCells(doc)) {
       for (XWPFTable nestedTable : cell.getTables()) {
-        if (nestedTable.equals(table)) {
+        if (nullExclusiveEquals(nestedTable, table)) {
           int pos = cell.getTables().indexOf(nestedTable);
           // dirty hack since POI XWPF does not offer functionality for removing nested tables
           try {
@@ -444,21 +446,18 @@ public abstract class AbstractTemplateExportFunctions {
     // paragraph above the table
     if (doc.getPosOfTable(table) != -1) {
       int paragraphPos = doc.getPosOfTable(table) - 1;
-      if (doc.getBodyElements()
-          .get(paragraphPos)
-          .getElementType()
-          .equals(BodyElementType.PARAGRAPH)) {
+      if (nullExclusiveEquals(
+          doc.getBodyElements().get(paragraphPos).getElementType(), (BodyElementType.PARAGRAPH))) {
         doc.removeBodyElement(paragraphPos);
       }
     } else {
       for (XWPFTableCell cell : getAllOuterTableCells(doc)) {
         for (XWPFTable nestedTable : cell.getTables()) {
-          if (nestedTable.equals(table)) {
+          if (nullExclusiveEquals(nestedTable, table)) {
             int paragraphPos = cell.getBodyElements().indexOf(table) - 1;
-            if (cell.getBodyElements()
-                .get(paragraphPos)
-                .getElementType()
-                .equals(BodyElementType.PARAGRAPH)) {
+            if (nullExclusiveEquals(
+                cell.getBodyElements().get(paragraphPos).getElementType(),
+                BodyElementType.PARAGRAPH)) {
               XWPFParagraph paragraphToRemove =
                   (XWPFParagraph) cell.getBodyElements().get(paragraphPos);
               cell.removeParagraph(cell.getParagraphs().indexOf(paragraphToRemove));

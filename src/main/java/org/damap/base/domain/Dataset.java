@@ -135,4 +135,16 @@ public class Dataset extends PanacheEntity {
   public Long getId() {
     return id;
   }
+
+  /**
+   * Return the value of the chain dataset.getDmp().getTargetAudience()
+   *
+   * @return the value of the targetAudience or null if any part of the chain is null.
+   */
+  public String getDmpTargetAudience() {
+    if (this.getDmp() == null) {
+      return null;
+    }
+    return this.getDmp().getTargetAudience();
+  }
 }
