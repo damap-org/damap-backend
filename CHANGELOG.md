@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added "Principle Investigator" and "Project Coordinator" as contributor roles [#285](https://github.com/tuwien-csd/damap-backend/pull/285).
 - Added option to configure html title [#320](https://github.com/tuwien-csd/damap-backend/pull/320).
 - Added backend support for configurable banners [#311](https://github.com/tuwien-csd/damap-backend/pull/311).
+- Added develop quickstart guide documentation [#329](https://github.com/tuwien-csd/damap-backend/pull/329).
 
 ### Changed
 
@@ -31,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed cost coverage text into a placeholders [#307](https://github.com/tuwien-csd/damap-backend/pull/307).
 - Removed detailed guidance table from FWF template [#316](https://github.com/tuwien-csd/damap-backend/pull/316).
+- Added Internal project ID and renamed grant information to project number in FWF section I. [#327](https://github.com/tuwien-csd/damap-backend/pull/327).
+- Added Project code of the funding body and Internal project ID to HE on page 1 [#327](https://github.com/tuwien-csd/damap-backend/pull/327).
+- Added Funder field to SE in the project details section [#327](https://github.com/tuwien-csd/damap-backend/pull/327).
 
 ### Resource Files
 

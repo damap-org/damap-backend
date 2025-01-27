@@ -1,5 +1,35 @@
 # Installation
 
+## Quickstart guide for development
+
+DAMAP is made up of two parts: a backend (this repository) and a [frontend](https://github.com/tuwien-csd/damap-frontend).
+You will probably need to set up both of these for development. DAMAP also requires extra services, which are provided via
+docker containers.
+
+```shell
+cd docker
+docker compose up -d
+```
+The above commands start the dockerized setup. By default, docker pulls back and frontend
+images from GitHub - the docker frontend can then be reached at http://localhost:8085/, use user/user for username/password.
+For more info about the docker setup, see [the section below](#run-with-docker-compose). The containerized DAMAP instance
+is good for testing out the software and showing it to others, but not for development. For development, it is better to
+run local instances of the front and backend. The backend can be started using maven with the following command:
+
+```shell
+   mvn compile quarkus:dev
+```
+
+Start the frontend using the command:
+
+```shell
+   nx serve damap-frontend
+```
+The locally run frontend will now be accessible at http://localhost:4200/, same username and password. The local instances
+will also automatically connect to the services provided by the docker containers. Now you have a running DAMAP setup with
+autoreload on changes to the source files.
+
+
 ## Run with docker-compose
 
 In order to set up the whole system consisting of multiple components a
@@ -71,7 +101,7 @@ docker-compose exec damap-db psql -U damap damap
 ## Custom Deployment
 
 In order to adapt the project and deploy it in your own institutional environment
-follow the [deployment instructions](INSTALLATION.md).
+follow the [custom deployment instructions](CUSTOMISING.md).
 
 ## OpenAPI Documentation
 
