@@ -1,0 +1,84 @@
+databaseChangeLog:
+  - changeSet:
+      id: 21
+      author: Geoffrey Karnbach
+      changes:
+        - createSequence:
+            sequenceName: technical_resource_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: technical_resource
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueComputed: "nextval('technical_resource_seq')"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: dataset_id
+                  type: BIGINT
+                  constraints:
+                      nullable: false
+
+        - createSequence:
+            sequenceName: technical_resource_aud_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: technical_resource_aud
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rev
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revtype
+                  type: TINYINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: dataset_id
+                  type: BIGINT
+
+        - addPrimaryKey:
+            tableName: technical_resource_aud
+            columnNames: id, rev
+
+
+      rollback:
+        - dropTable:
+            tableName: technical_resource
+        - dropSequence:
+            sequenceName: technical_resource_seq
+        - dropTable:
+            tableName: technical_resource_aud
+        - dropSequence:
+            sequenceName: technical_resource_aud_seq

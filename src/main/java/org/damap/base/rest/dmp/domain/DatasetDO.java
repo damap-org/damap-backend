@@ -52,4 +52,6 @@ public class DatasetDO {
   private Integer retentionPeriod;
   private IdentifierDO datasetId;
   private EDataSource source;
+
+  private List<TechnicalResourceDO> technicalResources = new ArrayList<>();
 }

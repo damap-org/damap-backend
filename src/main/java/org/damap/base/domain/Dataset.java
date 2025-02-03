@@ -108,6 +108,9 @@ public class Dataset extends PanacheEntity {
   @JoinColumn(name = "dataset_pid")
   private Identifier datasetIdentifier;
 
+  @OneToMany(mappedBy = "dataset", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<TechnicalResource> technicalResources = new ArrayList<>();
+
   @Enumerated(EnumType.STRING)
   @Column(name = "dataset_source")
   private EDataSource source;

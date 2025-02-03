@@ -405,6 +405,22 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
 
     addReplacement(replacements, "[produceddatadescription]", newDescription.toString());
+
+    StringBuilder newDatasetTechnicalResources = new StringBuilder();
+    for (Dataset dataset : newDatasets) {
+      if (dataset.getTechnicalResources() != null && !dataset.getTechnicalResources().isEmpty()) {
+        newDatasetTechnicalResources.append("Technical resources for \"");
+        newDatasetTechnicalResources.append(dataset.getTitle()).append("\": ;");
+        List<TechnicalResource> technicalResource = dataset.getTechnicalResources();
+        for (int i = 0; i < technicalResource.size(); i++) {
+          newDatasetTechnicalResources.append(technicalResource.get(i).getName());
+          if (i + 1 < technicalResource.size()) newDatasetTechnicalResources.append(", ");
+        }
+      }
+    }
+
+    addReplacement(
+        replacements, "[datasetTechnicalResources]", newDatasetTechnicalResources.toString());
   }
 
   /** storageIntroInformation */

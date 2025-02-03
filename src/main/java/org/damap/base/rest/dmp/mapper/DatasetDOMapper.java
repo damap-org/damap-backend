@@ -5,11 +5,13 @@ import java.util.List;
 import lombok.experimental.UtilityClass;
 import org.damap.base.domain.Dataset;
 import org.damap.base.domain.Identifier;
+import org.damap.base.domain.TechnicalResource;
 import org.damap.base.enums.EDataAccessType;
 import org.damap.base.enums.EDataType;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.DatasetDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
+import org.damap.base.rest.dmp.domain.TechnicalResourceDO;
 
 /** DatasetDOMapper class. */
 @UtilityClass
@@ -62,6 +64,16 @@ public class DatasetDOMapper {
             });
     datasetDO.setType(typeList);
     datasetDO.setFileFormat(dataset.getFileFormat());
+
+    List<TechnicalResourceDO> technicalResourceDOS = new ArrayList<>();
+    for (TechnicalResource technicalResource : dataset.getTechnicalResources()) {
+      TechnicalResourceDO technicalResourceDO = new TechnicalResourceDO();
+      technicalResourceDO.setName(technicalResource.getName());
+      technicalResourceDO.setDescription(technicalResource.getDescription());
+      technicalResourceDOS.add(technicalResourceDO);
+    }
+
+    datasetDO.setTechnicalResources(technicalResourceDOS);
 
     return datasetDO;
   }
@@ -118,6 +130,19 @@ public class DatasetDOMapper {
             });
     dataset.setType(typeList);
     dataset.setFileFormat(datasetDO.getFileFormat());
+
+    List<TechnicalResource> existingResources = dataset.getTechnicalResources();
+    existingResources.clear();
+
+    if (datasetDO.getTechnicalResources() != null) {
+      for (TechnicalResourceDO technicalResourceDO : datasetDO.getTechnicalResources()) {
+        TechnicalResource technicalResource = new TechnicalResource();
+        technicalResource.setName(technicalResourceDO.getName());
+        technicalResource.setDescription(technicalResourceDO.getDescription());
+        technicalResource.setDataset(dataset);
+        existingResources.add(technicalResource);
+      }
+    }
 
     return dataset;
   }

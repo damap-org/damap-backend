@@ -241,7 +241,26 @@ public class MaDmpMapper {
     dataset.setTitle(datasetDO.getTitle());
     dataset.setType(mapToMaDmpDatasetType(datasetDO.getType()));
 
+    dataset.setTechnicalResource(getTechnicalResource(datasetDO));
+
     return dataset;
+  }
+
+  private List<TechnicalResource> getTechnicalResource(DatasetDO datasetDO) {
+    List<TechnicalResource> technicalResources = new ArrayList<>();
+    for (TechnicalResourceDO technicalResourceDO : datasetDO.getTechnicalResources()) {
+      TechnicalResource technicalResource = new TechnicalResource();
+      technicalResource.setName(technicalResourceDO.getName());
+      // We need to check if the description is null, because the description is not mandatory
+      // In case it is null, we set it to an empty string so that the field is included in the JSON
+      if (technicalResourceDO.getDescription() == null) {
+        technicalResource.setDescription("");
+      } else {
+        technicalResource.setDescription(technicalResourceDO.getDescription());
+      }
+      technicalResources.add(technicalResource);
+    }
+    return technicalResources;
   }
 
   /**
