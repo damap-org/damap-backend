@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20
+      author: Geoffrey Karnbach
+      changes:
+        - createSequence:
+            sequenceName: banner_aud_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: banner_aud
+            columns:
+              - column:
+                  name: rev
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revtype
+                  type: TINYINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: dismissible
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: color
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+        - addPrimaryKey:
+            tableName: banner_aud
+            columnNames: id, rev
+
+      rollback:
+        - dropTable:
+            tableName: banner_aud
+        - dropSequence:
+            sequenceName: banner_aud_seq

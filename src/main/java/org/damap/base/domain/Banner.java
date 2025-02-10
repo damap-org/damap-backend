@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 /** Banner class. */
 @Data
@@ -12,6 +13,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Audited
 public class Banner extends PanacheEntity {
 
   @Column(name = "title")
