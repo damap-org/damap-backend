@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.4.0] - 2025-02-10
+
 ### Added
 
 - Added "Principle Investigator" and "Project Coordinator" as contributor roles [#285](https://github.com/tuwien-csd/damap-backend/pull/285).
 - Added option to configure html title [#320](https://github.com/tuwien-csd/damap-backend/pull/320).
 - Added backend support for configurable banners [#311](https://github.com/tuwien-csd/damap-backend/pull/311).
 - Added develop quickstart guide documentation [#329](https://github.com/tuwien-csd/damap-backend/pull/329).
+- Added support for ethical issues report number, can be disabled via config [#302](https://github.com/tuwien-csd/damap-backend/pull/302).
 
 ### Changed
 
@@ -27,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug that prevented exporting due to incomplete identifiers [#313](https://github.com/tuwien-csd/damap-backend/pull/313).
 - Fixed a bug in the FWF template, where dataset descriptions would not be exported [#323](https://github.com/tuwien-csd/damap-backend/pull/323).
 - Fixed a bug where internal storage title changes by an admin would not affect older DMP's [#324](https://github.com/tuwien-csd/damap-backend/pull/324).
+- Fixed a bug where editor name in version table was just a hash [#322](https://github.com/tuwien-csd/damap-backend/pull/322).
 
 ### Template
 
