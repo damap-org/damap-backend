@@ -1,6 +1,8 @@
 package org.damap.base.enums;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /** EContributorRole class. */
 public enum EContributorRole {
@@ -31,6 +33,8 @@ public enum EContributorRole {
 
   private static final HashMap<String, EContributorRole> MAP = new HashMap<>();
 
+  private static final List<EContributorRole> leadershipRoles = new ArrayList<>();
+
   EContributorRole(String role) {
     this.role = role;
   }
@@ -46,7 +50,7 @@ public enum EContributorRole {
    *
    * @return a {@link java.lang.String} object
    */
-  public String getRole() {
+  public String getRoles() {
     return this.role;
   }
 
@@ -60,9 +64,17 @@ public enum EContributorRole {
     return MAP.get(role);
   }
 
+  public static Boolean isLeadershipRole(EContributorRole role) {
+    return leadershipRoles.contains(role);
+  }
+
   static {
     for (EContributorRole role : EContributorRole.values()) {
-      MAP.put(role.getRole(), role);
+      MAP.put(role.getRoles(), role);
     }
+
+    leadershipRoles.add(EContributorRole.PROJECT_LEADER);
+    leadershipRoles.add(EContributorRole.PROJECT_COORDINATOR);
+    leadershipRoles.add(EContributorRole.PRINCIPAL_INVESTIGATOR);
   }
 }

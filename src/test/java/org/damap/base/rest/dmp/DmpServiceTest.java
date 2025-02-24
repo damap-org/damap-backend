@@ -3,10 +3,7 @@ package org.damap.base.rest.dmp;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import lombok.extern.java.Log;
 import org.damap.base.TestSetup;
 import org.damap.base.enums.EContributorRole;
@@ -34,94 +31,75 @@ class DmpServiceTest extends TestSetup {
 
   @Test
   void updateProjectLeadTest() {
-    ProjectDO projectDO =
-        new ProjectDO() {
-          {
-            setUniversityId("-1");
-          }
-        };
+    ProjectDO projectDO = new ProjectDO();
+    projectDO.setUniversityId("-1");
+
     testDOFactory.getOrCreateTestDmpDOEmpty();
-    DmpDO dmpDO =
-        new DmpDO() {
-          {
-            setTitle("title");
-            setProject(projectDO);
-          }
-        };
+    DmpDO dmpDO = new DmpDO();
+    dmpDO.setTitle("title");
+    dmpDO.setProject(projectDO);
 
     dmpDO = dmpService.create(dmpDO, "editedBy");
 
-    // On a new project, the project lead from the CRIS system should be
-    // added as contributor, contact and get the PROJECT_LEADER role.
     Assertions.assertFalse(dmpDO.getContributors().isEmpty());
     Optional<ContributorDO> projectLead =
         dmpDO.getContributors().stream()
-            .filter(c -> c.getRole().equals(EContributorRole.PROJECT_LEADER))
+            .filter(
+                c -> c.getRoles() != null && c.getRoles().contains(EContributorRole.PROJECT_LEADER))
             .findFirst();
     Assertions.assertTrue(projectLead.isPresent());
     Assertions.assertTrue(projectLead.get().isContact());
 
     long projectLeadID = projectLead.get().getId();
+
     // Remove project from dmp and update. Nothing should happen.
     dmpDO.setProject(null);
     dmpDO = dmpService.update(dmpDO);
 
-    // Project leader contributor has changed the role and is no longer
-    // contact.
-    projectLead.get().setRole(EContributorRole.PROJECT_MANAGER);
+    projectLead.get().setRoles(new HashSet<>(Set.of(EContributorRole.PROJECT_MANAGER)));
     projectLead.get().setContact(false);
 
-    // Add other contributor and set as contact.
-    ContributorDO otherContributor =
-        new ContributorDO() {
-          {
-            setContact(true);
-          }
-        };
+    ContributorDO otherContributor = new ContributorDO();
+    otherContributor.setContact(true);
+
     dmpDO.setContributors(Arrays.asList(projectLead.get(), otherContributor));
 
-    // Set project again and update.
     dmpDO.setProject(projectDO);
     dmpDO = dmpService.update(dmpDO);
 
-    // Now there should
-    // - two contributors
-    // - no project leader (don't override already set role)
-    // - other contributor is contact (don't override already set contact)
     Assertions.assertEquals(2, dmpDO.getContributors().size());
+
     projectLead =
         dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
+
     otherContributor =
         dmpDO.getContributors().stream()
             .filter(c -> !c.getId().equals(projectLeadID))
             .findFirst()
             .get();
+
     Assertions.assertTrue(projectLead.isPresent());
     Assertions.assertFalse(projectLead.get().isContact());
     Assertions.assertTrue(otherContributor.isContact());
-    Assertions.assertEquals(EContributorRole.PROJECT_MANAGER, projectLead.get().getRole());
+    Assertions.assertTrue(projectLead.get().getRoles().contains(EContributorRole.PROJECT_MANAGER));
+    Assertions.assertTrue(projectLead.get().getRoles().contains(EContributorRole.PROJECT_LEADER));
 
-    // Remove project from dmp and update. Nothing should happen.
     dmpDO.setProject(null);
     dmpDO = dmpService.update(dmpDO);
 
     // Remove other contributor and set role of project lead to null.
-    projectLead.get().setRole(null);
+    projectLead.get().setRoles(null);
     dmpDO.setContributors(Arrays.asList(projectLead.get()));
 
-    // Set project again and update.
     dmpDO.setProject(projectDO);
     dmpDO = dmpService.update(dmpDO);
 
-    // Now there should be
-    // - one contributor
-    // - a project leader
-    // - a contact (project leader)
     Assertions.assertEquals(1, dmpDO.getContributors().size());
     projectLead =
         dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
+
     Assertions.assertTrue(projectLead.get().isContact());
-    Assertions.assertEquals(EContributorRole.PROJECT_LEADER, projectLead.get().getRole());
+    Assertions.assertEquals(Set.of(EContributorRole.PROJECT_LEADER), projectLead.get().getRoles());
   }
 
   @Test

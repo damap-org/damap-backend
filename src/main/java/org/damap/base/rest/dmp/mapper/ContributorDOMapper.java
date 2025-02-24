@@ -1,5 +1,6 @@
 package org.damap.base.rest.dmp.mapper;
 
+import java.util.HashSet;
 import lombok.experimental.UtilityClass;
 import org.damap.base.domain.Contributor;
 import org.damap.base.domain.Identifier;
@@ -36,8 +37,13 @@ public class ContributorDOMapper {
       IdentifierDOMapper.mapEntityToDO(contributor.getAffiliationId(), affiliationIdentifierDO);
       contributorDO.setAffiliationId(affiliationIdentifierDO);
     }
-    if (contributor.getContributorRole() != null)
-      contributorDO.setRole(contributor.getContributorRole());
+
+    if (contributor.getContributorRoles() != null) {
+      contributorDO.setRoles(contributor.getContributorRoles());
+    } else {
+      contributorDO.setRoles(new HashSet<>());
+    }
+
     contributorDO.setContact(contributor.getContact() != null && contributor.getContact());
 
     return contributorDO;
@@ -52,7 +58,9 @@ public class ContributorDOMapper {
    */
   public Contributor mapDOtoEntity(ContributorDO contributorDO, Contributor contributor) {
 
-    if (contributorDO.getId() != null) contributor.id = contributorDO.getId();
+    if (contributorDO.getId() != null) {
+      contributor.id = contributorDO.getId();
+    }
     contributor.setFirstName(contributorDO.getFirstName());
     contributor.setLastName(contributorDO.getLastName());
     contributor.setMbox(contributorDO.getMbox());
@@ -60,23 +68,34 @@ public class ContributorDOMapper {
     contributor.setAffiliation(contributorDO.getAffiliation());
 
     if (contributorDO.getPersonId() != null) {
-      Identifier identifierContributor = new Identifier();
-      if (contributor.getPersonIdentifier() != null)
-        identifierContributor = contributor.getPersonIdentifier();
+      Identifier identifierContributor =
+          contributor.getPersonIdentifier() != null
+              ? contributor.getPersonIdentifier()
+              : new Identifier();
       IdentifierDOMapper.mapDOtoEntity(contributorDO.getPersonId(), identifierContributor);
       contributor.setPersonIdentifier(identifierContributor);
-    } else contributor.setPersonIdentifier(null);
+    } else {
+      contributor.setPersonIdentifier(null);
+    }
 
     if (contributorDO.getAffiliationId() != null) {
-      Identifier affiliationIdentifier = new Identifier();
-      if (contributor.getAffiliationId() != null)
-        affiliationIdentifier = contributor.getAffiliationId();
+      Identifier affiliationIdentifier =
+          contributor.getAffiliationId() != null
+              ? contributor.getAffiliationId()
+              : new Identifier();
       IdentifierDOMapper.mapDOtoEntity(contributorDO.getAffiliationId(), affiliationIdentifier);
       contributor.setAffiliationId(affiliationIdentifier);
-    } else contributor.setAffiliationId(null);
+    } else {
+      contributor.setAffiliationId(null);
+    }
 
     contributor.setContact(contributorDO.isContact());
-    contributor.setContributorRole(contributorDO.getRole());
+
+    if (contributorDO.getRoles() != null) {
+      contributor.setContributorRoles(contributorDO.getRoles());
+    } else {
+      contributor.setContributorRoles(new HashSet<>());
+    }
 
     return contributor;
   }

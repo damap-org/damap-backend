@@ -29,11 +29,13 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
 
   protected Map<String, String> replacements = new HashMap<>();
   protected Map<String, String> footerMap = new HashMap<>();
+
   // Convert the date for readable format for the document
   protected Dmp dmp = null;
   protected List<Dataset> datasets = null;
   protected List<Dataset> deletedDatasets = null;
   protected List<Cost> costList = null;
+
   // elements of the document that need to be navigated through
   protected Properties prop = null;
   protected List<XWPFParagraph> xwpfParagraphs = null;
@@ -52,15 +54,15 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
     deletedDatasets = getDeletedDatasets(datasets);
     costList = dmp.getCosts();
 
-    // determine project leader/coordinator/principal investigator
+    // Determine project leader/coordinator/principal investigator
     projectCoordinators =
         dmp.getContributorList().stream()
             .filter(
-                contributor ->
-                    contributor.getContributorRole() == EContributorRole.PROJECT_LEADER
-                        || contributor.getContributorRole() == EContributorRole.PROJECT_COORDINATOR
-                        || contributor.getContributorRole()
-                            == EContributorRole.PRINCIPAL_INVESTIGATOR)
+                contributor -> {
+                  Set<EContributorRole> roles = contributor.getContributorRoles();
+                  return roles != null
+                      && roles.stream().anyMatch(EContributorRole::isLeadershipRole);
+                })
             .map(contributor -> ContributorDOMapper.mapEntityToDO(contributor, new ContributorDO()))
             .toList();
 
@@ -69,13 +71,18 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
         if (dmp.getProjectUniversityId() != null) {
           ContributorDO projectLeader =
               projectService.getProjectLeader(dmp.getProjectUniversityId());
-          if (projectLeader.getRole() == null) {
-            projectLeader.setRole(EContributorRole.PROJECT_LEADER);
+
+          if (projectLeader != null) {
+            if (projectLeader.getRoles() == null || projectLeader.getRoles().isEmpty()) {
+              projectLeader.setRoles(new HashSet<>(Set.of(EContributorRole.PROJECT_LEADER)));
+            }
+            projectCoordinators = List.of(projectLeader);
+          } else {
+            log.warn("Project Leader is null for project ID: " + dmp.getProjectUniversityId());
           }
-          projectCoordinators = List.of(projectLeader);
         }
       } catch (Exception e) {
-        log.error("Project API not functioning");
+        log.error("Project API not functioning", e);
       }
     }
   }
@@ -92,8 +99,13 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
    * @return a {@link java.util.List} object
    */
   protected List<Contributor> getContributorsByRole(
-      List<Contributor> contributors, EContributorRole role) {
-    return contributors.stream().filter(c -> c.getContributorRole() == role).toList();
+      List<Contributor> contributors, Set<EContributorRole> roles) {
+    return contributors.stream()
+        .filter(
+            c ->
+                c.getContributorRoles() != null
+                    && !Collections.disjoint(c.getContributorRoles(), roles))
+        .toList();
   }
 
   /**
@@ -107,15 +119,22 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
       return "";
     } else {
       return String.join(
-          ", ",
+          "; ",
           contributors.stream()
               .map(
                   c ->
                       String.format(
-                          "%s %s%s",
+                          "%s %s%s [%s]",
                           c.getFirstName(),
                           c.getLastName(),
-                          c.getMbox() == null ? "" : " (" + c.getMbox() + ")"))
+                          c.getMbox() == null ? "" : " (" + c.getMbox() + ")",
+                          c.getContributorRoles() != null
+                              ? String.join(
+                                  ", ",
+                                  c.getContributorRoles().stream()
+                                      .map(EContributorRole::getRoles)
+                                      .toList())
+                              : ""))
               .toList());
     }
   }

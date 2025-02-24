@@ -3,6 +3,7 @@ package org.damap.base.conversion;
 import jakarta.enterprise.context.RequestScoped;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -76,7 +77,7 @@ public class ExportHorizonEuropeTemplate extends AbstractTemplateExportScienceEu
     super.datasetsInformation();
 
     var dataManagers =
-        getContributorsByRole(dmp.getContributorList(), EContributorRole.DATA_MANAGER);
+        getContributorsByRole(dmp.getContributorList(), Set.of(EContributorRole.DATA_MANAGER));
 
     if (dataManagers.isEmpty()) {
       addReplacement(
@@ -106,7 +107,8 @@ public class ExportHorizonEuropeTemplate extends AbstractTemplateExportScienceEu
   /** workPackageLeadersInformation. */
   public void workPackageLeadersInformation() {
     var workPackageLeaders =
-        getContributorsByRole(dmp.getContributorList(), EContributorRole.WORK_PACKAGE_LEADER);
+        getContributorsByRole(
+            dmp.getContributorList(), Set.of(EContributorRole.WORK_PACKAGE_LEADER));
     if (workPackageLeaders.isEmpty()) {
       addReplacement(
           replacements,

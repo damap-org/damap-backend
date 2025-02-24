@@ -2,20 +2,9 @@ package org.damap.base.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Version;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import java.util.Set;
+import lombok.*;
 import org.damap.base.annotations.gdpr.*;
 import org.damap.base.enums.EContributorRole;
 import org.hibernate.envers.Audited;
@@ -67,8 +56,9 @@ public class Contributor extends PanacheEntity {
 
   private Boolean contact;
 
-  @GdprExtended
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "contributor_roles")
+  @Column(name = "role")
   @Enumerated(EnumType.STRING)
-  @Column(name = "contributor_role")
-  private EContributorRole contributorRole;
+  private Set<EContributorRole> contributorRoles;
 }

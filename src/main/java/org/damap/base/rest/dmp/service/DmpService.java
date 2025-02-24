@@ -287,7 +287,7 @@ public class DmpService {
    * @param dmp Data management plan
    */
   private void updateProjectLead(Dmp dmp) {
-    if (dmp.getProject() == null || dmp.getProject().getUniversityId() == null) return;
+    if (dmp.getProjectUniversityId() == null) return;
 
     ContributorDO projectLeaderDO =
         projectService.getProjectLeader(dmp.getProject().getUniversityId());
@@ -313,13 +313,14 @@ public class DmpService {
       dmpContributors.add(projectLeaderContributor);
     }
 
-    // If no role was defined, set contributor role to project leader
-    if (projectLeaderContributor.getContributorRole() == null) {
-      projectLeaderContributor.setContributorRole(EContributorRole.PROJECT_LEADER);
+    if (projectLeaderContributor.getContributorRoles() == null) {
+      projectLeaderContributor.setContributorRoles(
+          new HashSet<>(Set.of(EContributorRole.PROJECT_LEADER)));
+    } else {
+      projectLeaderContributor.getContributorRoles().add(EContributorRole.PROJECT_LEADER);
     }
 
-    // If no other contact was defined, set project leader as contact.
-    if (dmpContributors.stream().noneMatch(c -> c.getContact())) {
+    if (dmpContributors.stream().noneMatch(Contributor::getContact)) {
       projectLeaderContributor.setContact(true);
     }
   }
