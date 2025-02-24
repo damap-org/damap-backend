@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 23
+      author: lpandath
+      changes:
+        - createTable:
+            tableName: contributor_roles
+            columns:
+              - column:
+                  name: contributor_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_contributor_roles_contributor
+                    references: contributor(id)
+              - column:
+                  name: role
+                  type: VARCHAR(255)
+                  constraints:
+                    foreignKeyName: fk_contributor_roles
+                    references: e_contributor_role(role)
+        - createTable:
+            tableName: contributor_roles_aud
+            columns:
+              - column:
+                  name: REV
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_contributor_roles_aud_rev
+                    references: revinfo(id)
+              - column:
+                  name: REVTYPE
+                  type: SMALLINT
+              - column:
+                  name: contributor_id
+                  type: BIGINT
+              - column:
+                  name: role
+                  type: VARCHAR(255)
+                  constraints:
+                    foreignKeyName: fk_contributor_roles_aud_role
+                    references: e_contributor_role(role)
+        - dropColumn:
+            tableName: contributor
+            columnName: contributor_role
+      rollback:
+        - addColumn:
+            tableName: contributor
+            columns:
+              - column:
+                  name: contributor_role
+                  type: VARCHAR(255)
+        - dropTable:
+            tableName: contributor_roles
+        - dropTable:
+            tableName: contributor_roles_aud

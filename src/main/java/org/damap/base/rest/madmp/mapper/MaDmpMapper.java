@@ -134,12 +134,17 @@ public class MaDmpMapper {
 
     if (contributorDO.getPersonId() != null)
       contributor.setContributorId(mapToMaDmp(contributorDO.getPersonId(), new ContributorId()));
+
     contributor.setMbox(contributorDO.getMbox());
     contributor.setName(contributorDO.getFirstName() + " " + contributorDO.getLastName());
 
-    Set<String> role = new LinkedHashSet<>();
-    if (contributorDO.getRole() != null) role.add(contributorDO.getRole().getRole());
-    contributor.setRole(role);
+    Set<String> roles =
+        contributorDO.getRoles() != null
+            ? contributorDO.getRoles().stream()
+                .map(EContributorRole::getRoles)
+                .collect(Collectors.toSet())
+            : new LinkedHashSet<>();
+    contributor.setRole(roles);
 
     return contributor;
   }
@@ -442,7 +447,7 @@ public class MaDmpMapper {
           return Host.CertifiedWith.TRAC;
         case WDS:
           return Host.CertifiedWith.WDS;
-          //                case XXX: return Host.CertifiedWith.CORETRUSTSEAL;
+          // case XXX: return Host.CertifiedWith.CORETRUSTSEAL;
         case CLARIN_CERTIFICATE_B:
         case DRAMBORA:
         case RAT_SWD:

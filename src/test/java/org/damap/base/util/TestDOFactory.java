@@ -9,10 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Dmp;
 import org.damap.base.domain.DmpVersion;
@@ -254,14 +251,15 @@ public class TestDOFactory {
 
   private List<ContributorDO> getTestContributorList() {
     ContributorDO contributor = getTestContributorDO();
-    contributor.setRole(EContributorRole.DATA_MANAGER);
+    contributor.setRoles(new HashSet<>(Set.of(EContributorRole.DATA_MANAGER)));
 
     ContributorDO secondContributor = getTestContributorDO();
     secondContributor.setFirstName("John");
     secondContributor.setLastName("Doe");
     secondContributor.setMbox("john.doe@research.institution.com");
-    secondContributor.setRole(EContributorRole.DATA_COLLECTOR);
+    secondContributor.setRoles(new HashSet<>(Set.of(EContributorRole.DATA_COLLECTOR)));
     secondContributor.setContact(false);
+
     return Arrays.asList(contributor, secondContributor);
   }
 
