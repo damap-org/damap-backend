@@ -32,7 +32,7 @@ public class TemplateFileBrokerServiceImpl implements TemplateFileBrokerService 
   /** {@inheritDoc} */
   @Override
   public Properties getFWFTemplateResource() {
-    return loadResource("org/damap/base/template/scienceEuropeTemplate.resource");
+    return loadResource("org/damap/base/template/FWFTemplate.resource");
   }
 
   /** {@inheritDoc} */
