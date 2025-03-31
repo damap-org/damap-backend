@@ -14,9 +14,9 @@ restrictedAccess.avail=Description of protocol to access restricted data:
 costs.avail=There are costs dedicated to data management and ensuring that data will be FAIR as outlined below.
 costs.no=There are no costs dedicated to data management and ensuring that data will be FAIR.
 
-storageIntro.internal=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. The data will be stored on the servers of our institution. Details about storage options and the stored datasets can be found in the storage table.
-storageIntro.external=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. The data will not be stored on the servers of our institution. Details about storage options and the stored datasets can be found in the storage table.
-storageIntro.both=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. External and internal storage options will be used. Details about storage options and the stored datasets can be found in the storage table.
+storageIntro.internal=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. The data will be stored on the servers of our institution.
+storageIntro.external=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. The data will not be stored on the servers of our institution.
+storageIntro.both=For the duration of the project, storage and backup of data will be ensured by [name] (acting as the person responsible for data management and DMP) in cooperation with the system operator. External and internal storage options will be used.
 storageIntro.none=No storage options are specified at the moment.
 
 distributionStorage=will be stored on
