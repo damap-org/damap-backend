@@ -7,11 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.5.0] - 2025-04-01
+
+### Added
+
+- Added the "Technical Resource" field to dataset, which describes the hardware used to capture the dataset [#337](https://github.com/tuwien-csd/damap-backend/pull/337).
+
+### Changed
+
+- Work was done to make the code more bug resistant [#332](https://github.com/tuwien-csd/damap-backend/pull/332).
+
+### Template
+
+- HE terminology section: removed the link above the table and the "EOSC" row [#336](https://github.com/tuwien-csd/damap-backend/pull/336).
+- Fixed broken header column text "dataset ID" in FWF template dataset tables [#344](https://github.com/tuwien-csd/damap-backend/pull/344).
+- Assigned more space to each "dataset ID" column so the "dataset" is not split and stays in one line [#344](https://github.com/tuwien-csd/damap-backend/pull/344).
+- Added cover pages to each template, explaining what do to after exporting to word. This covers replacing placeholders, rewriting automatically generated text and deletions [#345](https://github.com/tuwien-csd/damap-backend/pull/345).
+
+### Resource Files
+
+- Added FWF resource file; the only difference from SE is the following from under "personal.avail": (see section II.1) vs (see section 1a) [#343](https://github.com/tuwien-csd/damap-backend/pull/343).
+- Removed mentions of the storage table from resource files, since there is no such table [#347](https://github.com/tuwien-csd/damap-backend/pull/347).
+
 ## [4.4.0] - 2025-02-10
 
 ### Added
 
-- Added "Principle Investigator" and "Project Coordinator" as contributor roles [#285](https://github.com/tuwien-csd/damap-backend/pull/285).
+- Added "Principal Investigator" and "Project Coordinator" as contributor roles [#285](https://github.com/tuwien-csd/damap-backend/pull/285).
 - Added option to configure html title [#320](https://github.com/tuwien-csd/damap-backend/pull/320).
 - Added backend support for configurable banners [#311](https://github.com/tuwien-csd/damap-backend/pull/311).
 - Added develop quickstart guide documentation [#329](https://github.com/tuwien-csd/damap-backend/pull/329).
