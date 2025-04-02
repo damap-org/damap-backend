@@ -20,6 +20,7 @@ public class ExternalStorageDOMapper {
     storageDO.setBackupFrequency(storage.getBackupFrequency());
     storageDO.setStorageLocation(storage.getStorageLocation());
     storageDO.setBackupLocation(storage.getBackupLocation());
+    storageDO.setIsInternal(storage.getIsInternal());
 
     return storageDO;
   }
@@ -36,6 +37,7 @@ public class ExternalStorageDOMapper {
     storage.setBackupFrequency(storageDO.getBackupFrequency());
     storage.setStorageLocation(storageDO.getStorageLocation());
     storage.setBackupLocation(storageDO.getBackupLocation());
+    storage.setIsInternal(storageDO.getIsInternal());
 
     return storage;
   }

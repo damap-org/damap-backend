@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22
+      author: Geoffrey Karnbach
+      changes:
+        - addColumn:
+            tableName: external_storage
+            columns:
+              - column:
+                  name: is_internal
+                  type: BOOLEAN
+        - addColumn:
+            tableName: external_storage_aud
+            columns:
+              - column:
+                  name: is_internal
+                  type: BOOLEAN
+      rollback:
+        - dropColumn:
+            tableName: external_storage
+            columnName: is_internal
+        - dropColumn:
+            tableName: external_storage_aud
+            columnName: is_internal

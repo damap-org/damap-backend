@@ -25,4 +25,7 @@ public class ExternalStorage extends Host {
 
   @Column(name = "backup_location")
   private String backupLocation;
+
+  @Column(name = "is_internal")
+  private Boolean isInternal;
 }

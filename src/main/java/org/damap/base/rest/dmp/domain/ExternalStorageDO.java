@@ -1,6 +1,7 @@
 package org.damap.base.rest.dmp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,4 +23,7 @@ public class ExternalStorageDO extends HostDO {
 
   @Size(max = 255)
   private String backupLocation;
+
+  @JsonProperty("isInternal")
+  private Boolean isInternal;
 }

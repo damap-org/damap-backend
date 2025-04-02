@@ -489,6 +489,105 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         replacements, "[datasetTechnicalResources]", newDatasetTechnicalResources.toString());
   }
 
+  /** storageIntroInformation */
+  public void storageIntroInformation() {
+    String coordinatorFullName = null;
+
+    List<Contributor> contributorPool = dmp.getContributorList();
+    for (ContributorDO contributorDO : projectCoordinators) {
+      contributorPool.add(ContributorDOMapper.mapDOtoEntity(contributorDO, new Contributor()));
+    }
+
+    // Data Manager
+    for (Contributor contributor : contributorPool) {
+      if (contributor != null
+          && contributor.getContributorRole() != null
+          && nullExclusiveEquals(contributor.getContributorRole(), EContributorRole.DATA_MANAGER)) {
+        coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+        break;
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Project Leader
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && contributor.getContributorRole() != null
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PROJECT_LEADER)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Principal Investigator
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && contributor.getContributorRole() != null
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PRINCIPAL_INVESTIGATOR)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Project Coordinator
+      for (Contributor contributor : contributorPool) {
+        if (contributor != null
+            && nullExclusiveEquals(
+                contributor.getContributorRole(), EContributorRole.PROJECT_COORDINATOR)) {
+          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
+          break;
+        }
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Contact person as fallback option 1
+      if (dmp.getContact() != null) {
+        coordinatorFullName =
+            dmp.getContact().getFirstName() + " " + dmp.getContact().getLastName();
+      }
+    }
+
+    if (coordinatorFullName == null) {
+      // Generic string as fallback option 2
+      coordinatorFullName = "the project leader ";
+    }
+
+    boolean usesExternalStorage =
+        dmp.getHostList().stream()
+            .filter(ExternalStorage.class::isInstance)
+            .map(ExternalStorage.class::cast)
+            .anyMatch(storage -> storage.getIsInternal() != null && !storage.getIsInternal());
+
+    boolean usesInternalStorage =
+        dmp.getHostList().stream()
+            .anyMatch(
+                host ->
+                    (host instanceof Storage)
+                        || (host instanceof ExternalStorage
+                            && ((ExternalStorage) host).getIsInternal()));
+
+    String propName = "storageIntro.none";
+    if (usesExternalStorage && !usesInternalStorage) {
+      propName = "storageIntro.external";
+    } else if (usesInternalStorage && !usesExternalStorage) {
+      propName = "storageIntro.internal";
+    } else if (usesInternalStorage && usesExternalStorage) {
+      propName = "storageIntro.both";
+    }
+
+    String storageIntroReplacement = loadResourceService.loadVariableFromResource(prop, propName);
+    storageIntroReplacement = storageIntroReplacement.replace("[name]", coordinatorFullName);
+
+    addReplacement(replacements, "[storageintro]", storageIntroReplacement);
+  }
+
   /** storageInformation. */
   public void storageInformation() {
     List<Host> hostList = dmp.getHostList();
