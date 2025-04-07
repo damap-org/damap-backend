@@ -16,6 +16,7 @@ import org.damap.base.enums.EIdentifierType;
 import org.damap.base.repo.AccessRepo;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.rest.dmp.domain.*;
+import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
 import org.damap.base.rest.dmp.mapper.DmpDOMapper;
 import org.damap.base.rest.dmp.mapper.DmpListItemDOMapper;
@@ -212,37 +213,56 @@ public class DmpService {
   }
 
   /**
-   * getDefaultFileName.
+   * Generates a default filename for a DMP based in the info. Default format: "DMP_[id]_[date]"
    *
-   * @param id a long
-   * @return a {@link java.lang.String} object
+   * @param id The ID of the DMP
+   * @return A sanitized filename string
    */
   public String getDefaultFileName(long id) {
     Date date = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+    String formattedDate = formatter.format(date);
 
-    String filename = "My Data Management Plan";
+    String namePart = null;
+    boolean usePrefixAndSuffix = true;
 
     Dmp dmp = dmpRepo.findById(id);
+
     if (dmp != null) {
       if (dmp.getProject() != null) {
-        if (dmp.getProject().getUniversityId() != null
-            && projectService.read(dmp.getProject().getUniversityId()) != null) {
-          filename =
-              "DMP_"
-                  + projectService.read(dmp.getProject().getUniversityId()).getAcronym()
-                  + "_"
-                  + formatter.format(date);
-        } else if (dmp.getProject().getTitle() != null)
-          filename = "DMP_" + dmp.getProject().getTitle() + "_" + formatter.format(date);
-      } else {
-        if (dmp.getTitle() != null) filename = dmp.getTitle();
+        String universityId = dmp.getProject().getUniversityId();
+        ProjectDO universityProject =
+            (universityId != null) ? projectService.read(universityId) : null;
+
+        if (universityProject != null && universityProject.getAcronym() != null) {
+          namePart = universityProject.getAcronym();
+        } else if (dmp.getProject().getTitle() != null) {
+          namePart = dmp.getProject().getTitle();
+        }
+      }
+
+      // This condition is met if:
+      // - no project (dmp.getProject() == null).
+      // - a project that contains neither an acronym nor a title
+      // - if dmp.getTitle() is available, we use it directly.
+      if (namePart == null && dmp.getTitle() != null) {
+        namePart = dmp.getTitle();
+        usePrefixAndSuffix = false;
       }
     }
 
-    filename = filename.replaceAll("[\"',\\s]+", "_");
-
-    return filename;
+    String finalName;
+    if (namePart != null) {
+      if (usePrefixAndSuffix) {
+        finalName = "DMP_" + namePart + "_" + formattedDate;
+      } else {
+        finalName = namePart;
+      }
+    } else {
+      // Fallback to default if no namePart could be determined from DMP or Project
+      finalName = "DMP_" + id + "_" + formattedDate;
+    }
+    return finalName.replaceAll("[\"',\s]+", "_");
   }
 
   /**

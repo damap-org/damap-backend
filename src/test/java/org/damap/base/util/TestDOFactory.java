@@ -152,7 +152,7 @@ public class TestDOFactory {
     prepareInternalStorageOption();
 
     final Optional<Dmp> testDmp =
-        dmpRepo.getAll().stream().filter(a -> a.getTitle().equals("TestDmp")).findAny();
+        dmpRepo.getAll().stream().filter(a -> "TestDmp".equals(a.getTitle())).findAny();
     if (testDmp.isPresent()) return DmpDOMapper.mapEntityToDO(testDmp.get(), new DmpDO());
 
     DmpDO newTestDmpDO = new DmpDO();
@@ -313,7 +313,7 @@ public class TestDOFactory {
     StorageDO storage = new StorageDO();
     Optional<InternalStorageTranslation> testInternalStorage =
         internalStorageTranslationRepo.getAllInternalStorageByLanguage("eng").stream()
-            .filter(a -> a.getTitle().equals("Test Storage Title"))
+            .filter(a -> "Test Storage Title".equals(a.getTitle()))
             .findAny();
     testInternalStorage.ifPresent(
         storageTranslation ->
@@ -353,7 +353,7 @@ public class TestDOFactory {
    */
   public DmpDO getOrCreateTestDmpDOEmpty() {
     final Optional<Dmp> testDmp =
-        dmpRepo.getAll().stream().filter(a -> a.getTitle().equals("EmptyTestDmp")).findAny();
+        dmpRepo.getAll().stream().filter(a -> "EmptyTestDmp".equals(a.getTitle())).findAny();
     if (testDmp.isPresent()) return DmpDOMapper.mapEntityToDO(testDmp.get(), new DmpDO());
 
     DmpDO newTestDmpDO = new DmpDO();

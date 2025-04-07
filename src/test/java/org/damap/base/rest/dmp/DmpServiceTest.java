@@ -3,7 +3,14 @@ package org.damap.base.rest.dmp;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.java.Log;
 import org.damap.base.TestSetup;
 import org.damap.base.enums.EContributorRole;
@@ -162,5 +169,32 @@ class DmpServiceTest extends TestSetup {
     testDMP.getProject().setAcronym("newAcronym");
     DmpDO updatedDMP = dmpService.update(testDMP);
     Assertions.assertEquals("newAcronym", updatedDMP.getProject().getAcronym());
+  }
+
+  @Test
+  void givenDmpWithValidTitle_whenGettingDefaultFileName_thenShouldUseTitle() {
+    DmpDO dmpWithTitle = new DmpDO();
+    dmpWithTitle.setTitle("Test DMP Title");
+    dmpWithTitle = dmpService.create(dmpWithTitle, "testUser");
+
+    String fileName = dmpService.getDefaultFileName(dmpWithTitle.getId());
+
+    Assertions.assertEquals("Test_DMP_Title", fileName);
+  }
+
+  @Test
+  void givenOldDmpWithNullTitleAndNullProjectTitle_whenGettingDefaultFileName_thenShouldUseDmpId() {
+    DmpDO oldDmp = new DmpDO();
+    oldDmp.setTitle(null);
+    ProjectDO project = new ProjectDO();
+    project.setTitle(null);
+    oldDmp.setProject(project);
+    oldDmp = dmpService.create(oldDmp, "testUser");
+
+    String fileName = dmpService.getDefaultFileName(oldDmp.getId());
+
+    Date date = new Date();
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+    Assertions.assertEquals("DMP_" + oldDmp.getId() + "_" + formatter.format(date), fileName);
   }
 }
