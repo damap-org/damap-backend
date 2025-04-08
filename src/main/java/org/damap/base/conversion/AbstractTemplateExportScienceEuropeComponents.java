@@ -67,6 +67,11 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   public void titlePage() {
     Project project = dmp.getProject();
     if (project == null) {
+      addReplacement(replacements, "[startdate]", "");
+      addReplacement(replacements, "[enddate]", "");
+      addReplacement(replacements, "[funderid]", "");
+      addReplacement(replacements, "[grantid]", "");
+      addReplacement(replacements, "[projectid]", "");
       return;
     }
 
@@ -74,9 +79,11 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     Integer titleLength = (project.getTitle() == null) ? 0 : project.getTitle().length();
 
     // variable project name
-    if (titleLength / 25 > 2) // Title too long, need to be resized
-    addReplacement(replacements, "[projectname]", project.getTitle() + "#oversize");
-    else addReplacement(replacements, "[projectname]", project.getTitle());
+    if (titleLength / 25 > 2) { // Title too long, need to be resized
+      addReplacement(replacements, "[projectname]", project.getTitle() + "#oversize");
+    } else {
+      addReplacement(replacements, "[projectname]", project.getTitle());
+    }
 
     addReplacement(replacements, "[projectnameText]", project.getTitle());
     addReplacement(footerMap, "[projectnameText]", project.getTitle());
