@@ -6,6 +6,7 @@ import java.util.HashMap;
 public enum EAgreement {
   CONSORTIUM_AGREEMENT("consortium agreement"),
   DATA_PROCESSING_AGREEMENT("data processing agreement"),
+  DATA_TRANSFER_AGREEMENT("data transfer agreement"),
   JOINT_CONTROL_AGREEMENT("joint control agreement"),
   CONFIDENTIALITY_AGREEMENT("confidentiality agreement"),
   OTHER("other documents");
