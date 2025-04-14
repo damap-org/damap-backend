@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.5.1] - 2025-04-14
+
+### Fixed
+
+- Fixed a bug which prevented DAMAP from working with an oracle database [#358](https://github.com/tuwien-csd/damap-backend/pull/358).
+- Fixed a bug where placeholders were left in the exported document when no project was chosen [#354](https://github.com/tuwien-csd/damap-backend/pull/354).
+
+### Template
+
+- SE relevant policies and guidelines section: Updated broken link to ethics and data protection document [#353](https://github.com/tuwien-csd/damap-backend/pull/353).
+
 ## [4.5.0] - 2025-04-01
 
 ### Added
