@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22
+      author: Rafael dos Santos
+      changes:
+        - insert:
+            tableName: e_agreement
+            columns:
+              - column:
+                  name: agreement
+                  value: 'DATA_TRANSFER_AGREEMENT'
+
+      rollback:
+        - delete:
+            tableName: e_agreement
+            where: agreement = 'DATA_TRANSFER_AGREEMENT'
