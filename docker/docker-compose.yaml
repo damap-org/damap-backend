@@ -7,15 +7,13 @@ services:
     # Since DAMAP containers are publicly available on Github packages one can
     # just pull the latest container image.
     image: ghcr.io/tuwien-csd/damap-backend:next
-    pull_policy: always
     restart: unless-stopped
 
-    # uncomment the following two lines and comment the previous
-    # 'image' to directly build the backend container from this repository.
-    # build:
-    #  context: ../
+    build:
+     context: ../
     depends_on:
       - damap-db
+#      - oracle-db
       - keycloak
       - api-mock
       - fits-service
@@ -34,11 +32,9 @@ services:
     pull_policy: always
     restart: unless-stopped
 
-    # uncomment the following two lines and comment the previous
-    # 'image' to directly build the frontend container from the repository
-    # assumed to be checked-out beside the 'damap-backend' repository.
-    # build:
-      # context: ../../damap-frontend
+    # Assumed to be checked-out beside the 'damap-backend' repository.
+    build:
+      context: ../../damap-frontend
     depends_on:
       - damap-be
 
@@ -47,7 +43,6 @@ services:
     # configuration needs a proxy to manage the connections between them,
     # as well as access from the outside.
     image: registry.hub.docker.com/library/nginx
-    pull_policy: always
     restart: unless-stopped
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
