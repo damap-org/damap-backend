@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.5.2] - 2025-04-15
+
+### Fixed
+
+- Fixed a bug which prevented DAMAP from working with an oracle database [#362](https://github.com/tuwien-csd/damap-backend/pull/362).
+
 ## [4.5.1] - 2025-04-14
 
 ### Fixed
