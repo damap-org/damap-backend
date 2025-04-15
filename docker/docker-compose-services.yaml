@@ -15,6 +15,22 @@ services:
       timeout: 15s
       retries: 5
 
+#  oracle-db:
+#    image: gvenzl/oracle-free:slim
+#    container_name: oracle-db
+#    restart: unless-stopped
+#    ports:
+#      - "1521:1521"  # Oracle default port
+#    environment:
+#      ORACLE_PASSWORD: pw4damap
+#      APP_USER: damap
+#      APP_USER_PASSWORD: pw4damap
+#    healthcheck:
+#      test: [ "CMD-SHELL", "healthcheck.sh" ]
+#      interval: 30s
+#      timeout: 15s
+#      retries: 5
+
   keycloak:
     image: bitnami/keycloak:23
     pull_policy: always
