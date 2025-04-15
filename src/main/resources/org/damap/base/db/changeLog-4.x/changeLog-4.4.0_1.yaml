@@ -6,6 +6,7 @@ databaseChangeLog:
       # It was removed using validCheckSum, since some systems already deployed the old changeset
       validCheckSum:
         - 9:eb65b4b53c688a6b504e5b864e575b5b
+        - 9:ce1361b67db53e5a54079e51ae41d17d
       changes:
         - createSequence:
             sequenceName: technical_resource_seq
@@ -21,7 +22,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                    unique: true
               - column:
                   name: name
                   type: VARCHAR(255)
