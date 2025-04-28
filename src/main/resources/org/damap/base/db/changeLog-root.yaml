@@ -18,6 +18,7 @@
 # Important - keep in mind the id - check which one your predecessor used.
 
 databaseChangeLog:
+  - error
   - include:
       file: org/damap/base/db/changeLog.yaml # legacy changelog
   - include:
