@@ -3,7 +3,7 @@ package org.damap.base.enums;
 import java.util.HashMap;
 
 /** EAccessRight class. */
-public enum EAccessRight {
+public enumf EAccessRight {
   READ("reading only"),
   WRITE("writing"),
   NONE("no access");
