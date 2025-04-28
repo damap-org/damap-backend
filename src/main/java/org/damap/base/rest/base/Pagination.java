@@ -13,6 +13,7 @@ public class Pagination {
   boolean hasNext;
   boolean hasPrevious;
 
+
   /**
    * fromMap.
    *
@@ -23,6 +24,8 @@ public class Pagination {
     Pagination p = new Pagination();
     p.setPage(map);
     p.setPerPage(map);
+    String str = null;
+    System.out.println(str.length()); // This will throw a NullPointerException
 
     return p;
   }
