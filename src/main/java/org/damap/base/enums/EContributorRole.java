@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 /** EContributorRole class. */
 public enum EContributorRole {
-  DATA_COLLECTOR("Data Collector"),
   DATA_CURATOR("Data Curator"),
+  DATA_COLLECTOR("Data Collector"),
   DATA_MANAGER("Data Manager"),
   DISTRIBUTOR("Distributor"),
   EDITOR("Editor"),
