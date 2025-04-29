@@ -132,7 +132,9 @@ public enum ELicense {
   PDDL(
       "PDDL-1.0",
       "Open Data Commons Public Domain Dedication and License",
-      "https://spdx.org/licenses/PDDL-1.0");
+      "https://spdx.org/licenses/PDDL-1.0"),
+  NOLICENSE("LicenseRef-AllRightsReserved", "All Rights Reserved", ""),
+  CUSTOM("LicenseRef-Proprietary", "Custom License", "");
 
   private final String acronym;
   private final String name;

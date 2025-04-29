@@ -1350,10 +1350,11 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
         if (newDatasets.get(i).getLicense() != null
             && !nullExclusiveEquals(newDatasets.get(i).getDataAccess(), EDataAccessType.CLOSED)) {
-
           ELicense license = newDatasets.get(i).getLicense();
           XWPFParagraph paragraph = newRow.getCell(5).getParagraphs().get(0);
-          turnRunIntoHyperlinkRun(paragraph.getRuns().get(0), license.getUrl());
+          if (license != ELicense.NOLICENSE && license != ELicense.CUSTOM) {
+            turnRunIntoHyperlinkRun(paragraph.getRuns().get(0), license.getUrl());
+          }
           commitTableRows(xwpfTable);
         }
       }
