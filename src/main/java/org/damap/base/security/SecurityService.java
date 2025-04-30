@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.security.Principal;
+import java.util.Set;
 import lombok.extern.jbosslog.JBossLog;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -39,9 +40,13 @@ public class SecurityService {
    */
   public String getUserId() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
-
-    return ((OidcJwtCallerPrincipal) principal).getClaims().getClaimValue(authUser).toString();
+    if ((principal instanceof OidcJwtCallerPrincipal)) {
+      return ((OidcJwtCallerPrincipal) principal).getClaims().getClaimValue(authUser).toString();
+    }
+    if (principal instanceof ApiKeyPrincipal) {
+      return ((ApiKeyPrincipal) principal).getUserId();
+    }
+    return null;
   }
 
   /**
@@ -51,30 +56,42 @@ public class SecurityService {
    */
   public String getUserName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
-    return ((OidcJwtCallerPrincipal) principal).getName();
+    if ((principal instanceof OidcJwtCallerPrincipal)) {
+      return ((OidcJwtCallerPrincipal) principal).getName();
+    }
+    if (principal instanceof ApiKeyPrincipal) {
+      return ((ApiKeyPrincipal) principal).getName();
+    }
+    return null;
+  }
+
+  public Set<String> getUserRoles() {
+    return securityIdentity.getRoles();
   }
 
   public String getDisplayName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) {
-      return null;
+    if ((principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
+
+      String name = getClaimValueAsString(oidcPrincipal, "name");
+      if (name != null) {
+        return name;
+      }
+
+      String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
+      String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
+      if (firstName != null && lastName != null) {
+        return firstName + " " + lastName;
+      }
+
+      return getClaimValueAsString(oidcPrincipal, "email");
     }
 
-    OidcJwtCallerPrincipal oidcPrincipal = (OidcJwtCallerPrincipal) principal;
-
-    String name = getClaimValueAsString(oidcPrincipal, "name");
-    if (name != null) {
-      return name;
+    if (principal instanceof ApiKeyPrincipal) {
+      return ((ApiKeyPrincipal) principal).getDisplayName();
     }
 
-    String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
-    String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
-    if (firstName != null && lastName != null) {
-      return firstName + " " + lastName;
-    }
-
-    return getClaimValueAsString(oidcPrincipal, "email");
+    return null;
   }
 
   private String getClaimValueAsString(OidcJwtCallerPrincipal oidcPrincipal, String claimKey) {
