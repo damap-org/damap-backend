@@ -1143,8 +1143,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       }
       xwpfTable.removeRow(xwpfTable.getRows().size() - 1);
     } else {
-      // clean row
-      ArrayList<String> emptyContent = new ArrayList<>(Arrays.asList("", "", "", "", "", "", ""));
+      // clean row, the first FWF template table has the additional "description" column
+      ArrayList<String> emptyContent = new ArrayList<>(Collections.nCopies(7, ""));
       insertTableCells(
           xwpfTable, xwpfTable.getRows().get(xwpfTable.getRows().size() - 1), emptyContent);
     }
@@ -1376,8 +1376,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       xwpfTable.removeRow(xwpfTable.getRows().size() - 1);
     } else {
       // clean row
-      ArrayList<String> emptyContent =
-          new ArrayList<String>(Arrays.asList("", "", "", "", "", "", ""));
+      ArrayList<String> emptyContent = new ArrayList<String>(Arrays.asList("", "", "", "", "", ""));
       insertTableCells(
           xwpfTable, xwpfTable.getRows().get(xwpfTable.getRows().size() - 1), emptyContent);
     }

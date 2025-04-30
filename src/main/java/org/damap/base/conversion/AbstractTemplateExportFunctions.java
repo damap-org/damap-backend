@@ -156,19 +156,6 @@ public abstract class AbstractTemplateExportFunctions {
     int numCells = cells.size();
     int numContent = cellContent.size();
 
-    // Log warning if numCells and numContent does not match
-    if (numCells != numContent) {
-      log.warn(
-          String.format(
-              "Table %s\n"
-                  + "Number of provided values for table row does not match number of row cells. num provided/num row cells: %2d/%2d",
-              String.join(
-                  " | ",
-                  table.getRow(0).getTableCells().stream().map(XWPFTableCell::getText).toList()),
-              numContent,
-              numCells));
-    }
-
     // Iterate over min(numCells, numContent) to prevent out of bounds
     for (int i = 0; i < Math.min(numCells, numContent); i++) {
       XWPFTableCell cell = cells.get(i);
