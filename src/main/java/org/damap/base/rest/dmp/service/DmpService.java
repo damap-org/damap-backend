@@ -241,27 +241,19 @@ public class DmpService {
         }
       }
 
-      // This condition is met if:
-      // - no project (dmp.getProject() == null).
-      // - a project that contains neither an acronym nor a title
-      // - if dmp.getTitle() is available, we use it directly.
-      if (namePart == null && dmp.getTitle() != null) {
+      if (dmp.getTitle() != null && !dmp.getTitle().trim().isEmpty()) {
         namePart = dmp.getTitle();
         usePrefixAndSuffix = false;
       }
     }
 
     String finalName;
-    if (namePart != null) {
-      if (usePrefixAndSuffix) {
-        finalName = "DMP_" + namePart + "_" + formattedDate;
-      } else {
-        finalName = namePart;
-      }
+    if (namePart != null && !namePart.trim().isEmpty()) {
+      finalName = usePrefixAndSuffix ? "DMP_" + namePart + "_" + formattedDate : namePart;
     } else {
-      // Fallback to default if no namePart could be determined from DMP or Project
       finalName = "DMP_" + id + "_" + formattedDate;
     }
+
     return finalName.replaceAll("[\"',\s]+", "_");
   }
 
