@@ -1,0 +1,255 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: damap-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5G
+  storageClassName: {{ .Values.damap.storage_class_name }}
+  volumeMode: Filesystem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-backend
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: damap-backend
+  template:
+    metadata:
+      labels:
+        app: damap-backend
+    spec:
+      hostUsers: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: damap-backend
+          image: "{{ .Values.damap.backend_image }}"
+          imagePullPolicy: Always
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 2G
+            limits:
+              memory: 2G
+          ports:
+            - containerPort: 9000
+          env:
+            - name: QUARKUS_HTTP_PORT
+              value: "9000"
+            - name: DAMAP_FITS_URL
+              value: ""
+            - name: DAMAP_GOTENBERG_URL
+              value: "http://localhost:3000"
+            - name: DAMAP_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: db_username
+            - name: DAMAP_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: db_password
+            - name: DAMAP_DATASOURCE_URL
+              value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.db_name }}"
+            - name: DAMAP_AUTH_BACKEND_URL
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
+            - name: DAMAP_AUTH_FRONTEND_URL
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
+            - name: DAMAP_ORIGINS
+              value: "{{ .Values.damap.protocol}}://{{ .Values.damap.hostname }}"
+            - name: DAMAP_ENV
+{{ if eq .Values.debug true }}
+              value: DEV
+{{ else }}
+              value: PROD
+{{ end }}
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 9000
+            initialDelaySeconds: 600
+            periodSeconds: 5
+        - name: gotenberg
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
+          image: gotenberg/gotenberg:8
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2G
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-backend
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-backend
+spec:
+  selector:
+    app: damap-backend
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-frontend
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: damap-frontend
+  template:
+    metadata:
+      labels:
+        app: damap-frontend
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: damap-frontend
+          image: "{{ .Values.damap.frontend_image }}"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-frontend
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-frontend
+spec:
+  selector:
+    app: damap-frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-db
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: damap-db
+  template:
+    metadata:
+      labels:
+        app: damap-db
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: damap-db
+          persistentVolumeClaim:
+            claimName: damap-db
+      containers:
+        - name: damap-db
+          image: postgres:16
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2G
+          volumeMounts:
+            - name: damap-db
+              mountPath: /var/lib/postgresql/data
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/damap-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: db_username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: db_password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: db_database
+          livenessProbe:
+            exec:
+              command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-db
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-db
+spec:
+  selector:
+    app: damap-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
