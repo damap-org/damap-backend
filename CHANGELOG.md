@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.5.3] - 2025-06-11
+
+- Fixed container permissions for OpenShift deployment [#385](https://github.com/damap-org/damap-backend/pull/385)
+- Added values for "no license" and "custom license" to license dataset [#373](https://github.com/damap-org/damap-backend/pull/373)
+
 ## [4.5.2] - 2025-04-15
 
 ### Fixed

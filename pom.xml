@@ -11,7 +11,7 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A tool for machine actionable DMPs.</description>
-  <url>https://github.com/tuwien-csd/damap-backend</url>
+  <url>https://github.com/damap-org/damap-backend</url>
 
   <licenses>
     <license>
@@ -60,7 +60,7 @@
     <repository>
       <id>github</id>
       <name>CSD Github</name>
-      <url>https://maven.pkg.github.com/tuwien-csd/damap-backend</url>
+      <url>https://maven.pkg.github.com/damap-org/damap-backend</url>
     </repository>
   </distributionManagement>
 
