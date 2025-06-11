@@ -1,7 +1,3 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tuwien-csd_damap-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tuwien-csd_damap-backend)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tuwien-csd_damap-backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tuwien-csd_damap-backend)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=tuwien-csd_damap-backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=tuwien-csd_damap-backend)
-
 # DAMAP
 
 DAMAP is a tool that is currently being developed by TU Wien and TU Graz as part of the 
