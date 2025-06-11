@@ -1,3 +1,0 @@
-# DAMAP Documentation
-
-TODO
