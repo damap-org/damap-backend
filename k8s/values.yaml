@@ -1,0 +1,21 @@
+namespace: damap
+openshift: false
+debug: false
+damap:
+  frontend_image: "ghcr.io/damap-org/damap-frontend:next"
+  backend_image: "ghcr.io/damap-org/damap-backend:next"
+  db_name: damap
+  db_user: damap
+  db_password: pw4damap
+  hostname: damap.localhost
+  protocol: http
+  storage_class_name: ""
+keycloak:
+  admin_user: admin
+  admin_password: admin
+  db_name: keycloak
+  db_user: keycloak
+  db_password: keycloak
+  hostname: keycloak.localhost
+  protocol: http
+  storage_class_name: ""

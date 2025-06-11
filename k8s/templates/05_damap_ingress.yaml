@@ -1,0 +1,119 @@
+{{- if .Values.openshift -}}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-openapi
+  namespace: {{ .Values.namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /q/openapi
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-swagger-ui
+  namespace: {{ .Values.namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /q/swagger-ui
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-api
+  namespace: {{ .Values.namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /api
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-frontend
+  namespace: {{ .Values.namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /
+  to:
+    name: damap-frontend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+{{ else -}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: damap
+  namespace: "{{ .Values.namespace }}"
+spec:
+  rules:
+    - host: "{{ .Values.damap.hostname }}"
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /q/swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /q/openapi
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-frontend
+                port:
+                  number: 8080
+{{- end -}}
