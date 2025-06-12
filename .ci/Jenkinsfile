@@ -1,9 +1,0 @@
-/**
-  * This file is a Jenkins pipeline definition in Groovy which is supposed to be run
-  * on CSD servers with specific requirements, thus this file might be useless for anyone
-  * outside of CSD repositories.
-  */
-
-@Library('ops-jenkins-library@next') _
-
-csdPipeline()
