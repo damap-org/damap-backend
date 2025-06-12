@@ -6,11 +6,13 @@ DAMAP is made up of two parts: a backend (this repository) and a [frontend](http
 You will probably need to set up both of these for development. DAMAP also requires extra services, which are provided via
 docker containers.
 
+To start the dockerized setup with PostgreSQL, please run the following commands:
 ```shell
 cd docker
-docker compose up -d
+docker compose -f docker-compose.postgres.yaml up
 ```
-The above commands start the dockerized setup. By default, docker pulls back and frontend
+
+By default, docker pulls back and frontend
 images from GitHub - the docker frontend can then be reached at http://localhost:8085/, use user/user for username/password.
 For more info about the docker setup, see [the section below](#run-with-docker-compose). The containerized DAMAP instance
 is good for testing out the software and showing it to others, but not for development. For development, it is better to
@@ -32,8 +34,9 @@ autoreload on changes to the source files.
 
 ## Run with docker-compose
 
-In order to set up the whole system consisting of multiple components a
-`docker-compose` file has been prepared. With this file it should be
+In order to set up the whole system consisting of multiple components 3
+`docker-compose` files have been prepared: `docker-compose.oracle.yaml`, `docker-compose.postgres.yaml` and `docker-compose.common.yaml`.
+With this file it should be
 straight forward to get a sample system up and running.
 
 The full system will be comprised of
@@ -41,27 +44,25 @@ The full system will be comprised of
 - damap-backend,
 - damap-frontend,
 - dummy Keycloak with login name "user" and password "user"
-- dummy postgres database
+- dummy PostgreSQL database
 - and dummy APIs providing person and project data
 
-To start up the cluster of components just issue the following command:
+To start up the cluster of components with PostgreSQL, you can use the following command:
 
 ```shell
 cd docker
-docker compose up -d
+docker compose -f docker-compose.postgres.yaml up
 ```
 
-For local development, it is often enough to only run the additional services,
-as the local development instances for backend and frontend are used.
-
-To only start the additional services, the following command can be issued:
+Alternatively, if you wish you to start the dockerized setup with Oracle, the following commands will allow you to do so.
+Note that you need to modify the dev profile in the [application.yaml](src/main/resources/application.yaml) file as suggested by the comments.
 ```shell
 cd docker
-docker compose -f docker-compose-services.yaml up -d
+docker compose -f docker-compose.oracle.yaml up
 ```
 
-See the documented sections in the [docker/docker-compose.yaml]() to make further
-configurations.
+See the documented sections in the [docker-compose.postgres.yaml](docker/docker-compose.postgres.yaml) and in the [docker-compose.oracle.yaml](docker/docker-compose.oracle.yaml) to make further
+configurations respectively.
 
 ### Keycloak
 
@@ -83,19 +84,26 @@ by issuing:
 
 ```shell
 # rebuild
-docker-compose build keycloak
+docker compose -f docker-compose.postgres.yaml build keycloak
 
 # restart keycloak
-docker-compose up -d keycloak
+docker compose -f docker-compose.postgres.yaml up -d keycloak
 ```
 
-### Postgres
+### PostgreSQL
 
-You can access the Postgres CLI directly with the container with:
+You can access the PostgreSQL CLI directly using the postgres container with:
 
 ```shell
 cd docker
-docker-compose exec damap-db psql -U damap damap
+docker compose -f docker-compose.postgres.yaml exec damap-db psql -U damap damap
+```
+
+### Oracle
+You can access the Oracle CLI directly using the Oracle container with:
+```shell
+cd docker
+docker compose -f docker-compose.oracle.yaml exec damap-db sqlplus damap/pw4damap@FREEPDB1
 ```
 
 ## Custom Deployment
