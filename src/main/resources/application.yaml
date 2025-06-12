@@ -14,10 +14,12 @@ damap:
     scope: 'openid profile email offline_access microprofile-jwt roles personID' # your-backend-authentication-scope, including your variable for your user IDs
     user: 'personID' # the variable name for your user IDs
   datasource:
-    url: jdbc:postgresql://damap-db:5432/damap # jdbc:your-datasource-language:your-datasource.address
-    username: damap # your-datasource-username
-    password: pw4damap # your-datasource-password
-    db-kind: postgresql # your database
+    url: ${DAMAP_DATASOURCE_URL:jdbc:postgresql://damap-db:5432/damap}
+    db-kind: ${DAMAP_DATABASE_DB_KIND:postgresql}
+    driver: ${DAMAP_DATASOURCE_DRIVER:org.postgresql.Driver}
+    username: ${DAMAP_DATASOURCE_USERNAME:damap}
+    password: ${DAMAP_DATASOURCE_PASSWORD:pw4damap}
+    dialect: ${DAMAP_DATASOURCE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
   repositories:
     # Zenodo, Open Science Framework, DRYAD, Mendeley Data
     # can also be [] for no repositories recommendation
@@ -61,11 +63,13 @@ quarkus:
   datasource:
     jdbc:
       url: ${damap.datasource.url}
+      driver: ${damap.datasource.driver}
     db-kind: ${damap.datasource.db-kind}
     username: ${damap.datasource.username}
     password: ${damap.datasource.password}
 
   hibernate-orm:
+    dialect: ${damap.datasource.dialect}
     database:
       generation: none
     sql-load-script: no-file
@@ -109,29 +113,16 @@ rest:
         url: http://localhost:8087/realms/damap # https://your.authentication.server
     datasource:
       url: jdbc:postgresql://localhost:8088/damap
-      # FOR ORACLE INSTEAD USE:
-      # url: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
-      # db-kind: oracle
+      db-kind: postgresql
+    # FOR ORACLE INSTEAD USE:
+#      url: jdbc:oracle:thin:@localhost:8088/FREEPDB1
+#      db-kind: oracle
       username: damap
       password: pw4damap
     projects-url: http://localhost:8091
     persons-url: http://localhost:8091
     fits-url: http://localhost:8089/fits
     gotenberg-url: http://localhost:3000
-
-"%oracle":
-  quarkus:
-    datasource:
-      db-kind: oracle
-    hibernate-orm:
-      dialect: org.hibernate.dialect.OracleDialect
-
-"%postgres":
-  quarkus:
-    datasource:
-      db-kind: postgresql
-    hibernate-orm:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
 
 "%test":
   damap:
@@ -142,6 +133,7 @@ rest:
     datasource:
       db-kind: h2
       jdbc:
+        driver: org.h2.Driver
         url: jdbc:h2:mem:test
     oidc:
       enabled: false
