@@ -1,0 +1,35 @@
+{{ if and .Values.openshift (ne .Values.custom_build.name "") }}
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: {{ .Values.custom_build.name }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.custom_build.name }}
+spec:
+  source:
+    type: Git
+    git:
+      uri: "{{ .Values.custom_build.repo }}"
+      ref: "{{ .Values.custom_build.ref }}"
+    contextDir: /
+  resources:
+    limits:
+      memory: 2G
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  strategy:
+    type: docker
+    dockerStrategy: {}
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ .Values.custom_build.name }}:latest
+  triggers:
+    - type: ConfigChange
+{{ end }}

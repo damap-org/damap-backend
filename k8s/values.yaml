@@ -19,3 +19,16 @@ keycloak:
   hostname: keycloak.localhost
   protocol: http
   storage_class_name: ""
+# Create a custom backend build using the OpenShift CI pipeline.
+# Sadly, this doesn't work in vanilla Kubernetes.
+custom_build:
+  name: ""
+  repo: https://github.com/damap-org/damap-backend
+  ref: "next"
+pure:
+  enabled: false
+  persons_data: {}
+  projects_data: {}
+  description_classification: "/dk/atira/pure/..."
+  project_lead_classification: "/dk/atira/pure/..."
+  role_classifications: {}
