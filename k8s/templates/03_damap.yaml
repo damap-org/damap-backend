@@ -98,7 +98,7 @@ spec:
               value: PROD
 {{- end }}
 {{- if .Values.pure.enabled }}
-            - name: DAMAP_PROJECT_SERVICE
+            - name: DAMAP_PROJECTS_SERVICE
               value: elsevier-pure
             - name: DAMAP_ELSEVIER_PURE_BACKEND
               value: file
@@ -187,9 +187,26 @@ spec:
         app: damap-frontend
     spec:
       automountServiceAccountToken: false
+{{- if .Values.frontend.customize }}
+      volumes:
+        - name: damap-customization
+          secret:
+            secretName: damap-customization
+{{- end }}
       containers:
         - name: damap-frontend
           image: "{{ .Values.damap.frontend_image }}"
+{{- if .Values.frontend.customize }}
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/assets/logo-cropped.svg
+              name: damap-customization
+              subPath: logo-cropped.svg
+              readOnly: true
+            - mountPath: /usr/share/nginx/html/assets/logo.svg
+              name: damap-customization
+              subPath: logo.svg
+              readOnly: true
+{{- end }}
           resources:
             requests:
               cpu: 10m
