@@ -1,0 +1,13 @@
+{{- if .Values.frontend.customize }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: damap-customization
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    app: damap-customization
+data:
+  logo.svg: {{ .Values.frontend.logo | quote }}
+  logo-cropped.svg: {{ .Values.frontend.logo_cropped | quote }}
+{{ end -}}

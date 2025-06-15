@@ -32,3 +32,7 @@ pure:
   description_classification: "/dk/atira/pure/..."
   project_lead_classification: "/dk/atira/pure/..."
   role_classifications: {}
+frontend:
+  customize: false
+  logo: ""
+  logo_cropped: ""
