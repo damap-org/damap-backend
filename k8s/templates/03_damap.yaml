@@ -37,6 +37,15 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+        - name: damap
+          secret:
+            secretName: damap
+{{- if .Values.pure.enabled }}
+        - name: pure
+          secret:
+            secretName: damap-pure
+{{- end }}
       containers:
         - name: damap-backend
           image: "{{ .Values.damap.backend_image }}"
@@ -83,11 +92,43 @@ spec:
             - name: DAMAP_ORIGINS
               value: "{{ .Values.damap.protocol}}://{{ .Values.damap.hostname }}"
             - name: DAMAP_ENV
-{{ if eq .Values.debug true }}
+{{- if eq .Values.debug true }}
               value: DEV
-{{ else }}
+{{- else }}
               value: PROD
-{{ end }}
+{{- end }}
+{{- if .Values.pure.enabled }}
+            - name: DAMAP_PROJECT_SERVICE
+              value: elsevier-pure
+            - name: DAMAP_ELSEVIER_PURE_BACKEND
+              value: file
+            - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
+              value: file:///data/projects.json
+            - name: DAMAP_ELSEVIER_PURE_PERSONS_FILE
+              value: file:///data/persons.json
+            - name: DAMAP_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
+              value: {{ .Values.pure.description_classification | quote }}
+            - name: DAMAP_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
+              value: {{ .Values.pure.project_lead_classification | quote }}
+            - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
+              value: {{ .Values.pure.role_classifications | toJson | quote }}
+{{- end }}
+          volumeMounts:
+{{- if .Values.pure.enabled }}
+            - mountPath: /data/persons.json
+              name: pure
+              readOnly: true
+              subPath: persons.json
+            - mountPath: /data/projects.json
+              name: pure
+              readOnly: true
+              subPath: projects.json
+{{- end }}
+            # Workaround for reaugmentation write permissions:
+            - mountPath: /quarkus-app/.db_kind
+              name: damap
+              readOnly: true
+              subPath: db_kind
           livenessProbe:
             httpGet:
               path: /q/health/live
