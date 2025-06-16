@@ -4,7 +4,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: damap-backend-openapi
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
 spec:
@@ -23,7 +23,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: damap-backend-swagger-ui
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
 spec:
@@ -42,7 +42,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: damap-backend-api
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
 spec:
@@ -61,10 +61,9 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: damap-frontend
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-
 spec:
   host: "{{ .Values.damap.hostname }}"
   path: /
@@ -82,7 +81,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: damap
-  namespace: "{{ .Values.namespace }}"
+  namespace: "{{ .Release.Namespace }}"
 spec:
   rules:
     - host: "{{ .Values.damap.hostname }}"

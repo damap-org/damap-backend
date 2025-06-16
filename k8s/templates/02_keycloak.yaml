@@ -1,3 +1,24 @@
+{{ if .Values.keycloak.deploy }}
+{{ if .Values.keycloak.create_pv }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: keycloak-db
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: "{{ .Values.keycloak.storage_class_name }}"
+  claimRef:
+    namespace: "{{.Release.Namespace}}"
+    name: keycloak-db
+  capacity:
+    storage: 5G
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: {{ .Values.keycloak.host_folder}}
+{{ end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -9,14 +30,14 @@ spec:
   resources:
     requests:
       storage: 5G
-  storageClassName: {{ .Values.damap.storage_class_name }}
+  storageClassName: "{{ .Values.keycloak.storage_class_name }}"
   volumeMode: Filesystem
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak
-  namespace: "{{ .Values.namespace }}"
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: keycloak
 spec:
@@ -54,8 +75,6 @@ spec:
             - --import-realm
           env:
             - name: KC_LOG_LEVEL_ORG_KEYCLOAK
-              value: debug
-            - name: KC_LOG_LEVEL_IO_QUARKUS
               value: debug
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
@@ -95,7 +114,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
-  namespace: "{{ .Values.namespace }}"
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: keycloak
 spec:
@@ -110,7 +129,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak-db
-  namespace: "{{ .Values.namespace }}"
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: keycloak-db
 spec:
@@ -125,7 +144,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak-db
-  namespace: "{{ .Values.namespace }}"
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: keycloak-db
 spec:
@@ -159,7 +178,7 @@ spec:
               mountPath: /var/lib/postgresql/data
           env:
             - name: PGDATA
-              value: /var/lib/postgresql/data/damap-db
+              value: /var/lib/postgresql/data/keycloak-db
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -182,3 +201,4 @@ spec:
               command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
             initialDelaySeconds: 5
             periodSeconds: 5
+{{ end }}

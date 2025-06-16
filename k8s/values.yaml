@@ -1,24 +1,47 @@
-namespace: damap
 openshift: false
-debug: false
+debug: true
 damap:
   frontend_image: "ghcr.io/damap-org/damap-frontend:next"
   backend_image: "ghcr.io/damap-org/damap-backend:next"
   db_name: damap
   db_user: damap
   db_password: pw4damap
-  hostname: damap.localhost
+  hostname: localhost
   protocol: http
   storage_class_name: ""
+  # Host folder for demo / small scale deployments. Do not use for production!
+  create_pv: true
+  host_folder: /tmp/damap
+oidc:
+  # The endpoint the DAMAP frontend should use from the browser. This should be
+  # accessible from the user's computer. This setting will be ignored if
+  # keycloak.deploy is true.
+  frontend_endpoint: https://...
+  # The endpoint the DAMAP backend should use. Typically, this is the same as
+  # the frontend, but sometimes you may want to route the backend requests
+  # over a different network. This setting will be ignored if keycloak.deploy
+  # is true.
+  backend_endpoint: https://...
+  # OIDC client ID the backend should use.
+  # Note: you will have to configure these in your OIDC server!
+  backend_client_id: damap-be
+  # OIDC client ID the frontend should use.
+  # Note: you will have to configure these in your OIDC server!
+  frontend_client_id: damap
 keycloak:
+  # Set this to false in order to use your own OIDC server:
+  deploy: true
   admin_user: admin
   admin_password: admin
   db_name: keycloak
   db_user: keycloak
   db_password: keycloak
-  hostname: keycloak.localhost
+  hostname: localhost
   protocol: http
   storage_class_name: ""
+  # Host folder for demo / small scale deployments. Do not use for production!
+  create_pv: true
+  host_folder: /tmp/keycloak
 # Create a custom backend build using the OpenShift CI pipeline.
 # Sadly, this doesn't work in vanilla Kubernetes.
 custom_build:
@@ -26,13 +49,27 @@ custom_build:
   repo: https://github.com/damap-org/damap-backend
   ref: "next"
 pure:
+  # Enable the Elsevier Pure integration.
   enabled: false
-  persons_data: {}
-  projects_data: {}
+  backend: file # Set to "http" to use the real API
+  persons_data: {} # Provide your export of the persons in your Pure installation here.
+  projects_data: {} # Provide the export of the projects in your Pure installation here.
+  endpoint: https://...
+  api_key: ...
+  # Provide the classification values for the project description and project lead role here:
   description_classification: "/dk/atira/pure/..."
   project_lead_classification: "/dk/atira/pure/..."
-  role_classifications: {}
+  role_classifications:
+    # Provide mappings from Pure classifications to DAMAP roles here.
+    # DAMAP supports the following role values:
+    # DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER,
+    # PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER,
+    # RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR,
+    # PROJECT_COORDINATOR, OTHER
+    /dk/atira/pure/...: PROJECT_MEMBER
 frontend:
+  # Set this to true to provide your logo in SVG format (base64-encoded) here. Note that
+  # the two logos together must not exceed 1 MB in size.
   customize: false
   logo: ""
   logo_cropped: ""
