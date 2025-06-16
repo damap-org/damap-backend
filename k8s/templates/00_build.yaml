@@ -3,12 +3,12 @@ apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
   name: {{ .Values.custom_build.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   name: {{ .Values.custom_build.name }}
 spec:
   source:

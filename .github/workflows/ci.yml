@@ -11,6 +11,37 @@ permissions:
   contents: read
 
 jobs:
+  test-kubernetes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install KinD
+        run: |
+          set -euo pipefail
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+      - name: Deploy registry
+        run: |
+      - name: Bring up KinD cluster
+        run: |
+          set -e
+          ./k8s/test/create-test-cluster.sh
+      - name: Deploy Helm chart
+        run: |
+          set -euo pipefail
+          curl -o /tmp/helm.tar.gz https://get.helm.sh/helm-v3.18.3-linux-amd64.tar.gz
+          if [ "$(sha256sum /tmp/helm.tar.gz)" != "6ec85f306dd8fe9eb05c61ba4593182b2afcfefb52f21add3fe043ebbdc48e39  /tmp/helm.tar.gz" ]; then
+            echo "Checksum mismatch!"
+            exit 1
+          fi
+          sudo mkdir -p /usr/local/helm
+          (cd /usr/local/helm && sudo tar --strip-components 1 -xvzf /tmp/helm.tar.gz)
+          sudo ln -s /usr/local/bin/helm /usr/local/helm/helm
+      - name: Deploy Helm chart
+        run: |
+
   # This job builds the Docker images and runs a health check to ensure the
   # backend service is up and running. It uses 2 databases: Oracle and Postgres.
   test-docker:
