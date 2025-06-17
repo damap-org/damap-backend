@@ -378,18 +378,20 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
 
     boolean usesExternalStorage =
-            dmp.getHostList().stream()
-                    .filter(ExternalStorage.class::isInstance)
-                    .map(ExternalStorage.class::cast)
-                    .anyMatch(storage -> storage.getIsManagedInternally() != null && !storage.getIsManagedInternally());
+        dmp.getHostList().stream()
+            .filter(ExternalStorage.class::isInstance)
+            .map(ExternalStorage.class::cast)
+            .anyMatch(
+                storage ->
+                    storage.getIsManagedInternally() != null && !storage.getIsManagedInternally());
 
     boolean usesInternalStorage =
-            dmp.getHostList().stream()
-                    .anyMatch(
-                            host ->
-                                    (host instanceof Storage)
-                                            || (host instanceof ExternalStorage
-                                            && ((ExternalStorage) host).getIsManagedInternally()));
+        dmp.getHostList().stream()
+            .anyMatch(
+                host ->
+                    (host instanceof Storage)
+                        || (host instanceof ExternalStorage
+                            && ((ExternalStorage) host).getIsManagedInternally()));
 
     String propName = "storageIntro.none";
     if (usesExternalStorage && !usesInternalStorage) {
@@ -562,7 +564,10 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
                       + " "
                       + hostVar
                       + ".");
-          if (dmp.getExternalStorageInfo() != null && !dmp.getExternalStorageInfo().isEmpty() && !((ExternalStorage)host).getIsManagedInternally() ) {
+          if (dmp.getExternalStorageInfo() != null
+              && !dmp.getExternalStorageInfo().isEmpty()
+              && ((ExternalStorage) host).getIsManagedInternally() != null
+              && !((ExternalStorage) host).getIsManagedInternally()) {
             storageVar =
                 storageVar.concat(
                     " "

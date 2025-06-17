@@ -332,6 +332,7 @@ public class TestDOFactory {
     storage.setBackupFrequency("Frequency of data backups.");
     storage.setStorageLocation("Location of Storages");
     storage.setBackupLocation("Location of Backups");
+    storage.setIsManagedInternally(false);
     return List.of(storage);
   }
 
