@@ -7,18 +7,18 @@ databaseChangeLog:
             tableName: external_storage
             columns:
               - column:
-                  name: is_internal
+                  name: is_managed_internally
                   type: BOOLEAN
         - addColumn:
             tableName: external_storage_aud
             columns:
               - column:
-                  name: is_internal
+                  name: is_managed_internally
                   type: BOOLEAN
       rollback:
         - dropColumn:
             tableName: external_storage
-            columnName: is_internal
+            columnName: is_managed_internally
         - dropColumn:
             tableName: external_storage_aud
-            columnName: is_internal
+            columnName: is_managed_internally

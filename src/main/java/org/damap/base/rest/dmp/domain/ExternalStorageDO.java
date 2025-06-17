@@ -24,6 +24,6 @@ public class ExternalStorageDO extends HostDO {
   @Size(max = 255)
   private String backupLocation;
 
-  @JsonProperty("isInternal")
-  private Boolean isInternal;
+  @JsonProperty("isManagedInternally")
+  private Boolean isManagedInternally;
 }
