@@ -221,8 +221,7 @@
 
     <xs:complexType name="relToType">
         <xs:annotation>
-            <xs:documentation>Information about the related entity. <p>The semantics of the
-                relationships is expressed by the attributes class and scheme. </p>
+            <xs:documentation>Information about the related entity. <p>The semantics of the relationships is expressed by the attributes class and scheme. </p>
             </xs:documentation>
         </xs:annotation>
         <xs:simpleContent>

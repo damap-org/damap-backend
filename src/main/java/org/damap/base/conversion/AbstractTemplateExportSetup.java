@@ -95,7 +95,7 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
    * getContributorsByRole.
    *
    * @param contributors a {@link java.util.List} object
-   * @param role a {@link org.damap.base.enums.EContributorRole} object
+   * @param roles a {@link java.util.Set} object
    * @return a {@link java.util.List} object
    */
   protected List<Contributor> getContributorsByRole(
