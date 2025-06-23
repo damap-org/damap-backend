@@ -26,6 +26,10 @@ public class ExternalStorage extends Host {
   @Column(name = "backup_location")
   private String backupLocation;
 
+  // This field indicates whether this specific external storage is managed internally or not.
+  // It is possible, that a storage is not indicated as internal storage (by the admin in the Admin
+  // UI),
+  // but is still managed internally. In this case, this field should be set to true.
   @Column(name = "is_managed_internally")
   private Boolean isManagedInternally;
 }

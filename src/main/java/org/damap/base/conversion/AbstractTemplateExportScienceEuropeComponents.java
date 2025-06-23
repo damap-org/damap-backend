@@ -385,7 +385,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
                 storage ->
                     storage.getIsManagedInternally() != null && !storage.getIsManagedInternally());
 
-    boolean usesInternalStorage =
+    boolean isManagedInternally =
         dmp.getHostList().stream()
             .anyMatch(
                 host ->
@@ -394,11 +394,11 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
                             && ((ExternalStorage) host).getIsManagedInternally()));
 
     String propName = "storageIntro.none";
-    if (usesExternalStorage && !usesInternalStorage) {
+    if (usesExternalStorage && !isManagedInternally) {
       propName = "storageIntro.external";
-    } else if (usesInternalStorage && !usesExternalStorage) {
+    } else if (isManagedInternally && !usesExternalStorage) {
       propName = "storageIntro.internal";
-    } else if (usesInternalStorage && usesExternalStorage) {
+    } else if (isManagedInternally && usesExternalStorage) {
       propName = "storageIntro.both";
     }
 

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 22
+      id: 24
       author: Geoffrey Karnbach
       changes:
         - addColumn:
