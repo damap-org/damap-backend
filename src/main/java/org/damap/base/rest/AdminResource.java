@@ -13,7 +13,6 @@ import org.damap.base.rest.admin.service.AdminService;
 /** AdminResource class. */
 @Path("/api/admin")
 @Produces(MediaType.APPLICATION_JSON)
-@Authenticated
 @JBossLog
 public class AdminResource {
 
@@ -28,7 +27,6 @@ public class AdminResource {
 
   @POST
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
   public BannerDO createAppBanner(@Valid BannerDO bannerDO) {
     log.info("POST /admin/banner");
     log.info(bannerDO);
@@ -37,7 +35,6 @@ public class AdminResource {
 
   @PUT
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
   public BannerDO updateAppBanner(@Valid BannerDO bannerDO) {
     log.info("PUT /admin/banner");
     log.info(bannerDO);
@@ -46,7 +43,6 @@ public class AdminResource {
 
   @DELETE
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
   public void deleteAppBanner() {
     log.info("DELETE /admin/banner");
     this.adminService.deleteAppBanner();
