@@ -1,0 +1,44 @@
+include:
+  - docker-compose.keycloak.db.yaml
+  - docker-compose.keycloak.config.yaml
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    profiles:
+      - with_keycloak
+    command:
+      - start
+      - --hostname=https://${DAMAP_HOSTNAME?Please provide a hostname for Keycloak}
+      - --hostname-backchannel-dynamic
+      - "true"
+      - --http-enabled=true
+      - --proxy-headers
+      - xforwarded
+      - --import-realm
+      - --hostname-debug=true
+    environment:
+      KC_LOG_LEVEL_ORG_KEYCLOAK: debug
+      KC_BOOTSTRAP_ADMIN_USERNAME: "${KEYCLOAK_ADMIN_USER?Please provide an admin user for Keycloak}"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD?Please provide an admin password for Keycloak}"
+      KC_HOSTNAME: "${DAMAP_HOSTNAME?Please provide a hostname for DAMAP}"
+      KC_DB: postgres
+      KC_DB_URL: "jdbc:postgresql://${KEYCLOAK_DATABASE_HOST:-keycloak-db}:5432/${KEYCLOAK_DATABASE_NAME?The Keycloak database name is required}"
+      KC_DB_USERNAME: "${KEYCLOAK_DATABASE_USERNAME?Please provide a Keycloak database user}"
+      KC_DB_PASSWORD: "${KEYCLOAK_DATABASE_PASSWORD?Please provide a Keycloak database user}"
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+        required: false # We don't require this since the DB only exists when the with_keycloak_db profile is enabled.
+    configs:
+      - source: damap-realm-import
+        target: /opt/keycloak/data/import/damap-realm-import.json
+    networks:
+      damap-internal:
+        aliases:
+          - keycloak
+    healthcheck:
+      test: [ "CMD-SHELL", "/bin/bash", "-c", "exec 3<>/dev/tcp/localhost/8080 ; echo -e \"GET /health/ready HTTP/1.1\nhost: localhost:8080\nconnection: close\n\n\" >&3 ; test \"$(cat <&3 | grep -m 1 'HTTP/1.1 ')\" = \"HTTP/1.1 200 OK\" ; RES=$? ; exec 3<&- ; exec 3>&- ; exit $$RES" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5

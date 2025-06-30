@@ -1,5 +1,5 @@
 include:
-  - docker-compose.common.yaml
+  - docker-compose.dev.common.yaml
 
 services:
   damap-be:
@@ -11,8 +11,10 @@ services:
     restart: unless-stopped
     environment:
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
-      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://damap-db:5432/damap"
-      QUARKUS_DATASOURCE_DB_KIND: "postgresql"
+      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:oracle:thin:@damap-db:1521/FREEPDB1"
+      QUARKUS_HIBERNATE_ORM_DIALECT: "org.hibernate.dialect.OracleDialect"
+      QUARKUS_DATASOURCE_JDBC_DRIVER: "oracle.jdbc.driver.OracleDriver"
+      QUARKUS_DATASOURCE_DB_KIND: "oracle"
       QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
       QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
@@ -28,22 +30,21 @@ services:
       retries: 5
 
   damap-db:
-    image: postgres:16
-    pull_policy: always
+    image: gvenzl/oracle-free:23-slim
     restart: unless-stopped
     environment:
-      POSTGRES_USER: damap
-      POSTGRES_PASSWORD: pw4damap
-      POSTGRES_DB: damap
+      ORACLE_PASSWORD: pw4damap
+      APP_USER: damap
+      APP_USER_PASSWORD: pw4damap
     ports:
-      - "8088:5432"
+      - "8088:1521"
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - oracle-data:/opt/oracle/oradata
     healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U damap -d damap'" ]
+      test: [ "CMD-SHELL", "healthcheck.sh" ]
       interval: 30s
       timeout: 15s
       retries: 5
 
 volumes:
-  pg-data:
+  oracle-data:

@@ -70,14 +70,14 @@ jobs:
             db_kind: postgresql
             dialect: org.hibernate.dialect.PostgreSQLDialect
             driver: org.postgresql.Driver
-            compose: docker/docker-compose.postgres.yaml
+            compose: docker/docker-compose.dev.postgres.yaml
 
           - database: oracle
             url: jdbc:oracle:thin:@127.0.0.1:8088/FREEPDB1
             db_kind: oracle
             dialect: org.hibernate.dialect.OracleDialect
             driver: oracle.jdbc.driver.OracleDriver
-            compose: docker/docker-compose.oracle.yaml
+            compose: docker/docker-compose.dev.oracle.yaml
 
     steps:
       - uses: actions/checkout@v4

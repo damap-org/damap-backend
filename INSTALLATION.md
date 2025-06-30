@@ -9,7 +9,7 @@ docker containers.
 To start the dockerized setup with PostgreSQL, please run the following commands:
 ```shell
 cd docker
-docker compose -f docker-compose.postgres.yaml up
+docker compose -f docker-compose.dev.postgres.yaml up
 ```
 
 By default, docker pulls back and frontend
@@ -53,17 +53,17 @@ To start up the cluster of components with PostgreSQL, you can use the following
 
 ```shell
 cd docker
-docker compose -f docker-compose.postgres.yaml up
+docker compose -f docker-compose.dev.postgres.yaml up
 ```
 
 Alternatively, if you wish you to start the dockerized setup with Oracle, the following commands will allow you to do so.
 Note that you need to modify the dev profile in the [application.yaml](src/main/resources/application.yaml) file as suggested by the comments.
 ```shell
 cd docker
-docker compose -f docker-compose.oracle.yaml up
+docker compose -f docker-compose.dev.oracle.yaml up
 ```
 
-See the documented sections in the [docker-compose.postgres.yaml](docker/docker-compose.postgres.yaml) and in the [docker-compose.oracle.yaml](docker/docker-compose.oracle.yaml) to make further
+See the documented sections in the [docker-compose.postgres.yaml](docker/docker-compose.dev.postgres.yaml) and in the [docker-compose.oracle.yaml](docker/docker-compose.dev.oracle.yaml) to make further
 configurations respectively.
 
 ### Keycloak
@@ -86,10 +86,10 @@ by issuing:
 
 ```shell
 # rebuild
-docker compose -f docker-compose.postgres.yaml build keycloak
+docker compose -f docker-compose.dev.postgres.yaml build keycloak
 
 # restart keycloak
-docker compose -f docker-compose.postgres.yaml up -d keycloak
+docker compose -f docker-compose.dev.postgres.yaml up -d keycloak
 ```
 
 ### PostgreSQL
@@ -98,14 +98,14 @@ You can access the PostgreSQL CLI directly using the postgres container with:
 
 ```shell
 cd docker
-docker compose -f docker-compose.postgres.yaml exec damap-db psql -U damap damap
+docker compose -f docker-compose.dev.postgres.yaml exec damap-db psql -U damap damap
 ```
 
 ### Oracle
 You can access the Oracle CLI directly using the Oracle container with:
 ```shell
 cd docker
-docker compose -f docker-compose.oracle.yaml exec damap-db sqlplus damap/pw4damap@FREEPDB1
+docker compose -f docker-compose.dev.oracle.yaml exec damap-db sqlplus damap/pw4damap@FREEPDB1
 ```
 
 ## Custom Deployment
