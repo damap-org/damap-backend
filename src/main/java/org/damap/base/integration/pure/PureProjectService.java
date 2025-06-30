@@ -1,0 +1,137 @@
+package org.damap.base.integration.pure;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.util.*;
+import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.enums.EContributorRole;
+import org.damap.base.integration.ProjectServiceProvider;
+import org.damap.base.rest.base.ResultList;
+import org.damap.base.rest.base.Search;
+import org.damap.base.rest.dmp.domain.ContributorDO;
+import org.damap.base.rest.dmp.domain.ProjectDO;
+import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+/**
+ * This class partially implements reading Elsevier Pure Project and Person objects from their API.
+ *
+ * <p><strong>Note:</strong> this implementation is currently experimental.
+ *
+ * @see <a href="https://api.elsevierpure.com/ws/api/rapidoc.html">Elsevier Pure API doc</a>
+ */
+@JBossLog
+@ApplicationScoped
+public class PureProjectService implements ProjectServiceProvider {
+  @Inject PureAPI pureAPI;
+
+  /** Maps the configured Pure contributor role classification URIs to DAMAP roles. */
+  @ConfigProperty(
+      name = "damap.elsevier-pure-contributor-role-classifications",
+      defaultValue = "{}")
+  RoleClassificationMappingConfiguration contributorRoleMapping;
+
+  /** Describes the Pure classification URI for project descriptions. */
+  @ConfigProperty(name = "damap.elsevier-pure-description-classification", defaultValue = "")
+  String descriptionClassification;
+
+  /** Describes the Pure classification URI for project lead. */
+  @ConfigProperty(name = "damap.elsevier-pure-project-lead-role-classification", defaultValue = "")
+  String projectLeadRoleClassification;
+
+  @Override
+  public List<ContributorDO> getProjectStaff(String projectId) {
+    PureAPIProject project = pureAPI.getProject(projectId);
+    if (project == null) {
+      return null;
+    }
+    if (project.participants == null) {
+      return new ArrayList<>();
+    }
+    // TODO what if multiple associations are present for one person?
+    return project.participants.stream().map(this::getContributorDO).toList();
+  }
+
+  private ContributorDO getContributorDO(PureAPIParticipantAssociation participantAssociation) {
+    if (participantAssociation instanceof PureAPIInternalParticipantAssociation internal) {
+      ContributorDO contributor = pureAPI.getPerson(internal.person.uuid).toContributor();
+      convertContributorRoles(participantAssociation, contributor);
+      return contributor;
+    }
+    if (participantAssociation instanceof PureAPIExternalParticipantAssociation external) {
+      ContributorDO contributor = new ContributorDO();
+      if (external.name != null) {
+        contributor.setFirstName(external.name.firstName);
+        contributor.setLastName(external.name.lastName);
+      }
+      convertContributorRoles(participantAssociation, contributor);
+      contributor.setUniversityId(external.externalPerson.uuid);
+      return contributor;
+    }
+    return null;
+  }
+
+  private void convertContributorRoles(
+      PureAPIParticipantAssociation participantAssociation, ContributorDO contributor) {
+    if (participantAssociation.role != null
+        && participantAssociation.role.uri != null
+        && contributorRoleMapping.configs.containsKey(participantAssociation.role.uri)) {
+      Set<EContributorRole> roles = new HashSet<>();
+      roles.add(contributorRoleMapping.configs.get(participantAssociation.role.uri));
+      contributor.setRoles(roles);
+    }
+  }
+
+  @Override
+  public String getConfigID() {
+    return "elsevier-pure";
+  }
+
+  @Override
+  public ContributorDO getProjectLeader(String projectId) {
+    PureAPIProject project = pureAPI.getProject(projectId);
+    if (project == null || project.participants == null) {
+      return null;
+    }
+    return project.participants.stream()
+        .filter(participantAssociation -> participantAssociation.role != null)
+        .filter(participantAssociation -> participantAssociation.role.uri != null)
+        .filter(
+            participantAssociation ->
+                participantAssociation.role.uri.equals(projectLeadRoleClassification))
+        .map(this::getContributorDO)
+        .findFirst()
+        .orElse(null);
+  }
+
+  @Override
+  public ProjectSupplementDO getProjectSupplement(String projectId) {
+    return new ProjectSupplementDO();
+  }
+
+  @Override
+  public ResultList<ProjectDO> getRecommended(Search search) {
+    return this.search(search);
+  }
+
+  @Override
+  public ProjectDO read(String id) {
+    PureAPIProject project = pureAPI.getProject(id);
+    if (project == null || project.participants == null) {
+      return null;
+    }
+    return project.toProjectDO(descriptionClassification);
+  }
+
+  @Override
+  public ResultList<ProjectDO> search(Search query) {
+    ResultList<ProjectDO> res = new ResultList<>();
+    res.setSearch(query);
+    res.setItems(
+        pureAPI.listAllProjects().stream()
+            .filter(project -> project.titleContains(query.getQuery()))
+            .map(project -> project.toProjectDO(descriptionClassification))
+            .toList());
+    return res;
+  }
+}

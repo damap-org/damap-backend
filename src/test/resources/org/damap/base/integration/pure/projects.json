@@ -1,0 +1,137 @@
+{
+  "count": 2,
+  "pageInformation": {
+    "offset": 0,
+    "size": 2
+  },
+  "items": [
+    {
+      "typeDiscriminator": "AwardManagementProject",
+      "uuid": "430daa1b-f722-4649-b638-b11e056dbc85",
+      "acronym": "test1",
+      "participants": [
+        {
+          "typeDiscriminator": "InternalParticipantAssociation",
+          "pureId": 1234567,
+          "name": {
+            "firstName": "Jane",
+            "lastName": "Doe"
+          },
+          "role": {
+            "uri": "/dk/atira/pure/test/projectlead",
+            "term": {
+              "de_DE": "Projektleitung"
+            }
+          },
+          "person": {
+            "systemName": "Person",
+            "uuid": "a8864c16-5264-4d94-955d-8be7e00f26a9"
+          },
+          "organizations": [
+            {
+              "systemName": "Organization",
+              "uuid": "eefae982-c15a-41e9-b030-18527a61a60b"
+            }
+          ]
+        }
+      ],
+      "descriptions": [
+        {
+          "pureId": 5464781,
+          "value": {
+            "en_GB": "Test description"
+          },
+          "type": {
+            "uri": "/dk/atira/pure/projectdescription",
+            "term": {
+              "de_DE": "Beschreibung"
+            }
+          }
+        },
+        {
+          "pureId": 47754645,
+          "type": {
+            "uri": "/dk/atira/pure/longdescription",
+            "term": {
+              "en_GB": "Long description",
+              "de_DE": "Lange Beschreibung"
+            }
+          }
+        }
+      ],
+      "period": {
+        "startDate": "2021-01-01",
+        "endDate": "2026-01-01"
+      },
+      "title": {
+        "en_GB": "Test  1",
+        "de_DE": "Test Eins"
+      },
+      "systemName": "Project"
+    },
+    {
+      "typeDiscriminator": "AwardManagementProject",
+      "uuid": "4541d528-43ed-4cad-98a4-31c83de7fae8",
+      "acronym": "test2",
+      "participants": [
+        {
+          "typeDiscriminator": "ExternalParticipantAssociation",
+          "pureId": 32435346,
+          "externalOrganizations": [
+            {
+              "systemName": "ExternalOrganization",
+              "uuid": "ed900c19-e21d-4429-8501-6de7970ec485"
+            }
+          ],
+          "name": {
+            "firstName": "Bob",
+            "lastName": "Beispiel"
+          },
+          "role": {
+            "uri": "/dk/atira/pure/member",
+            "term": {
+              "de_AT": "Projektmitarbeiter/in"
+            }
+          },
+          "externalPerson": {
+            "systemName": "ExternalPerson",
+            "uuid": "05f95b98-9e7e-436e-87e2-f72c703384f0"
+          }
+        }
+      ],
+      "descriptions": [
+        {
+          "pureId": 54756,
+          "value": {
+            "en_GB": "Test description"
+          },
+          "type": {
+            "uri": "/dk/atira/pure/projectdescription",
+            "term": {
+              "de_DE": "Beschreibung"
+            }
+          }
+        },
+        {
+          "pureId": 2342345,
+          "type": {
+            "uri": "/dk/atira/pure/longdescription",
+            "term": {
+              "en_GB": "Long description",
+              "de_DE": "Lange Beschreibung"
+            }
+          }
+        }
+      ],
+      "period": {
+        "startDate": "2022-01-01",
+        "endDate": "2027-01-01"
+      },
+      "title": {
+        "en_GB": "Test 2",
+        "de_DE": "Test Zwei"
+      },
+      "systemName": "Project"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "count": 2,
+  "pageInformation": {
+    "offset": 0,
+    "size": 2
+  },
+  "items": [
+    {
+      "uuid": "a8864c16-5264-4d94-955d-8be7e00f26a9",
+      "name": {
+        "firstName": "Jane",
+        "lastName": "Doe"
+      },
+      "orcid": "0000-0001-2345-6789",
+      "email": "jane.doe@example.com"
+    },
+    {
+      "uuid": "72993125-c1b7-4b14-a111-c36a72d59da0",
+      "name": {
+        "firstName": "John",
+        "lastName": "Doe"
+      },
+      "orcid": "0001-0001-2345-6789",
+      "email": "john.doe@example.com"
+    }
+  ]
+}
