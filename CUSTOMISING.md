@@ -65,7 +65,7 @@ Include here the domain of your frontend.
 
 ```yaml
 damap:
-  origins: https://your.frontend.com,https://*.yourdomain.com
+   origins: https://your.frontend.com,https://*.yourdomain.com
 ```
 
 
@@ -75,13 +75,13 @@ Provide the following config values in order to be able to integrate your authen
 
 ```yaml
 damap:
-  auth:
-    url: https://your.authentication.server
-    client:
-      backend: your-backend-authentication-client-id
-      frontend: your-frontend-authentication-client-id
-    scope: your-authentication-scope
-    user: your-authentication-claim-holding-the-user-id
+   auth:
+      url: https://your.authentication.server
+      client:
+         backend: your-backend-authentication-client-id
+         frontend: your-frontend-authentication-client-id
+      scope: your-authentication-scope
+      user: your-authentication-claim-holding-the-user-id
 ```
 
 Note the value DAMAP_AUTH_USER, which will contain the variable name of your institutional person-ID.
@@ -90,7 +90,7 @@ and contains the users ID as per your project/researcher management system.
 This ID will then be used throughout the project to identify people and users within damap.
 This allows you to make people recognizeable through your various systems, without having to map or track new IDs.
 
-Any person that is authenticated through your service will be considered as a user,
+Any person that is authenticated through your service will be considered as a user, 
 as long as they have the provided person-ID attribute (renamed to your preference).
 If you wish to have users with the administrator role, you need to provide them with the role **Damap Admin**
 within your authentication service.
@@ -135,7 +135,7 @@ If you want to completely do your own thing, keep everything above the same, but
 file, include every changeset you want to keep separately. Beware - this approach requires a lot of maintenance, since
 every new damap version has to be checked for new changesets you might want to include.
 Also before version 3, all changesets where kept in db/changeLog.yaml. If you might want to remove certain changesets in
-this file, you would have to create your own version in your institutional folder.
+this file, you would have to create your own version in your institutional folder. 
 
 ### Configuring Project and Person API
 
@@ -150,43 +150,24 @@ corresponding environment variables:
 ```yaml
 ## Custom project service:
 # project-service: your-service
+## Note: if left unconfigured, the natural Java CDI load order takes precedence. Use the
+## @Priority annotation to load your implementation first.
 
   person-services:
-    ## Custom university integration:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
       class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-    ## Pure integration:
-    # - display-text: 'Pure'
-    #   query-value: 'PURE'
-    #   class-name: 'org.damap.base.integration.pure.PurePersonService
-    ## ORCID:
-    # - display-text: 'ORCID'
-    #   query-value: 'ORCID'
-    #   class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
-
-  mock-endpoint-url: http://api-mock:80
-
-## Elsevier Pure integration:
-## With the HTTP backend:
-  elsevier-pure-backend: http
-  elsevier-pure-endpoint-url: ""
-  elsevier-pure-api-key: "your API key here"
-## Alternatively, the file-based backend:
-# elsevier-pure-backend: file
-  elsevier-pure-projects-file: "file:///path/to/projects.json"
-  elsevier-pure-persons-file: "file:///path/to/persons.json"
+    - display-text: 'ORCID'
+      query-value: 'ORCID'
+      class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
 ```
 
 </details>
 
 To create your own integration, you need to implement the following two interfaces:
 
-- [ProjectService](src/main/java/org/damap/base/integration/ProjectService.java)
+- [ProjectService](src/main/java/org/damap/base/integration/ProjectServiceProvider.java)
 - [PersonService](src/main/java/org/damap/base/integration/PersonService.java)
-
-> [!WARNING]
-> If you do not configure a projects service explicitly, the Java CDI load order will take precedence. Make sure to add a `@Priority(1)` annotation to your custom projects service if you do not configure it explicitly.
 
 ### Providing a FITS service
 
@@ -299,10 +280,10 @@ Then write a class to extend
 and have it override the methods which retrieve those files.
 
 The new filepath will look into the local resource folder and take the file placed there.
-This .docx file needs to contain the placeholder keywords found in the sample template provided in the generic project,
+This .docx file needs to contain the placeholder keywords found in the sample template provided in the generic project, 
 in order to replace the text at those specific places.
 By replacing the resource file instead, the default texts used to compose the document can be adapted.
 
-The template is selected automatically when exporting, if the project has a funder. You may want to override this functionality,
+The template is selected automatically when exporting, if the project has a funder. You may want to override this functionality, 
 if you have custom templates for example. To override this, write a class that extends [TemplateSelectorServiceImpl](src/main/java/org/damap/base/conversion/TemplateSelectorServiceImpl.java)
 and have it override the methods that determine the template.
