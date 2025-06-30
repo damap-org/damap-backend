@@ -7,46 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
-### Added
- 
-- Support for Elsevier Pure project/person database integration [#392](https://github.com/damap-org/damap-backend/pull/392)
-
-## [4.6.0] - 2025-07-08
-
-### Added
-
-- Added values for "no license" and "custom license" to license dataset [#373](https://github.com/damap-org/damap-backend/pull/373)
-- Added a startup healthcheck to CI pipeline [#364](https://github.com/damap-org/damap-backend/pull/364)
-- Added data transfer agreement to options of legal restrictions [#360](https://github.com/damap-org/damap-backend/pull/360)
-- Added a javadoc check to mvn verify to insure correct documentation [#397](https://github.com/damap-org/damap-backend/pull/397)
-- Added support for marking external storages as managed internally by an institution [#355](https://github.com/damap-org/damap-backend/pull/355)
-- Added support for granting and revoking owner rights, editors now cannot create more editor [#399](https://github.com/damap-org/damap-backend/pull/399)
-- Added new endpoint for updating the ORCID affiliation of contributors [#381](https://github.com/damap-org/damap-backend/pull/381)
-
+- Experimental support for Elsevier Pure project/person database integration [#392](https://github.com/damap-org/damap-backend/pull/392)
 
 ## [4.5.3] - 2025-06-11
 
 - Fixed container permissions for OpenShift deployment [#385](https://github.com/damap-org/damap-backend/pull/385)
-- Update Lombok dependency to 1.18.30 for developers on macOS [#367](https://github.com/damap-org/damap-backend/pull/367)
-- Added support for assigning contributors multiple roles [#339](https://github.com/damap-org/damap-backend/pull/339)
-- Created single docker-compose files for oracle and postgres to make deployment easier [#376](https://github.com/damap-org/damap-backend/pull/376)
-- Removed misleading warning logs [#375](https://github.com/damap-org/damap-backend/pull/375)
-- Refactored how project and person service integrations are managed (backwards compatibility is still provided) [#398](https://github.com/damap-org/damap-backend/pull/398)
-- Replaced mock person ORCIDs with ISNIs to avoid clashes with ORCID API calls [#402](https://github.com/damap-org/damap-backend/pull/402)
-
-### Removed
-
-- Cleaned up CI pipeline by removing SonarCube [#383](https://github.com/damap-org/damap-backend/pull/383)
-
-### Fixed
-
-- Test suite is now independent of R3Data API being available [#382](https://github.com/damap-org/damap-backend/pull/382)
-- Fixed bug in exported DMP filename generation [#352](https://github.com/damap-org/damap-backend/pull/352)
-
-### Template
-
-- Added \[contact\] placeholder to FWF template to fill in "Co-ordination of data management responsibilities across partners:" in section I.2 [#356](https://github.com/damap-org/damap-backend/pull/356)
-- Changed table settings in Word templates so that they do not split over two pages [#396](https://github.com/damap-org/damap-backend/pull/396)
+- Added values for "no license" and "custom license" to license dataset [#373](https://github.com/damap-org/damap-backend/pull/373)
 
 ## [4.5.2] - 2025-04-15
 
