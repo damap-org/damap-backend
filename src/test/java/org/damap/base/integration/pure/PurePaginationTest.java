@@ -2,17 +2,14 @@ package org.damap.base.integration.pure;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
-/** Test demonstrating the pagination bug in PureAPI default methods. */
-public class PurePaginationBugTest {
+/** This test makes sure that the pagination works correctly. */
+public class PurePaginationTest {
 
   @Test
-  @Timeout(value = 5, unit = TimeUnit.SECONDS)
-  public void testPaginationBugCausesInfiniteLoop() {
+  public void testPaginationWorksCorrectly() {
     PureAPI api =
         new PureAPI() {
           private int callCount = 0;
@@ -20,6 +17,7 @@ public class PurePaginationBugTest {
           @Override
           public PureAPIPaginatedProjectsResponse listAllProjects(Long size, Long offset) {
             callCount++;
+
             System.out.println(
                 "API Call #" + callCount + " - offset: " + offset + ", size: " + size);
 
@@ -72,21 +70,7 @@ public class PurePaginationBugTest {
             return null;
           }
         };
-
-    // should fail due to infinite loop
-    Exception exception =
-        Assertions.assertThrows(
-            RuntimeException.class,
-            () -> {
-              System.out.println(
-                  "Calling api.listAllProjects() - this should cause infinite loop...");
-              List<PureAPIProject> allProjects = api.listAllProjects();
-              System.out.println(
-                  "Got " + allProjects.size() + " projects - this shouldn't be reached!");
-            });
-
-    System.out.println("Exception caught: " + exception.getMessage());
-    Assertions.assertTrue(exception.getMessage().contains("infinite loop detected"));
-    Assertions.assertTrue(exception.getMessage().contains("offset always = 0"));
+    List<PureAPIProject> allProjects = api.listAllProjects();
+    Assertions.assertEquals(25, allProjects.size());
   }
 }
