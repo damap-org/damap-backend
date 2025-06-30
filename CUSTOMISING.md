@@ -140,7 +140,7 @@ this file, you would have to create your own version in your institutional folde
 ### Configuring Project and Person API
 
 DAMAP supports automatically populating project and person information from your CRIS system. It comes with a number of
-industry-standard integrations such as ORCID, but you can also create your own.
+industry-standard integrations, such as ORCID or Elsevier Pure, but you can also create your own.
 
 To configure the integration, you may need to change the following settings in `application.yaml` or provide the
 corresponding environment variables:
@@ -148,8 +148,8 @@ corresponding environment variables:
 <details><summary>application.yaml</summary>
 
 ```yaml
-## Custom project service by specifying the ID (not the classname) of your projects service:
-# projects-service: your-service
+## Custom project service:
+# project-service: your-service
 
   person-services:
     - display-text: 'University'
