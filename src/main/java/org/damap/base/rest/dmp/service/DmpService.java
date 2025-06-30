@@ -76,7 +76,7 @@ public class DmpService {
   @Transactional
   public List<DmpListItemDO> getDmpListByPersonId(String personId) {
 
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(personId);
+    List<Access> accessList = accessRepo.getAllByUniversityId(personId);
 
     List<DmpListItemDO> dmpListItemDOS = new ArrayList<>();
     accessList.forEach(
@@ -112,7 +112,7 @@ public class DmpService {
    */
   @Transactional
   public List<DmpDO> getDmpDOListByPersonId(String personId) {
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(personId);
+    List<Access> accessList = accessRepo.getAllByUniversityId(personId);
 
     List<DmpDO> dmpDOS = new ArrayList<>();
     accessList.forEach(
