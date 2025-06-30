@@ -54,12 +54,12 @@ interface PureAPI {
     long pageSize = 10;
     boolean finished = false;
     while (!finished) {
-      PureAPIPaginatedProjectsResponse projects = listAllProjects(pageSize, offset);
-      items.addAll(projects.items);
-      offset = projects.pageInformation.offset + projects.pageInformation.size;
-      if (projects.count <= offset) {
+      PureAPIPaginatedProjectsResponse persons = listAllProjects(pageSize, offset);
+      items.addAll(persons.items);
+      if (persons.count <= persons.pageInformation.offset + persons.pageInformation.size) {
         finished = true;
       }
+      offset = persons.pageInformation.offset;
     }
     return items;
   }
@@ -77,10 +77,10 @@ interface PureAPI {
     while (!finished) {
       PureAPIPaginatedPersonsResponse persons = listAllPersons(pageSize, offset);
       items.addAll(persons.items);
-      offset = persons.pageInformation.offset + persons.pageInformation.size;
-      if (persons.count <= offset) {
+      if (persons.count <= persons.pageInformation.offset + persons.pageInformation.size) {
         finished = true;
       }
+      offset = persons.pageInformation.offset;
     }
     return items;
   }
