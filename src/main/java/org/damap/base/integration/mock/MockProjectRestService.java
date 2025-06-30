@@ -1,4 +1,4 @@
-package org.damap.base.rest.projects;
+package org.damap.base.integration.mock;
 
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
@@ -8,13 +8,14 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import org.damap.base.rest.dmp.domain.ProjectDO;
+import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /** MockProjectRestService interface. */
 @Path("")
-@RegisterRestClient(configKey = "rest.projects")
+@RegisterRestClient(configKey = "rest.mock-projects")
 @Produces(MediaType.APPLICATION_JSON)
-public interface MockProjectRestService {
+interface MockProjectRestService {
 
   /**
    * getProjectDetails.
@@ -50,7 +51,7 @@ public interface MockProjectRestService {
   /**
    * getProjectSupplement.
    *
-   * @return a {@link org.damap.base.rest.projects.ProjectSupplementDO} object
+   * @return a {@link ProjectSupplementDO} object
    */
   @GET
   @Path("/project-supplement")

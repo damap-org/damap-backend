@@ -2,7 +2,7 @@ package org.damap.base.rest.dmp.mapper;
 
 import lombok.experimental.UtilityClass;
 import org.damap.base.domain.Dmp;
-import org.damap.base.rest.projects.ProjectSupplementDO;
+import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
 
 /** ProjectSupplementDOMapper class. */
 @UtilityClass
@@ -11,7 +11,7 @@ public class ProjectSupplementDOMapper {
   /**
    * mapDOtoEntity.
    *
-   * @param projectSupplementDO a {@link org.damap.base.rest.projects.ProjectSupplementDO} object
+   * @param projectSupplementDO a {@link ProjectSupplementDO} object
    * @param dmp a {@link org.damap.base.domain.Dmp} object
    * @return a {@link org.damap.base.domain.Dmp} object
    */

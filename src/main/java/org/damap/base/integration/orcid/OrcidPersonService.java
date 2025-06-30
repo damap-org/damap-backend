@@ -1,4 +1,4 @@
-package org.damap.base.rest.persons.orcid;
+package org.damap.base.integration.orcid;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -6,8 +6,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import org.damap.base.rest.persons.orcid.models.ORCIDExpandedSearchResult;
-import org.damap.base.rest.persons.orcid.models.ORCIDRecord;
+import org.damap.base.integration.orcid.models.ORCIDExpandedSearchResult;
+import org.damap.base.integration.orcid.models.ORCIDRecord;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -15,14 +15,14 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "rest.orcid.search")
 @Path("/v3.0")
 @Produces(MediaType.APPLICATION_JSON)
-public interface OrcidPersonService {
+interface OrcidPersonService {
 
   /**
    * getAll.
    *
    * @param query a {@link java.lang.String} object
    * @param rows a int
-   * @return a {@link org.damap.base.rest.persons.orcid.models.ORCIDExpandedSearchResult} object
+   * @return a {@link ORCIDExpandedSearchResult} object
    */
   @Path("/expanded-search")
   @GET
@@ -33,7 +33,7 @@ public interface OrcidPersonService {
    * get.
    *
    * @param orcid a {@link java.lang.String} object
-   * @return a {@link org.damap.base.rest.persons.orcid.models.ORCIDRecord} object
+   * @return a {@link ORCIDRecord} object
    */
   @Path("/{orcid}/record")
   @GET

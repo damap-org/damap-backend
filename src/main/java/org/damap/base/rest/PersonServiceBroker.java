@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.integration.PersonService;
 import org.damap.base.rest.config.domain.ServiceConfig;
-import org.damap.base.rest.persons.PersonService;
 
 /** PersonServiceBroker class. */
 @JBossLog
@@ -17,13 +17,13 @@ public class PersonServiceBroker {
 
   LinkedHashMap<String, PersonService> personServices = new LinkedHashMap<>();
 
-  @Inject
   /**
    * Constructor for PersonServiceBroker.
    *
    * @param config a {@link org.damap.base.rest.ConfigResource} object
    * @param availableServices a {@link java.util.List} object
    */
+  @Inject
   public PersonServiceBroker(ConfigResource config, @All List<PersonService> availableServices) {
     List<ServiceConfig> configuredServices = config.personServiceConfigurations.getConfigs();
 
@@ -58,7 +58,7 @@ public class PersonServiceBroker {
    * getServiceFromQueryParams.
    *
    * @param queryParams a {@link jakarta.ws.rs.core.MultivaluedMap} object
-   * @return a {@link org.damap.base.rest.persons.PersonService} object
+   * @return a {@link PersonService} object
    */
   public PersonService getServiceFromQueryParams(MultivaluedMap<String, String> queryParams) {
     return this.getServiceForQueryParam(queryParams.getFirst("searchService"));
@@ -68,7 +68,7 @@ public class PersonServiceBroker {
    * getServiceForQueryParam.
    *
    * @param searchServiceType a {@link java.lang.String} object
-   * @return a {@link org.damap.base.rest.persons.PersonService} object
+   * @return a {@link PersonService} object
    */
   public PersonService getServiceForQueryParam(String searchServiceType) {
     PersonService searchService = personServices.get(searchServiceType);

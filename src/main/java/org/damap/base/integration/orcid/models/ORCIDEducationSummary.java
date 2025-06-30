@@ -1,9 +1,9 @@
-package org.damap.base.rest.persons.orcid.models;
+package org.damap.base.integration.orcid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
-import org.damap.base.rest.persons.orcid.models.base.ORCIDAffiliation;
+import org.damap.base.integration.orcid.models.base.ORCIDAffiliation;
 
 /** ORCIDEducationSummary class. */
 @Data

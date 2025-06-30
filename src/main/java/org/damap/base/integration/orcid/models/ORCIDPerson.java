@@ -1,4 +1,4 @@
-package org.damap.base.rest.persons.orcid.models;
+package org.damap.base.integration.orcid.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,32 +1,31 @@
-package org.damap.base.rest.persons.orcid;
+package org.damap.base.integration.orcid;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 import org.damap.base.enums.EIdentifierType;
+import org.damap.base.integration.orcid.models.ORCIDExpandedSearchPerson;
+import org.damap.base.integration.orcid.models.ORCIDRecord;
+import org.damap.base.integration.orcid.models.base.ORCIDAffiliation;
+import org.damap.base.integration.orcid.models.base.ORCIDDate;
+import org.damap.base.integration.orcid.models.base.ORCIDEmail;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
-import org.damap.base.rest.persons.orcid.models.ORCIDExpandedSearchPerson;
-import org.damap.base.rest.persons.orcid.models.ORCIDRecord;
-import org.damap.base.rest.persons.orcid.models.base.ORCIDAffiliation;
-import org.damap.base.rest.persons.orcid.models.base.ORCIDDate;
-import org.damap.base.rest.persons.orcid.models.base.ORCIDEmail;
 
-/** ORCIDMapper class. */
+/** Provides static functions that map between DAMAP and ORCID objects. */
 @UtilityClass
 public class ORCIDMapper {
   /**
-   * mapExpandedSearchPersonEntityToDO.
+   * Maps an ORCID {@link ORCIDExpandedSearchPerson} to a {@link
+   * org.damap.base.rest.dmp.domain.ContributorDO}.
    *
-   * @param orcidPerson a {@link org.damap.base.rest.persons.orcid.models.ORCIDExpandedSearchPerson}
-   *     object
-   * @param contributorDO a {@link org.damap.base.rest.dmp.domain.ContributorDO} object
-   * @return a {@link org.damap.base.rest.dmp.domain.ContributorDO} object
+   * @param orcidPerson a {@link ORCIDExpandedSearchPerson} object to map from.
+   * @return the {@link org.damap.base.rest.dmp.domain.ContributorDO} mapped from the ORCID person.
    */
-  public ContributorDO mapExpandedSearchPersonEntityToDO(
-      ORCIDExpandedSearchPerson orcidPerson, ContributorDO contributorDO) {
-
+  public static ContributorDO mapExpandedSearchPersonEntityToDO(
+      ORCIDExpandedSearchPerson orcidPerson) {
+    ContributorDO contributorDO = new ContributorDO();
     contributorDO.setId(null);
     contributorDO.setFirstName(orcidPerson.getGivenNames());
     contributorDO.setLastName(orcidPerson.getFamilyNames());
@@ -43,20 +42,17 @@ public class ORCIDMapper {
     identifierContributorDO.setType(EIdentifierType.ORCID);
 
     contributorDO.setPersonId(identifierContributorDO);
-
     return contributorDO;
   }
 
   /**
-   * mapRecordEntityToPersonDO.
+   * Maps an {@link ORCIDRecord} to a {@link org.damap.base.rest.dmp.domain.ContributorDO}.
    *
-   * @param orcidRecord a {@link org.damap.base.rest.persons.orcid.models.ORCIDRecord} object
-   * @param contributorDO a {@link org.damap.base.rest.dmp.domain.ContributorDO} object
-   * @return a {@link org.damap.base.rest.dmp.domain.ContributorDO} object
+   * @param orcidRecord a {@link ORCIDRecord} object to map from.
+   * @return a {@link org.damap.base.rest.dmp.domain.ContributorDO} object with the mapped data..
    */
-  public ContributorDO mapRecordEntityToPersonDO(
-      ORCIDRecord orcidRecord, ContributorDO contributorDO) {
-
+  public static ContributorDO mapRecordEntityToPersonDO(ORCIDRecord orcidRecord) {
+    ContributorDO contributorDO = new ContributorDO();
     contributorDO.setId(null);
     contributorDO.setFirstName(orcidRecord.getPerson().getName().getGivenNames().getValue());
     contributorDO.setLastName(orcidRecord.getPerson().getName().getFamilyName().getValue());
@@ -99,7 +95,7 @@ public class ORCIDMapper {
     return contributorDO;
   }
 
-  private final Comparator<? super ORCIDAffiliation> sortByCurrentStartDate =
+  private static final Comparator<? super ORCIDAffiliation> sortByCurrentStartDate =
       ((ORCIDAffiliation a, ORCIDAffiliation b) -> {
         ORCIDDate aEndDate = a.getEndDate();
         ORCIDDate bEndDate = b.getEndDate();
@@ -112,7 +108,7 @@ public class ORCIDMapper {
         // if only one is set, it means the other is current
         if (aEndDate != null || bEndDate != null) {
           if (aEndDate == null) return 1;
-          if (bEndDate == null) return -1;
+          return -1;
         }
 
         // both end dates are null. lets compare via start date
@@ -129,9 +125,6 @@ public class ORCIDMapper {
 
         // one not set.
         if (aStartDate == null) return 1;
-        if (bStartDate == null) return -1;
-
-        // fall back. Should never reach this.
-        return 0;
+        return -1;
       });
 }

@@ -1,4 +1,4 @@
-package org.damap.base.rest.persons.orcid.models.base;
+package org.damap.base.integration.orcid.models.base;
 
 import lombok.Data;
 

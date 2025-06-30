@@ -6,13 +6,20 @@ damap:
   origins: http://localhost:8085 # https://your.frontend.com,https://*.yourdomain.com
   auth:
     backend:
-      url: http://keycloak:8080/realms/damap # https://your.authentication.server
-      client: 'damap-be' # your-backend-authentication-client-id
+      # Configures the OIDC realm the DAMAP backend should query to verify authentication:
+      url: http://keycloak:8080/realms/damap
+      # Client ID as configured in the OIDC Server:
+      client: 'damap-be'
     frontend:
-      url: http://localhost:8087/realms/damap # usually the same as the backend url
-      client: 'damap' # your-frontend-authentication-client-id
+      # Configures the OIDC URL the frontend should send users to in order to log in. This is typically the same
+      # as the backend URL, but may differ if the backend can access the OIDC server over a non-public network.
+      url: http://localhost:8087/realms/damap
+      # Client ID as configured in the OIDC Server:
+      client: 'damap'
+    # Scopes to request during login:
     scope: 'openid profile email offline_access microprofile-jwt roles personID' # your-backend-authentication-scope, including your variable for your user IDs
-    user: 'personID' # the variable name for your user IDs
+    # The OIDC claim to use as a user ID:
+    user: 'personID'
   datasource:
     url: ${DAMAP_DATASOURCE_URL:jdbc:postgresql://damap-db:5432/damap}
     db-kind: ${DAMAP_DATABASE_DB_KIND:postgresql}
@@ -24,19 +31,23 @@ damap:
     # Zenodo, Open Science Framework, DRYAD, Mendeley Data
     # can also be [] for no repositories recommendation
     recommendation: ['r3d100010468', 'r3d100011137', 'r3d100000044', 'r3d100011868'] # your-recommended-repositories
-  projects-url: http://api-mock:80
-  persons-url: http://api-mock:80
   fits-url: http://fits-service:8080/fits
   gotenberg-url: http://gotenberg:3000
+  fields:
+    ethical-report-enabled: true
+
+  mock-endpoint-url: http://api-mock:80
+
+  projects-service: default
+
+## Set up person lookups here:
   person-services:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
-      class-name: 'org.damap.base.rest.persons.MockUniversityPersonServiceImpl'
+      class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
     - display-text: 'ORCID'
       query-value: 'ORCID'
-      class-name: 'org.damap.base.rest.persons.orcid.ORCIDPersonServiceImpl'
-  fields:
-    ethical-report-enabled: true
+      class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
 
 invenio:
   disabled: true
@@ -93,8 +104,8 @@ quarkus:
     oauth-client-id: ${damap.auth.frontend.client}
 
 rest:
-  projects/mp-rest/url: ${damap.projects-url}
-  persons/mp-rest/url: ${damap.persons-url}
+  mock-projects/mp-rest/url: ${damap.mock-endpoint-url}
+  mock-persons/mp-rest/url: ${damap.mock-endpoint-url}
   fits/mp-rest/url: ${damap.fits-url}
   gotenberg/mp-rest/url: ${damap.gotenberg-url}
   r3data:
@@ -119,8 +130,7 @@ rest:
 #      db-kind: oracle
       username: damap
       password: pw4damap
-    projects-url: http://localhost:8091
-    persons-url: http://localhost:8091
+    mock-endpoint-url: http://localhost:8091
     fits-url: http://localhost:8089/fits
     gotenberg-url: http://localhost:3000
 

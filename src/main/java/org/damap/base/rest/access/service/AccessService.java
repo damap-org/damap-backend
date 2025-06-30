@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Access;
 import org.damap.base.domain.Dmp;
+import org.damap.base.integration.PersonService;
 import org.damap.base.repo.AccessRepo;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.rest.PersonServiceBroker;
@@ -19,7 +20,6 @@ import org.damap.base.rest.access.mapper.AccessMapper;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
 import org.damap.base.rest.dmp.mapper.MapperService;
-import org.damap.base.rest.persons.PersonService;
 
 /** AccessService class. */
 @ApplicationScoped

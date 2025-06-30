@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
+import org.damap.base.integration.orcid.ORCIDMapper;
+import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
 import org.damap.base.rest.dmp.domain.DmpDO;
-import org.damap.base.rest.persons.MockUniversityPersonServiceImpl;
-import org.damap.base.rest.persons.orcid.ORCIDMapper;
-import org.damap.base.rest.persons.orcid.ORCIDPersonServiceImpl;
 import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,9 +38,7 @@ public class TestSetup {
     Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
         .thenReturn(testDOFactory.getTestContributorDO());
     Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
-        .thenReturn(
-            ORCIDMapper.mapRecordEntityToPersonDO(
-                testDOFactory.getORCIDTestRecord(), testDOFactory.getTestContributorDO()));
+        .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
     dmpDO = testDOFactory.getOrCreateTestDmpDO();
   }
 }

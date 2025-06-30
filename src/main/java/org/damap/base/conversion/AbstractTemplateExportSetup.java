@@ -11,9 +11,9 @@ import org.damap.base.domain.Dataset;
 import org.damap.base.domain.Dmp;
 import org.damap.base.enums.EContributorRole;
 import org.damap.base.r3data.RepositoriesService;
+import org.damap.base.rest.ProjectService;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
-import org.damap.base.rest.projects.ProjectService;
 
 /** This class describes necessary setup for all template export classes. */
 @JBossLog

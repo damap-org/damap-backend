@@ -1,5 +1,6 @@
 package org.damap.base.rest.base;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import lombok.Data;
 
@@ -21,5 +22,22 @@ public class Search {
     search.query = map.getFirst("q");
 
     return search;
+  }
+
+  /**
+   * Converts the search back to a {@link jakarta.ws.rs.core.MultivaluedMap} for legacy API calls.
+   *
+   * @return the map containing the query string.
+   */
+  public MultivaluedMap<String, String> toMap() {
+    MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
+    if (query != null) {
+      map.add("q", query);
+    }
+    MultivaluedMap<String, String> paginationMap = pagination.toMap();
+    for (String key : paginationMap.keySet()) {
+      map.addAll(key, paginationMap.get(key));
+    }
+    return map;
   }
 }
