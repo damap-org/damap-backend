@@ -1,0 +1,229 @@
+## This file contains a production-grade setup of DAMAP as a Docker Compose file.
+name: DAMAP
+configs:
+  api-mock-routes:
+    content: |
+      {
+        "/api/projects": "/projects",
+        "/api/projects/*/staff": "/persons"
+      }
+  api-mock-db:
+    content: |
+      {
+        "projects": [],
+        "persons": [],
+        "project-supplement": {
+          "personalData": true,
+          "sensitiveData": true,
+          "legalRestrictions": false,
+          "humanParticipants": true,
+          "ethicalIssuesExist": true,
+          "committeeReviewed": false,
+          "costsExist": false
+        }
+      }
+
+  nginx:
+    content: |
+      worker_processes  auto;
+      error_log  /var/log/nginx/error.log notice;
+      pid        /var/run/nginx.pid;
+      events {
+          worker_connections  1024;
+      }
+      http {
+          include       /etc/nginx/mime.types;
+          default_type  application/octet-stream;
+          log_format    main  '$$remote_addr - $$remote_user [$$time_local] "$$request" '
+                              '$$status $$body_bytes_sent "$$http_referer" '
+                              '"$$http_user_agent" "$$http_x_forwarded_for"';
+          access_log          /var/log/nginx/access.log  main;
+          sendfile            on;
+          keepalive_timeout   65;
+          server {
+              listen 443      ssl default_server;
+              listen [::]:443 ssl default_server;
+              http2 on;
+              ssl_certificate     /run/secrets/certificate;
+              ssl_certificate_key /run/secrets/privatekey;
+              add_header Strict-Transport-Security "max-age=63072000" always;
+              location / {
+                  proxy_pass http://damap-fe:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+              location /api/ {
+                  proxy_pass http://damap-be:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+              location /q/swagger-ui {
+                  proxy_pass http://damap-be:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+              location /q/openapi {
+                  proxy_pass http://damap-be:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+              # TODO find a way to conditionally apply these only:
+              location /realms {
+                  proxy_pass http://keycloak:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+              location /resources {
+                  proxy_pass http://keycloak:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
+          }
+          server {
+              listen 80      default_server;
+              listen [::]:80 default_server;
+              location /api/ {
+                  # Prevent the API from silently redirecting as the credentials may have been leaked:
+                  return 400;
+              }
+              return 301 https://$$host$$request_uri;
+          }
+
+          # TLS configuration based on the Mozilla modern profile
+          ssl_protocols TLSv1.3;
+          ssl_ecdh_curve X25519:prime256v1:secp384r1;
+          ssl_prefer_server_ciphers off;
+
+          # Note: OCSP stapling is disabled as OCSP is being phased out,
+          # see: https://letsencrypt.org/2024/12/05/ending-ocsp/
+      }
+secrets:
+  certificate:
+    file: ./tls/bundle.crt
+  privatekey:
+    file: ./tls/private.pem
+volumes:
+  logs:
+    name: logs
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "${PROXY_LOG_HOST_PATH?Please specify a log path.}"
+include:
+  - docker-compose.db.yaml
+  - docker-compose.keycloak.yaml
+services:
+  damap-be:
+    image: ghcr.io/damap-org/damap-backend:next
+    restart: unless-stopped
+    environment:
+      DAMAP_DATASOURCE_URL: "jdbc:postgresql://${DAMAP_DATABASE_HOST:-damap-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}"
+      DAMAP_DATABASE_DB_KIND: "postgresql"
+      DAMAP_DATASOURCE_USERNAME: "${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}"
+      DAMAP_DATASOURCE_PASSWORD: "${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}"
+      DAMAP_ORIGINS: "${DAMAP_ORIGINS?The DAMAP origins setting is required}"
+      DAMAP_AUTH_BACKEND_URL: "${DAMAP_AUTH_BACKEND_URL?The OIDC URL is required}"
+      DAMAP_AUTH_FRONTEND_URL: "${DAMAP_AUTH_FRONTEND_URL?The OIDC URL is required}"
+      DAMAP_AUTH_BACKEND_CLIENT: "${DAMAP_AUTH_BACKEND_CLIENT?The OIDC client ID is required}"
+      DAMAP_AUTH_FRONTEND_CLIENT: "${DAMAP_AUTH_FRONTEND_CLIENT?The OIDC client ID is required}"
+    expose:
+      - 8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      damap-internal:
+        aliases:
+          - damap-be
+    depends_on:
+      damap-db:
+        condition: service_healthy
+        required: false # We don't require this since the DB only exists when the with_db profile is enabled.
+      keycloak:
+        condition: service_healthy
+        required: false # We don't require this since the DB only exists when the with_keycloak profile is enabled.
+  damap-fe:
+    image: ghcr.io/damap-org/damap-frontend:next
+    restart: unless-stopped
+    expose:
+      - 8080
+    depends_on:
+      damap-be:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      damap-internal:
+        aliases:
+          - damap-fe
+  proxy:
+    image: registry.hub.docker.com/library/nginx
+    restart: unless-stopped
+    volumes:
+      - logs:/var/log
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      damap-fe:
+        condition: service_healthy
+      damap-be:
+        condition: service_healthy
+      api-mock:
+        condition: service_started
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    secrets:
+      - certificate
+      - privatekey
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      damap-internal:
+      damap-external:
+  # TODO replace the API mock with a build-in mock:
+  api-mock:
+    image: clue/json-server
+    pull_policy: always
+    restart: unless-stopped
+    command: db.json --routes routes.json
+    configs:
+      - source: api-mock-db
+        target: /data/db.json
+      - source: api-mock-routes
+        target: /data/routes.json
+    networks:
+      damap-internal:
+        aliases:
+          - api-mock
+networks:
+  damap-external:
+    name: damap-external
+  damap-internal:
+    name: damap-internal
+    internal: true
