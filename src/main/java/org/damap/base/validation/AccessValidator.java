@@ -128,8 +128,7 @@ public class AccessValidator {
             .filter(
                 access ->
                     access.getUniversityId().equals(securityService.getUserId())
-                        && (access.getRole().equals(EFunctionRole.EDITOR)
-                            || access.getRole().equals(EFunctionRole.OWNER)))
+                        && (access.getRole().equals(EFunctionRole.OWNER)))
             .findAny();
 
     return dmpAccess.isPresent();
