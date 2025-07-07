@@ -228,10 +228,58 @@
       <artifactId>tika-parsers-standard-package</artifactId>
       <version>3.2.3</version>
     </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.34</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.6</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.14.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/bitmotivator/openapi-minimal/openapi.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <output>${project.build.directory}/generated-sources/integration</output>
+              <configOptions>
+                <sourceFolder>src/java/main</sourceFolder>
+                <useJakartaEe>true</useJakartaEe>
+                <library>native</library>
+                <useBeanValidation>false</useBeanValidation>
+                <serializationLibrary>jackson</serializationLibrary>
+                <dateLibrary>java8</dateLibrary>
+                <annotationLibrary>none</annotationLibrary>
+                <apiPackage>org.damap.base.integration.rest</apiPackage>
+                <modelPackage>org.damap.base.integration.rest</modelPackage>
+                <invokerPackage>org.damap.base.integration.rest</invokerPackage>
+                <configKey>rest-integration</configKey>
+                <artifactUrl>org.damap</artifactUrl>
+                <artifactId>integration</artifactId>
+                <artifactVersion>1.0.0</artifactVersion>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
