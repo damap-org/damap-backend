@@ -140,7 +140,7 @@ this file, you would have to create your own version in your institutional folde
 ### Configuring Project and Person API
 
 DAMAP supports automatically populating project and person information from your CRIS system. It comes with a number of
-industry-standard integrations, such as ORCID or Elsevier Pure, but you can also create your own.
+industry-standard integrations such as ORCID, but you can also create your own.
 
 To configure the integration, you may need to change the following settings in `application.yaml` or provide the
 corresponding environment variables:
@@ -148,18 +148,13 @@ corresponding environment variables:
 <details><summary>application.yaml</summary>
 
 ```yaml
-## Custom project service:
-# project-service: your-service
-## Note: if left unconfigured, the natural Java CDI load order takes precedence. Use the
-## @Priority annotation to load your implementation first.
+## Custom project service by specifying the ID (not the classname) of your projects service:
+# projects-service: your-service
 
   person-services:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
       class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-    - display-text: 'ORCID'
-      query-value: 'ORCID'
-      class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
 ```
 
 </details>
@@ -168,6 +163,9 @@ To create your own integration, you need to implement the following two interfac
 
 - [ProjectService](src/main/java/org/damap/base/integration/ProjectServiceProvider.java)
 - [PersonService](src/main/java/org/damap/base/integration/PersonService.java)
+
+> [!WARNING]
+> If you do not configure a projects service explicitly, the Java CDI load order will take precedence. Make sure to add a `@Priority(1)` annotation to your custom projects service if you do not configure it explicitly.
 
 ### Providing a FITS service
 
