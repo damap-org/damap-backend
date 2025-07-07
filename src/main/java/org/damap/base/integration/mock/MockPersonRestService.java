@@ -1,4 +1,4 @@
-package org.damap.base.rest.persons;
+package org.damap.base.integration.mock;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -11,9 +11,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /** MockPersonRestService interface. */
 @Path("")
-@RegisterRestClient(configKey = "rest.persons")
+@RegisterRestClient(configKey = "rest.mock-persons")
 @Produces(MediaType.APPLICATION_JSON)
-public interface MockPersonRestService {
+interface MockPersonRestService {
 
   /**
    * getContributorDetails.

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+- Refactoring the project service to allow for configurable integrations [#398](https://github.com/damap-org/damap-backend/pull/398). This affects existing implementations using the old method and integrators should check this update carefully.
+
 ## [4.5.3] - 2025-06-11
 
 - Fixed container permissions for OpenShift deployment [#385](https://github.com/damap-org/damap-backend/pull/385)

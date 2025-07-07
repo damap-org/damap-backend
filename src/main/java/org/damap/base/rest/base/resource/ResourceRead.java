@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.UriInfo;
 public interface ResourceRead<E> {
 
   /**
-   * read.
+   * Reads an object with the specified ID and
    *
    * @param id a {@link java.lang.String} object
    * @param uriInfo a {@link jakarta.ws.rs.core.UriInfo} object

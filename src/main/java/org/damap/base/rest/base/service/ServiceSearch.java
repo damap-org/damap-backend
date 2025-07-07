@@ -4,7 +4,13 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.damap.base.rest.base.ResultList;
 
-/** ServiceSearch interface. */
+/**
+ * Generic interface for searching objects.
+ *
+ * @deprecated this interface is too generic and should no longer be used. Create specific search
+ *     interfaces instead.
+ */
+@Deprecated
 public interface ServiceSearch<E> {
   /**
    * search.

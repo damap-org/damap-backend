@@ -6,12 +6,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.integration.PersonService;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
 import org.damap.base.rest.base.resource.ResourceRead;
 import org.damap.base.rest.base.resource.ResourceSearch;
 import org.damap.base.rest.dmp.domain.ContributorDO;
-import org.damap.base.rest.persons.PersonService;
 
 /** PersonResource class. */
 @Path("/api/persons")
@@ -27,12 +27,12 @@ public class PersonResource implements ResourceRead<ContributorDO>, ResourceSear
   @Override
   public ContributorDO read(String id, UriInfo uriInfo) {
     var queryParams = uriInfo.getQueryParameters();
-    log.info("Return person details for id=" + id + " and query=" + queryParams.toString());
+    log.info("Return person details for id=" + id);
     PersonService searchService = personServiceBroker.getServiceFromQueryParams(queryParams);
 
     ContributorDO result = null;
     if (searchService != null) {
-      result = searchService.read(id, queryParams);
+      result = searchService.read(id);
     }
 
     return result;
@@ -50,7 +50,7 @@ public class PersonResource implements ResourceRead<ContributorDO>, ResourceSear
     ResultList<ContributorDO> result = ResultList.fromItemsAndSearch(null, search);
 
     if (searchService != null) {
-      result = searchService.search(queryParams);
+      result = searchService.search(Search.fromMap(queryParams));
     }
 
     return result;

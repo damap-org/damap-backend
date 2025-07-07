@@ -138,32 +138,34 @@ Also before version 3, all changesets where kept in db/changeLog.yaml. If you mi
 this file, you would have to create your own version in your institutional folder. 
 
 ### Configuring Project and Person API
-Provide your CRIS system and person database API addresses in the config:
 
-In your institutional project, write custom API services for retrieving project and person information from your
-services, as well as mappers, to map their information to damaps classes.
-To this end you need to implement the API services
-[ProjectService.class](src/main/java/org/damap/base/rest/projects/ProjectService.java) and
-[PersonService.class](src/main/java/org/damap/base/rest/persons/PersonService.java).
+DAMAP supports automatically populating project and person information from your CRIS system. It comes with a number of
+industry-standard integrations such as ORCID, but you can also create your own.
 
-You can then integrate the project service by overriding the mock implementation 
-through the annotation @Priority(1). 
+To configure the integration, you may need to change the following settings in `application.yaml` or provide the
+corresponding environment variables:
 
-For the persons data service instead, add it to the list of person services (see below) 
-and remove the mock implementation.
-This will allow you to integrate several person services in parallel. The frontend will then 
-communicate with the service the user chooses. This component will provide the list of options to the frontend, 
-so no further changes are necessary there.
+<details><summary>application.yaml</summary>
 
 ```yaml
+## Custom project service by specifying the ID (not the classname) of your projects service:
+# projects-service: your-service
+
   person-services:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
-      class-name: 'org.damap.base.rest.persons.MockUniversityPersonServiceImpl'
-    - display-text: 'ORCID'
-      query-value: 'ORCID'
-      class-name: 'org.damap.base.rest.persons.orcid.ORCIDPersonServiceImpl'
+      class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
 ```
+
+</details>
+
+To create your own integration, you need to implement the following two interfaces:
+
+- [ProjectService](src/main/java/org/damap/base/integration/ProjectServiceProvider.java)
+- [PersonService](src/main/java/org/damap/base/integration/PersonService.java)
+
+> [!WARNING]
+> If you do not configure a projects service explicitly, the Java CDI load order will take precedence. Make sure to add a `@Priority(1)` annotation to your custom projects service if you do not configure it explicitly.
 
 ### Providing a FITS service
 

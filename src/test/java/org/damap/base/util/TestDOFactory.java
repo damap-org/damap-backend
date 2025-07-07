@@ -29,6 +29,7 @@ import org.damap.base.enums.EFundingState;
 import org.damap.base.enums.EIdentifierType;
 import org.damap.base.enums.ELicense;
 import org.damap.base.enums.ESecurityMeasure;
+import org.damap.base.integration.orcid.models.ORCIDRecord;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.repo.DmpVersionRepo;
 import org.damap.base.repo.InternalStorageRepo;
@@ -44,7 +45,6 @@ import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.RepositoryDO;
 import org.damap.base.rest.dmp.domain.StorageDO;
 import org.damap.base.rest.dmp.mapper.DmpDOMapper;
-import org.damap.base.rest.persons.orcid.models.ORCIDRecord;
 import org.damap.base.rest.version.VersionDO;
 import org.damap.base.rest.version.VersionDOMapper;
 import org.damap.base.rest.version.VersionService;
@@ -501,7 +501,7 @@ public class TestDOFactory {
   /**
    * getORCIDTestRecord.
    *
-   * @return a {@link org.damap.base.rest.persons.orcid.models.ORCIDRecord} object
+   * @return a {@link ORCIDRecord} object
    */
   public ORCIDRecord getORCIDTestRecord() {
     ORCIDRecord record = new ORCIDRecord();

@@ -1,5 +1,6 @@
 package org.damap.base.rest.base;
 
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import lombok.Data;
 
@@ -66,5 +67,21 @@ public class Pagination {
       }
       hasNext = page != numPages;
     }
+  }
+
+  /**
+   * Convert the pagination information back to the map format.
+   *
+   * @return the query string parameters for pagination.
+   */
+  public MultivaluedMap<String, String> toMap() {
+    MultivaluedMap<String, String> map = new MultivaluedHashMap<>();
+    if (this.page != 1) {
+      map.add("page", Integer.toString(this.page));
+    }
+    if (this.perPage != 10) {
+      map.add("perPage", Integer.toString(this.perPage));
+    }
+    return map;
   }
 }

@@ -2,17 +2,15 @@ package org.damap.base.rest.projects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/** Damap compatible representation of additional project information */
+/**
+ * {@inheritDoc}
+ *
+ * @deprecated Use {@link org.damap.base.rest.dmp.domain.ProjectSupplementDO} instead.
+ */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProjectSupplementDO {
-
-  private Boolean personalData;
-  private Boolean sensitiveData;
-  private Boolean legalRestrictions;
-  private Boolean humanParticipants;
-  private Boolean ethicalIssuesExist;
-  private Boolean committeeReviewed;
-  private Boolean costsExist;
-}
+@Deprecated
+public class ProjectSupplementDO extends org.damap.base.rest.dmp.domain.ProjectSupplementDO {}

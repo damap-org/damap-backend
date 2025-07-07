@@ -9,8 +9,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.enums.EIdentifierType;
+import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
 import org.damap.base.rest.dmp.domain.ContributorDO;
-import org.damap.base.rest.persons.orcid.ORCIDPersonServiceImpl;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 /** PersonResource class. */

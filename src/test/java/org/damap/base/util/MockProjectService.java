@@ -1,14 +1,13 @@
 package org.damap.base.util;
 
 import io.quarkus.test.InjectMock;
-import io.quarkus.test.Mock;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.damap.base.integration.mock.MockProjectServiceImpl;
 import org.damap.base.rest.dmp.domain.ContributorDO;
-import org.damap.base.rest.projects.MockProjectServiceImpl;
 
-/** MockProjectService class. */
-@Mock
+@Priority(2)
 @ApplicationScoped
 public class MockProjectService extends MockProjectServiceImpl {
   @Inject TestDOFactory testDOFactory;
