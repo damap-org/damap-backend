@@ -91,8 +91,8 @@
     {
       "universityId": "654321",
       "personId": {
-        "identifier":  "admin_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "admin_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Admin",
       "lastName": "Admin",
@@ -108,8 +108,8 @@
     {
       "universityId": "123456",
       "personId": {
-        "identifier":  "user_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "user_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "User",
       "lastName": "User",
@@ -123,10 +123,27 @@
       "roleInProject": "Role In Project"
     },
     {
+      "universityId": "josiah_carberry_uni_id",
+      "personId": {
+        "identifier":  "0000-0002-1825-0097",
+        "type": "ORCID"
+      },
+      "firstName": "Josiah",
+      "lastName": "Carberry",
+      "mbox": "josiah.carberry@address.com",
+      "affiliation": "Wesleyan University",
+      "affiliationId": {
+        "identifier":  "05h7xva58",
+        "type": "ROR"
+      },
+      "contact": false,
+      "roleInProject": "Role In Project"
+    },
+    {
       "universityId": "rose_tennsion_uni_id",
       "personId": {
-        "identifier":  "rose_tennison_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "rose_tennison_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Rose",
       "lastName": "Tennison",
@@ -142,8 +159,8 @@
     {
       "universityId": "karl_sylvester_uni_id",
       "personId": {
-        "identifier":  "karl_sylvester_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "karl_sylvester_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Karl",
       "lastName": "Sylvester",
@@ -159,8 +176,8 @@
     {
       "universityId": "amanda_jones_uni_id",
       "personId": {
-        "identifier":  "amanda_jones_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "amanda_jones_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Amanda",
       "lastName": "Jones",
@@ -176,8 +193,8 @@
     {
       "universityId": "benjamin_martinez_uni_id",
       "personId": {
-        "identifier":  "benjamin_martinez_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "benjamin_martinez_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Benjamin",
       "lastName": "Martinez",
@@ -193,8 +210,8 @@
     {
       "universityId": "chloe_thompson_uni_id",
       "personId": {
-        "identifier":  "chloe_thompson_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "chloe_thompson_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Chloe",
       "lastName": "Thompson",
@@ -210,8 +227,8 @@
     {
       "universityId": "david_rodriguez_uni_id",
       "personId": {
-        "identifier":  "david_rodriguez_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "david_rodriguez_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "David",
       "lastName": "Rodriguez",
@@ -227,8 +244,8 @@
     {
       "universityId": "emily_lee_uni_id",
       "personId": {
-        "identifier":  "emily_lee_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "emily_lee_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Emily",
       "lastName": "Lee",
@@ -244,8 +261,8 @@
     {
       "universityId": "henry_smith_uni_id",
       "personId": {
-        "identifier":  "henry_smith_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "henry_smith_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Henry",
       "lastName": "Smith",
@@ -261,8 +278,8 @@
     {
       "universityId": "isabella_johnson_uni_id",
       "personId": {
-        "identifier":  "isabella_johnson_orcid_id0",
-        "type": "ORCID"
+        "identifier":  "isabella_johnson_isni_id0",
+        "type": "ISNI"
       },
       "firstName": "Isabella",
       "lastName": "Johnson",
