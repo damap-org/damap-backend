@@ -36,7 +36,7 @@ public class AccessValidator {
       return true;
     }
 
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(personId);
+    List<Access> accessList = accessRepo.getAllByUniversityId(personId);
 
     Optional<Access> dmpAccess =
         accessList.stream().filter(access -> access.getDmp().id.equals(dmpId)).findAny();
@@ -56,7 +56,7 @@ public class AccessValidator {
       return true;
     }
 
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(personId);
+    List<Access> accessList = accessRepo.getAllByUniversityId(personId);
 
     Optional<Access> dmpAccess =
         accessList.stream()
@@ -93,7 +93,7 @@ public class AccessValidator {
       return true;
     }
 
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(personId);
+    List<Access> accessList = accessRepo.getAllByUniversityId(personId);
 
     Optional<Access> dmpAccess =
         accessList.stream()
@@ -128,8 +128,7 @@ public class AccessValidator {
             .filter(
                 access ->
                     access.getUniversityId().equals(securityService.getUserId())
-                        && (access.getRole().equals(EFunctionRole.EDITOR)
-                            || access.getRole().equals(EFunctionRole.OWNER)))
+                        && (access.getRole().equals(EFunctionRole.OWNER)))
             .findAny();
 
     return dmpAccess.isPresent();
@@ -142,9 +141,6 @@ public class AccessValidator {
    * @return a boolean
    */
   public boolean canCreateAccess(AccessDO accessDO) {
-    if (accessDO.getAccess().equals(EFunctionRole.OWNER)) {
-      return false;
-    }
 
     Dmp dmp = dmpRepo.findById(accessDO.getDmpId());
     if (dmp == null) {
@@ -155,15 +151,15 @@ public class AccessValidator {
     boolean hasPermission = securityService.isAdmin();
     if (!hasPermission) {
       List<Access> accessList = accessRepo.getAccessByDmp(dmp);
-      Optional<Access> dmpAccess =
+      // Check if caller is owner
+      Optional<Access> callerOwnerAccess =
           accessList.stream()
               .filter(
                   access ->
                       access.getUniversityId().equals(securityService.getUserId())
-                          && (access.getRole().equals(EFunctionRole.EDITOR)
-                              || access.getRole().equals(EFunctionRole.OWNER)))
+                          && access.getRole().equals(EFunctionRole.OWNER))
               .findAny();
-      hasPermission = dmpAccess.isPresent();
+      hasPermission = callerOwnerAccess.isPresent();
     }
 
     return canGetAccess(accessDO) && hasPermission;
@@ -176,33 +172,38 @@ public class AccessValidator {
    * @return a boolean
    */
   public boolean canDeleteAccess(long id) {
-    Access access = accessRepo.findById(id);
-
-    // Non-existing access can be deleted (idempotence)
-    if (access == null) {
-      return true;
-    }
-
-    // Can't delete owner access
-    if (access.getRole().equals(EFunctionRole.OWNER)) {
-      return false;
-    }
+    Access accessToDelete = accessRepo.findById(id);
 
     // Check if user has permission to delete access
     if (securityService.isAdmin()) {
       return true;
     }
-    List<Access> accessList = accessRepo.getAllDmpByUniversityId(securityService.getUserId());
-    Optional<Access> dmpAccess =
-        accessList.stream()
-            .filter(
-                a ->
-                    a.getDmp().id.equals(access.getDmp().id)
-                        && (a.getRole().equals(EFunctionRole.EDITOR)
-                            || a.getRole().equals(EFunctionRole.OWNER)))
-            .findAny();
 
-    return dmpAccess.isPresent();
+    // Non-existing access can be deleted (idempotence)
+    if (accessToDelete == null) {
+      return true;
+    }
+
+    List<Access> accessForDmp = accessRepo.getAccessByDmp(accessToDelete.getDmp());
+
+    List<EFunctionRole> callerAccessRoles =
+        accessForDmp.stream()
+            .filter(a -> a.getUniversityId().equals(securityService.getUserId()))
+            .map(Access::getRole)
+            .toList();
+
+    // Only owners can delete access
+    if (!callerAccessRoles.contains(EFunctionRole.OWNER)) {
+      return false;
+    }
+
+    // There has to be one owner always
+    if (accessToDelete.getRole().equals(EFunctionRole.OWNER)) {
+      return accessForDmp.stream().filter(a -> a.getRole() == EFunctionRole.OWNER).limit(2).count()
+          >= 2;
+    }
+
+    return true;
   }
 
   // Can the selected user be given access to this dmp

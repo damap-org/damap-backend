@@ -32,9 +32,9 @@ class AccessValidatorTest {
   @BeforeEach
   public void setup() {
     Mockito.when(securityService.isAdmin()).thenReturn(false);
-    Mockito.when(accessRepo.getAllDmpByUniversityId(ownerId)).thenReturn(getAccessListOwner());
-    Mockito.when(accessRepo.getAllDmpByUniversityId(editorId)).thenReturn(getAccessListEditor());
-    Mockito.when(accessRepo.getAllDmpByUniversityId(guestId)).thenReturn(getAccessListGuest());
+    Mockito.when(accessRepo.getAllByUniversityId(ownerId)).thenReturn(getAccessListOwner());
+    Mockito.when(accessRepo.getAllByUniversityId(editorId)).thenReturn(getAccessListEditor());
+    Mockito.when(accessRepo.getAllByUniversityId(guestId)).thenReturn(getAccessListGuest());
   }
 
   @Test

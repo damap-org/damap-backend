@@ -97,6 +97,12 @@ public class AccessService {
    */
   @Transactional
   public AccessDO create(AccessDO accessDO) {
+    // There should ever only be one access, so automatically delete the older ones (editing
+    // existing access is not supported)
+    if (accessDO.getId() != null) {
+      accessRepo.deleteById(accessDO.getId());
+    }
+
     Access access = new Access();
     AccessMapper.mapDOtoEntity(accessDO, access, mapperService);
     if (access.getPersonIdentifier() != null) {

@@ -12,12 +12,12 @@ import org.damap.base.domain.Dmp;
 public class AccessRepo implements PanacheRepository<Access> {
 
   /**
-   * getAllDmpByUniversityId.
+   * Returns all accesses by the institution/university-specific identifier of a person.
    *
    * @param universityId a {@link java.lang.String} object
    * @return a {@link java.util.List} object
    */
-  public List<Access> getAllDmpByUniversityId(String universityId) {
+  public List<Access> getAllByUniversityId(String universityId) {
     return list(
         "select access from Access access" + " where access.universityId = :universityId ",
         Parameters.with("universityId", universityId));
