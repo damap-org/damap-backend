@@ -2,25 +2,21 @@
   "$id": "https://damap.org/helm-chart/values.schema.json",
   "type": "object",
   "required": [
-    "openshift",
-    "debug",
     "damap",
-    "oidc",
-    "keycloak",
-    "custom_build",
-    "pure",
-    "frontend"
+    "oidc"
   ],
   "properties": {
     "openshift": {
       "title": "OpenShift",
       "description": "Deploy OpenShift-specific resources",
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "debug": {
       "title": "Debug",
       "description": "Deploy a non-production debug instance",
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     },
     "damap": {
       "title": "DAMAP",
@@ -101,30 +97,34 @@
       "type": "object",
       "required": [
         "frontend_endpoint",
-        "backend_endpoint",
-        "frontend_client_id",
-        "backend_client_id",
-        "scope",
-        "person_id_claim"
+        "backend_endpoint"
       ],
       "properties": {
         "frontend_endpoint": {
           "title": "Frontend OIDC endpoint",
           "description": "The endpoint the DAMAP frontend should use from the browser. This should be accessible from the user's computer. This setting will be ignored if keycloak.deploy is true.",
-          "type": "string"
+          "type": "string",
+          "format": "url",
+          "minLength": 1
         },
         "backend_endpoint": {
           "title": "Backend OIDC endpoint",
           "description": "The endpoint the DAMAP backend should use. Typically, this is the same as the frontend, but sometimes you may want to route the backend requests over a different network. This setting will be ignored if keycloak.deploy is true.",
-          "type": "string"
+          "type": "string",
+          "format": "url",
+          "minLength": 1
         },
         "frontend_client_id": {
           "title": "Frontend OIDC client ID",
-          "type": "string"
+          "type": "string",
+          "default": "damap",
+          "minLength": 1
         },
         "backend_client_id": {
           "title": "Backend OIDC client ID",
-          "type": "string"
+          "type": "string",
+          "default": "damap-be",
+          "minLength": 1
         },
         "scope": {
           "title": "OIDC scope",
@@ -133,12 +133,23 @@
             "type": "string",
             "pattern": "^[a-zA-Z0-9-_.]+$"
           },
-          "minItems": 1
+          "minItems": 1,
+          "default": [
+            "openid",
+            "profile",
+            "email",
+            "offline_access",
+            "microprofile-jwt",
+            "roles",
+            "personID"
+          ]
         },
         "person_id_claim": {
           "title": "Person ID OIDC claim",
           "type": "string",
-          "pattern": "^[a-zA-Z0-9-_.]+$"
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "personID",
+          "minLength": 1
         }
       }
     },
@@ -146,6 +157,9 @@
       "title": "Keycloak",
       "description": "Keycloak configuration",
       "type": "object",
+      "default": {
+        "deploy": false
+      },
       "required": [
         "deploy",
         "admin_user",
@@ -220,16 +234,20 @@
       "title": "Custom build",
       "description": "Create a custom backend build using the OpenShift CI pipeline. Sadly, this doesn't work in vanilla Kubernetes.",
       "type": "object",
-      "required": [
-        "name",
-        "repo",
-        "ref"
-      ],
+      "required": [],
+      "default": {},
+      "dependentRequired": {
+        "name": [
+          "repo",
+          "ref"
+        ]
+      },
       "properties": {
         "name": {
           "title": "Name",
           "description": "Set this field to non-empty to trigger an OpenShift build",
-          "type": "string"
+          "type": "string",
+          "default": ""
         },
         "repo": {
           "title": "Repository",
@@ -249,23 +267,49 @@
       "title": "Elsevier Pure",
       "type": "object",
       "required": [
-        "enabled",
-        "backend",
-        "persons_data",
-        "projects_data",
-        "endpoint",
-        "api_key",
-        "description_classification",
-        "project_lead_classification",
-        "role_classifications"
+        "enabled"
       ],
+      "default": {
+        "enabled": false
+      },
+      "dependentRequired": {
+        "enabled": [
+          "backend",
+          "description_classification",
+          "project_lead_classification",
+          "role_classifications"
+        ]
+      },
+      "if": {
+        "properties": {
+          "backend": {
+            "type": "string",
+            "const": "file"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "persons_data",
+          "projects_data"
+        ]
+      },
+      "else": {
+        "required": [
+          "endpoint",
+          "api_key"
+        ]
+      },
       "properties": {
         "enabled": {
           "title": "Enabled",
-          "type": "boolean"
+          "description": "Enable Elsevier Pure integration.",
+          "type": "boolean",
+          "default": false
         },
         "backend": {
           "title": "Backend",
+          "description": "Which backend to use. The file backend reads static data provided in the persons_data and projects_data fields. The http backend reads from a Pure API endpoint.",
           "type": "string",
           "enum": ["file","http"]
         },
@@ -324,6 +368,7 @@
 
         },
         "persons_data": {
+          "default": {},
           "oneOf": [
             {
               "type": "object",
@@ -367,6 +412,7 @@
           ]
         },
         "projects_data": {
+          "default": {},
           "oneOf": [
             {
               "type": "object",
@@ -423,7 +469,8 @@
       "properties": {
         "customize": {
           "title": "Customize",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "logo": {
           "title": "Logo (authenticated)",
@@ -431,7 +478,8 @@
           "type": "string",
           "contentMediaType": "image/svg",
           "format": "binary",
-          "contentEncoding": "base64"
+          "contentEncoding": "base64",
+          "default": ""
         },
         "logo_cropped": {
           "title": "Logo (front page)",
@@ -439,7 +487,8 @@
           "type": "string",
           "contentMediaType": "image/svg",
           "format": "binary",
-          "contentEncoding": "base64"
+          "contentEncoding": "base64",
+          "default": ""
         }
       }
     }
