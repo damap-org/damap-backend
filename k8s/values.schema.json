@@ -1,0 +1,447 @@
+{
+  "$id": "https://damap.org/helm-chart/values.schema.json",
+  "type": "object",
+  "required": [
+    "openshift",
+    "debug",
+    "damap",
+    "oidc",
+    "keycloak",
+    "custom_build",
+    "pure",
+    "frontend"
+  ],
+  "properties": {
+    "openshift": {
+      "title": "OpenShift",
+      "description": "Deploy OpenShift-specific resources",
+      "type": "boolean"
+    },
+    "debug": {
+      "title": "Debug",
+      "description": "Deploy a non-production debug instance",
+      "type": "boolean"
+    },
+    "damap": {
+      "title": "DAMAP",
+      "description": "DAMAP configuration",
+      "type": "object",
+      "required": [
+        "frontend_image",
+        "backend_image",
+        "db_name",
+        "db_user",
+        "db_password",
+        "hostname",
+        "protocol",
+        "storage_class_name",
+        "create_pv",
+        "host_folder"
+      ],
+      "properties": {
+        "frontend_image": {
+          "title": "Frontend image",
+          "description": "Container image for the frontend",
+          "type": "string",
+          "example": "ghcr.io/damap-org/damap-frontend:next"
+        },
+        "backend_image": {
+          "title": "Backend image",
+          "description": "Container image for the backend",
+          "type": "string",
+          "example": "ghcr.io/damap-org/damap-backend:next"
+        },
+        "db_user": {
+          "title": "Database username",
+          "description": "Username for the PostgreSQL server.",
+          "type": "string"
+        },
+        "db_password": {
+          "title": "Database password",
+          "description": "Password for the PostgreSQL server.",
+          "type": "string"
+        },
+        "db_name": {
+          "title": "Database name",
+          "description": "Database name for the PostgreSQL server.",
+          "type": "string"
+        },
+        "hostname": {
+          "title": "Hostname",
+          "description": "Effective hostname for DAMAP.",
+          "type": "string",
+          "minLength": 1
+        },
+        "protocol": {
+          "title": "Protocol",
+          "description": "Protocol for DAMAP",
+          "type": "string",
+          "enum": ["http", "https"]
+        },
+        "storage_class_name": {
+          "title": "Storage class name",
+          "description": "Name for the storage class to use for allocating PVs.",
+          "type": "string"
+        },
+        "create_pv": {
+          "title": "Create PV?",
+          "description": "Create a host folder PV during deployment. Do not use for production!",
+          "type": "boolean"
+        },
+        "host_folder": {
+          "title": "Host folder",
+          "description": "Host folder when creating a PV.",
+          "type": "string"
+        }
+      }
+    },
+    "oidc": {
+      "title": "OIDC",
+      "description": "OIDC authentication configuration.",
+      "type": "object",
+      "required": [
+        "frontend_endpoint",
+        "backend_endpoint",
+        "frontend_client_id",
+        "backend_client_id",
+        "scope",
+        "person_id_claim"
+      ],
+      "properties": {
+        "frontend_endpoint": {
+          "title": "Frontend OIDC endpoint",
+          "description": "The endpoint the DAMAP frontend should use from the browser. This should be accessible from the user's computer. This setting will be ignored if keycloak.deploy is true.",
+          "type": "string"
+        },
+        "backend_endpoint": {
+          "title": "Backend OIDC endpoint",
+          "description": "The endpoint the DAMAP backend should use. Typically, this is the same as the frontend, but sometimes you may want to route the backend requests over a different network. This setting will be ignored if keycloak.deploy is true.",
+          "type": "string"
+        },
+        "frontend_client_id": {
+          "title": "Frontend OIDC client ID",
+          "type": "string"
+        },
+        "backend_client_id": {
+          "title": "Backend OIDC client ID",
+          "type": "string"
+        },
+        "scope": {
+          "title": "OIDC scope",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-_.]+$"
+          },
+          "minItems": 1
+        },
+        "person_id_claim": {
+          "title": "Person ID OIDC claim",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$"
+        }
+      }
+    },
+    "keycloak": {
+      "title": "Keycloak",
+      "description": "Keycloak configuration",
+      "type": "object",
+      "required": [
+        "deploy",
+        "admin_user",
+        "admin_password",
+        "db_name",
+        "db_user",
+        "db_password"
+      ],
+      "properties": {
+        "deploy": {
+          "title": "Deploy",
+          "description": "Co-deploy Keycloak. Not for production use.",
+          "type": "boolean"
+        },
+        "admin_user": {
+          "title": "Admin user",
+          "description": "Admin user for initial provisioning",
+          "type": "string",
+          "format": "username"
+        },
+        "admin_password": {
+          "title": "Admin password",
+          "description": "Admin password for initial provisioning",
+          "type": "string",
+          "format": "password"
+        },
+        "db_user": {
+          "title": "Database username",
+          "description": "Username for the PostgreSQL server.",
+          "type": "string"
+        },
+        "db_password": {
+          "title": "Database password",
+          "description": "Password for the PostgreSQL server.",
+          "type": "string"
+        },
+        "db_name": {
+          "title": "Database name",
+          "description": "Database name for the PostgreSQL server.",
+          "type": "string"
+        },
+        "hostname": {
+          "title": "Hostname",
+          "description": "Effective hostname for Keycloak.",
+          "type": "string",
+          "minLength": 1
+        },
+        "protocol": {
+          "title": "Protocol",
+          "description": "Protocol for Keycloak",
+          "type": "string",
+          "enum": ["http", "https"]
+        },
+        "storage_class_name": {
+          "title": "Storage class name",
+          "description": "Name for the storage class to use for allocating PVs.",
+          "type": "string"
+        },
+        "create_pv": {
+          "title": "Create PV?",
+          "description": "Create a host folder PV during deployment. Do not use for production!",
+          "type": "boolean"
+        },
+        "host_folder": {
+          "title": "Host folder",
+          "description": "Host folder when creating a PV.",
+          "type": "string"
+        }
+      }
+    },
+    "custom_build": {
+      "title": "Custom build",
+      "description": "Create a custom backend build using the OpenShift CI pipeline. Sadly, this doesn't work in vanilla Kubernetes.",
+      "type": "object",
+      "required": [
+        "name",
+        "repo",
+        "ref"
+      ],
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "Set this field to non-empty to trigger an OpenShift build",
+          "type": "string"
+        },
+        "repo": {
+          "title": "Repository",
+          "description": "Git repository to build from",
+          "type": "string",
+          "format": "url"
+        },
+        "ref": {
+          "title": "Ref",
+          "description": "Git ref",
+          "example": "next",
+          "type": "string"
+        }
+      }
+    },
+    "pure": {
+      "title": "Elsevier Pure",
+      "type": "object",
+      "required": [
+        "enabled",
+        "backend",
+        "persons_data",
+        "projects_data",
+        "endpoint",
+        "api_key",
+        "description_classification",
+        "project_lead_classification",
+        "role_classifications"
+      ],
+      "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "backend": {
+          "title": "Backend",
+          "type": "string",
+          "enum": ["file","http"]
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string",
+          "format": "url"
+        },
+        "api_key": {
+          "title": "API key",
+          "type": "string",
+          "format": "password"
+        },
+        "description_classification": {
+          "title": "Description classification",
+          "type": "string",
+          "pattern": "^/dk/atira/pure/"
+        },
+        "project_lead_classification": {
+          "title": "Project lead classification",
+          "type": "string",
+          "pattern": "^/dk/atira/pure/"
+        },
+        "role_classifications": {
+          "title": "Role classifications",
+          "type": "object",
+          "patternProperties": {
+            "^/dk/atira/pure/": {
+              "type": "string",
+              "enum": [
+                "DATA_COLLECTOR",
+                "DATA_CURATOR",
+                "DATA_MANAGER",
+                "DISTRIBUTOR",
+                "EDITOR",
+                "HOSTING_INSTITUTION",
+                "PRODUCER",
+                "PROJECT_LEADER",
+                "PROJECT_MANAGER",
+                "PROJECT_MEMBER",
+                "REGISTRATION_AGENCY",
+                "REGISTRATION_AUTHORITY",
+                "RELATED_PERSON",
+                "RESEARCHER",
+                "RESEARCH_GROUP",
+                "RIGHTS_HOLDER",
+                "SPONSOR",
+                "SUPERVISOR",
+                "WORK_PACKAGE_LEADER",
+                "PRINCIPAL_INVESTIGATOR",
+                "PROJECT_COORDINATOR",
+                "OTHER"
+              ]
+            }
+          }
+
+        },
+        "persons_data": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "count",
+                "pageInformation",
+                "items"
+              ],
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pageInformation": {
+                  "type": "object",
+                  "required": [
+                    "offset",
+                    "size"
+                  ],
+                  "properties": {
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            },
+            {"type": "object","additionalProperties": false}
+          ]
+        },
+        "projects_data": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "count",
+                "pageInformation",
+                "items"
+              ],
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pageInformation": {
+                  "type": "object",
+                  "required": [
+                    "offset",
+                    "size"
+                  ],
+                  "properties": {
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            },
+            {"type": "object","additionalProperties": false}
+          ]
+        }
+      }
+    },
+    "frontend": {
+      "title": "Frontend",
+      "description": "Customize the frontend here. The two logos must not exceed 1 MB in size together.",
+      "type": "object",
+      "required": [
+        "customize",
+        "logo",
+        "logo_cropped"
+      ],
+      "properties": {
+        "customize": {
+          "title": "Customize",
+          "type": "boolean"
+        },
+        "logo": {
+          "title": "Logo (authenticated)",
+          "description": "Logo for the authenticated area in SVG format.",
+          "type": "string",
+          "contentMediaType": "image/svg",
+          "format": "binary",
+          "contentEncoding": "base64"
+        },
+        "logo_cropped": {
+          "title": "Logo (front page)",
+          "description": "Logo for the front page in SVG format.",
+          "type": "string",
+          "contentMediaType": "image/svg",
+          "format": "binary",
+          "contentEncoding": "base64"
+        }
+      }
+    }
+  }
+}
