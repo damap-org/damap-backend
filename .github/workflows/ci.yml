@@ -19,26 +19,33 @@ jobs:
           curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
           chmod +x kind
           sudo mv kind /usr/local/bin/kind
-      - name: Deploy registry
-        run: |
       - name: Bring up KinD cluster
         run: |
-          set -e
+          set -euo pipefail
           ./k8s/test/create-test-cluster.sh
       - name: Deploy Helm chart
         run: |
           set -euo pipefail
-          curl -o /tmp/helm.tar.gz https://get.helm.sh/helm-v3.18.3-linux-amd64.tar.gz
-          if [ "$(sha256sum /tmp/helm.tar.gz)" != "6ec85f306dd8fe9eb05c61ba4593182b2afcfefb52f21add3fe043ebbdc48e39  /tmp/helm.tar.gz" ]; then
-            echo "Checksum mismatch!"
+          cd k8s
+          helm install damap ./ --values values.yaml
+      - name: Run health check
+        run: |
+          set -e
+          for i in $(seq 1 24); do
+            echo "Attempt $i..."
+            sleep 5
+            response=$(curl -s -w "%{http_code}" -o /dev/null http://localhost/api/config)
+            echo -e "Status code: $response"
+            if [ "$response" == "200" ]; then
+              echo "Health check passed after $i attempt(s)."
+              break
+            fi
+          done
+
+          if [ "$response" != "200" ]; then
+            echo "Health check failed after 24 attempts."
             exit 1
           fi
-          sudo mkdir -p /usr/local/helm
-          (cd /usr/local/helm && sudo tar --strip-components 1 -xvzf /tmp/helm.tar.gz)
-          sudo ln -s /usr/local/bin/helm /usr/local/helm/helm
-      - name: Deploy Helm chart
-        run: |
-
   # This job builds the Docker images and runs a health check to ensure the
   # backend service is up and running. It uses 2 databases: Oracle and Postgres.
   test-docker:
@@ -72,7 +79,7 @@ jobs:
           done
 
           if [ "$response" != "200" ]; then
-            echo "Health check failed after 10 attempts."
+            echo "Health check failed after 120 attempts."
             exit 1
           fi
 

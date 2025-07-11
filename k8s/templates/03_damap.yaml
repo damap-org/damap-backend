@@ -113,6 +113,14 @@ spec:
             - name: DAMAP_AUTH_FRONTEND_URL
               value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
 {{- else }}
+            - name: DAMAP_AUTH_USER
+              value: "{{ .Values.oidc.person_id_claim }}"
+            - name: DAMAP_AUTH_SCOPE
+              value: "{{ .Values.oidc.scope | join " " }}"
+            - name: DAMAP_AUTH_BACKEND_CLIENT
+              value: "{{ .Values.oidc.backend_client_id }}"
+            - name: DAMAP_AUTH_FRONTEND_CLIENT
+              value: "{{ .Values.oidc.frontend_client_id }}"
             - name: DAMAP_AUTH_BACKEND_URL
               value: "{{ .Values.oidc.backend_endpoint }}"
             - name: DAMAP_AUTH_FRONTEND_URL
