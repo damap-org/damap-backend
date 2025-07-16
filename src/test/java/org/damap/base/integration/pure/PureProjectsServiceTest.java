@@ -63,7 +63,6 @@ public class PureProjectsServiceTest {
   private ProjectDO getSecondProject() {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    // Make sure that the timezones are parsed the same way:
     dateFormat.setTimeZone(TimeZone.getTimeZone(JsonFormat.DEFAULT_TIMEZONE));
 
     ProjectDO expected = new ProjectDO();
