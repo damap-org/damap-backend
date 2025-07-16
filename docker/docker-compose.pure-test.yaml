@@ -1,0 +1,14 @@
+include:
+  - docker-compose.postgres.yaml
+
+services:
+  damap-be:
+    environment:
+      DAMAP_ELSEVIER_PURE_BACKEND: "http"
+      DAMAP_ELSEVIER_PURE_ENDPOINT_URL: "https://tugraz-staging.elsevierpure.com/ws/api"
+      DAMAP_ELSEVIER_PURE_API_KEY: "your-pure-api-key-here"
+      
+      # role mappings 
+      DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS: '{"\/dk\/atira\/pure\/member": "PROJECT_MEMBER", "\/dk\/atira\/pure\/projectlead": "PROJECT_LEADER", "\/dk\/atira\/pure\/upmproject\/roles\/upmproject\/coi": "PROJECT_MEMBER"}'
+      # project service config  
+      DAMAP_PROJECTS_SERVICE: "elsevier-pure" 
