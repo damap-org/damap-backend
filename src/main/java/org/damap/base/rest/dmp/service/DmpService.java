@@ -244,7 +244,8 @@ public class DmpService {
     }
 
     String universityId = dmp.getProject().getUniversityId();
-    ProjectDO universityProject = (universityId != null) ? projectServiceBroker.read(universityId) : null;
+    ProjectDO universityProject =
+        (universityId != null) ? projectServiceBroker.read(universityId) : null;
 
     if (universityProject != null && universityProject.getAcronym() != null) {
       return universityProject.getAcronym();
