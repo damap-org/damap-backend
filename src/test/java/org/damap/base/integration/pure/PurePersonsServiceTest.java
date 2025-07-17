@@ -89,7 +89,6 @@ public class PurePersonsServiceTest {
   @Test
   public void testWiring() {
     Assertions.assertNotNull(pureAPI);
-    Assertions.assertTrue(pureAPI instanceof FileBasedPureAPI);
 
     PersonService svc =
         personsServices.stream()

@@ -12,4 +12,4 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PureAPIPaginatedPersonsResponse extends PureAPIPaginatedResponse<PureAPIPerson> {}
+class PureAPIPaginatedPersonsResponse extends PureAPIPaginatedResponse<PureAPIPerson> {}
