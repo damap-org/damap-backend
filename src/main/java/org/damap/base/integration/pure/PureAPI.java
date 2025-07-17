@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @see <a href="https://api.elsevierpure.com/ws/api/rapidoc.html">Elsevier Pure API doc</a>
  */
-interface PureAPI {
+public interface PureAPI {
   /**
    * List all projects using pagination.
    *
