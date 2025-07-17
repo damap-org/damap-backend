@@ -22,15 +22,9 @@ public class PureAPIConnectionTest {
   @ConfigProperty(name = "damap.elsevier-pure-endpoint-url")
   String endpointUrl;
 
+  // Example test UUIDs - replace these with actual project UUIDs from your PURE instance
   private static final String[] TEST_PROJECT_UUIDS = {
-    "18fb01c4-5801-468b-8818-43bde001f43d",
-    "0cd8eb67-fa83-469b-9398-4563041305d9",
-    "74b78a48-9498-45c1-87ff-63be5e5410e9",
-    "622713ab-7fa0-4c2b-b916-6e36779f120e",
-    "b9fa4f5f-f6f1-4d24-aa61-1ca3e5d39bfe",
-    "06eb8491-9125-4cc8-88bf-981cf9a34f1a",
-    "d43d4520-daa9-4329-a508-d7372d04ad4f",
-    "03e4e414-570b-4447-b187-19a0468e385c"
+    "example-uuid-1", "example-uuid-2", "example-uuid-3"
   };
 
   @Test
@@ -40,9 +34,8 @@ public class PureAPIConnectionTest {
     System.out.println("API Key: " + apiKey.substring(0, 8) + "...");
     Assertions.assertNotNull(pureAPI, "PureAPI should be injected");
     Assertions.assertNotNull(apiKey, "API key should be configured");
-    Assertions.assertTrue(apiKey.startsWith("b62c34ab"), "Should use new API key");
-    Assertions.assertTrue(
-        endpointUrl.contains("tugraz-staging.elsevierpure.com"), "Should use correct endpoint");
+    Assertions.assertTrue(apiKey.length() > 8, "API key should be configured");
+    Assertions.assertTrue(endpointUrl.contains("elsevierpure.com"), "Should use PURE endpoint");
     System.out.println("Configuration validation passed");
   }
 

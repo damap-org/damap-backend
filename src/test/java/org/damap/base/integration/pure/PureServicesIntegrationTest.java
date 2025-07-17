@@ -26,16 +26,9 @@ public class PureServicesIntegrationTest {
   @ConfigProperty(name = "quarkus.rest-client.elsevier-pure.url")
   String restClientUrl;
 
-  // TODO: Replace these UUIDs with ones from your institution's PURE instance
-  // Current UUIDs are from real Pure API staging environment
+  // Example test UUIDs - replace these with actual project UUIDs from your PURE instance
   private static final String[] TEST_PROJECT_UUIDS = {
-    "18fb01c4-5801-468b-8818-43bde001f43d",
-    "0cd8eb67-fa83-469b-9398-4563041305d9",
-    "74b78a48-9498-45c1-87ff-63be5e5410e9",
-    "622713ab-7fa0-4c2b-b916-6e36779f120e",
-    "b9fa4f5f-f6f1-4d24-aa61-1ca3e5d39bfe",
-    "06eb8491-9125-4cc8-88bf-981cf9a34f1a",
-    "d43d4520-daa9-4329-a508-d7372d04ad4f"
+    "example-uuid-1", "example-uuid-2", "example-uuid-3"
   };
 
   private static final long TEST_PAGE_SIZE = 3L;
@@ -297,13 +290,7 @@ public class PureServicesIntegrationTest {
         String roleUri = participant.getRole().getUri();
         System.out.println("Role URI found: " + roleUri);
 
-        // Check if this is the common Pure API role discovered
-        if ("/dk/atira/pure/upmproject/roles/upmproject/coi".equals(roleUri)) {
-          System.out.println("Found Pure API 'coi' role - should map to PROJECT_MEMBER");
-          foundMappableRole = true;
-        } else {
-          System.out.println("Other role URI: " + roleUri);
-        }
+        System.out.println("Other role URI: " + roleUri);
       }
     }
 

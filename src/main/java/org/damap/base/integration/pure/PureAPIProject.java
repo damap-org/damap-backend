@@ -20,7 +20,7 @@ import org.damap.base.rest.dmp.domain.ProjectDO;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-class PureAPIProject {
+public class PureAPIProject {
   @JsonProperty Long pureId;
 
   @JsonProperty String uuid;
