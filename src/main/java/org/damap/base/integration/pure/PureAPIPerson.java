@@ -14,7 +14,7 @@ import org.damap.base.rest.dmp.domain.IdentifierDO;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PureAPIPerson {
+class PureAPIPerson {
   @JsonProperty String uuid;
 
   @JsonProperty PureAPIName name;

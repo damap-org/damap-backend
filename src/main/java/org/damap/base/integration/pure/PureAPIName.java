@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PureAPIName {
+class PureAPIName {
   @JsonProperty String firstName;
   @JsonProperty String lastName;
 }
