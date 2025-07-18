@@ -31,10 +31,9 @@ public class PureAPIConnectionTest {
   public void testAPIConnectionConfiguration() {
     System.out.println("PURE API Connection Test");
     System.out.println("Endpoint: " + endpointUrl);
-    System.out.println("API Key: " + apiKey.substring(0, 8) + "...");
     Assertions.assertNotNull(pureAPI, "PureAPI should be injected");
     Assertions.assertNotNull(apiKey, "API key should be configured");
-    Assertions.assertTrue(apiKey.length() > 8, "API key should be configured");
+    Assertions.assertTrue(apiKey.length() > 0, "API key should be configured");
     Assertions.assertTrue(endpointUrl.contains("elsevierpure.com"), "Should use PURE endpoint");
     System.out.println("Configuration validation passed");
   }

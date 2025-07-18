@@ -148,31 +148,31 @@ corresponding environment variables:
 <details><summary>application.yaml</summary>
 
 ```yaml
-## Pure integration:
-# project-service: elsevier-pure
-## Note: if left unconfigured, the natural Java CDI load order takes precedence. Use the
-## @Priority annotation to load your implementation first.
+## Custom project service:
+# project-service: your-service
 
   person-services:
-  ## Pure integration:
-  # - display-text: 'Pure'
-  #   query-value: 'PURE'
-  #   class-name: 'org.damap.base.integration.pure.PurePersonService
+    ## Custom university integration:
     - display-text: 'University'
       query-value: 'UNIVERSITY'
       class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-    - display-text: 'ORCID'
-      query-value: 'ORCID'
-      class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
+    ## Pure integration:
+    # - display-text: 'Pure'
+    #   query-value: 'PURE'
+    #   class-name: 'org.damap.base.integration.pure.PurePersonService
+    ## ORCID:
+    # - display-text: 'ORCID'
+    #   query-value: 'ORCID'
+    #   class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
 
   mock-endpoint-url: http://api-mock:80
+
 ## Elsevier Pure integration:
-# project-service: org.damap.base.integration.pure.PureProjectService
+## With the HTTP backend:
   elsevier-pure-backend: http
   elsevier-pure-endpoint-url: ""
   elsevier-pure-api-key: "your API key here"
 ## Alternatively, the file-based backend:
-# project-service: org.damap.base.integration.pure.PureProjectService
 # elsevier-pure-backend: file
   elsevier-pure-projects-file: "file:///path/to/projects.json"
   elsevier-pure-persons-file: "file:///path/to/persons.json"
@@ -184,6 +184,9 @@ To create your own integration, you need to implement the following two interfac
 
 - [ProjectService](src/main/java/org/damap/base/integration/ProjectService.java)
 - [PersonService](src/main/java/org/damap/base/integration/PersonService.java)
+
+> [!WARNING]
+> If you do not configure a projects service explicitly, the Java CDI load order will take precedence. Make sure to add a `@Priority(1)` annotation to your custom projects service if you do not configure it explicitly.
 
 ### Providing a FITS service
 
