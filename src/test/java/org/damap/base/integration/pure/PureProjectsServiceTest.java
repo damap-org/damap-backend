@@ -161,6 +161,7 @@ public class PureProjectsServiceTest {
   @Test
   public void testWiring() {
     Assertions.assertNotNull(pureAPI);
+    Assertions.assertTrue(pureAPI instanceof FileBasedPureAPI);
 
     Assertions.assertNotNull(projectService);
 
