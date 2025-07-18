@@ -54,10 +54,10 @@ interface PureAPI {
     long pageSize = 10;
     boolean finished = false;
     while (!finished) {
-      PureAPIPaginatedProjectsResponse persons = listAllProjects(pageSize, offset);
-      items.addAll(persons.items);
-      offset = persons.pageInformation.offset + persons.pageInformation.size;
-      if (persons.count <= offset) {
+      PureAPIPaginatedProjectsResponse projects = listAllProjects(pageSize, offset);
+      items.addAll(projects.items);
+      offset = projects.pageInformation.offset + projects.pageInformation.size;
+      if (projects.count <= offset) {
         finished = true;
       }
     }
