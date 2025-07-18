@@ -7,7 +7,7 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   labels:
     app: damap-customization
-data:
+stringData:
   logo.svg: {{ .Values.frontend.logo | quote }}
   logo-cropped.svg: {{ .Values.frontend.logo_cropped | quote }}
 {{ end -}}

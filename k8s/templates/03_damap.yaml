@@ -23,6 +23,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: damap-db
+  namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -51,6 +52,10 @@ spec:
       labels:
         app: damap-backend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
       volumes:
         - name: damap
@@ -72,6 +77,7 @@ spec:
               memory: 2G
             limits:
               memory: 2G
+              cpu: "0.25"
           ports:
             - containerPort: 9000
           env:
@@ -174,12 +180,18 @@ spec:
               port: 9000
             initialDelaySeconds: 600
             periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
         - name: gotenberg
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
-            runAsUser: 1001
-            runAsGroup: 1001
             seccompProfile:
               type: RuntimeDefault
             capabilities:
@@ -192,6 +204,7 @@ spec:
               memory: 512Mi
             limits:
               memory: 2G
+              cpu: "0.25"
 ---
 apiVersion: v1
 kind: Service
@@ -225,6 +238,10 @@ spec:
       labels:
         app: damap-frontend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
 {{- if .Values.frontend.customize }}
       volumes:
@@ -252,6 +269,7 @@ spec:
               memory: 512Mi
             limits:
               memory: 512Mi
+              cpu: "0.5"
           ports:
             - containerPort: 8080
           livenessProbe:
@@ -260,6 +278,14 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
 ---
 apiVersion: v1
 kind: Service
@@ -295,6 +321,10 @@ spec:
       labels:
         app: damap-db
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
       volumes:
         - name: damap-db
@@ -309,6 +339,7 @@ spec:
               memory: 512Mi
             limits:
               memory: 2G
+              cpu: "0.25"
           volumeMounts:
             - name: damap-db
               mountPath: /var/lib/postgresql/data
@@ -337,6 +368,8 @@ spec:
               command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
             initialDelaySeconds: 5
             periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service
