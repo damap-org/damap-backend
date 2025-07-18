@@ -24,7 +24,7 @@ oidc:
   backend_endpoint: https://...
   # OIDC client ID the backend should use.
   # Note: you will have to configure these in your OIDC server!
-  backend_client_id: damap-be
+  backend_client_id: damap
   # OIDC client ID the frontend should use.
   # Note: you will have to configure these in your OIDC server!
   frontend_client_id: damap

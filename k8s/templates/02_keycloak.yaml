@@ -9,7 +9,7 @@ metadata:
 spec:
   storageClassName: "{{ .Values.keycloak.storage_class_name }}"
   claimRef:
-    namespace: "{{.Release.Namespace}}"
+    namespace: "{{ .Release.Namespace }}"
     name: keycloak-db
   capacity:
     storage: 5G
@@ -24,6 +24,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: keycloak-db
+  namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -52,6 +53,10 @@ spec:
       labels:
         app: keycloak
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
       volumes:
         - name: keycloak
@@ -66,6 +71,7 @@ spec:
               memory: 512Mi
             limits:
               memory: 2G
+              cpu: "0.5"
           args:
             - start
             - --hostname={{ .Values.keycloak.hostname }}
@@ -109,6 +115,14 @@ spec:
               name: keycloak
               subPath: damap-realm-import
               readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
 ---
 apiVersion: v1
 kind: Service
@@ -159,6 +173,10 @@ spec:
       labels:
         app: keycloak-db
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       automountServiceAccountToken: false
       volumes:
       - name: keycloak-db
@@ -173,6 +191,7 @@ spec:
               memory: 512Mi
             limits:
               memory: 2G
+              cpu: "0.25"
           volumeMounts:
             - name: keycloak-db
               mountPath: /var/lib/postgresql/data
@@ -201,4 +220,12 @@ spec:
               command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
             initialDelaySeconds: 5
             periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
 {{ end }}
