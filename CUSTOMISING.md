@@ -173,7 +173,6 @@ corresponding environment variables:
   elsevier-pure-endpoint-url: ""
   elsevier-pure-api-key: "your API key here"
 ## Alternatively, the file-based backend:
-# project-service: org.damap.base.integration.pure.PureProjectService
 # elsevier-pure-backend: file
   elsevier-pure-projects-file: "file:///path/to/projects.json"
   elsevier-pure-persons-file: "file:///path/to/persons.json"
