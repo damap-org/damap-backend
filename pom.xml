@@ -257,7 +257,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/bitmotivator/openapi-minimal/openapi.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Project</inputSpec>
               <generatorName>java</generatorName>
               <output>${project.build.directory}/generated-sources/integration</output>
               <configOptions>
