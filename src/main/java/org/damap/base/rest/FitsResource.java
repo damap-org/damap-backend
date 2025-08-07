@@ -5,10 +5,12 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.exception.GlobalServerExceptionMapper;
 import org.damap.base.rest.dmp.domain.DatasetDO;
 import org.damap.base.rest.dmp.domain.MultipartBodyDO;
 import org.damap.base.rest.dmp.mapper.DatasetDOMapper;
 import org.damap.base.rest.fits.service.FitsService;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 
 /** FitsResource class. */
 @Path("/api/fits")
@@ -16,6 +18,7 @@ import org.damap.base.rest.fits.service.FitsService;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 @JBossLog
+@RegisterProvider(GlobalServerExceptionMapper.class)
 public class FitsResource {
 
   @Inject FitsService fitsService;

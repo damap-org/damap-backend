@@ -11,16 +11,20 @@ import jakarta.ws.rs.core.StreamingOutput;
 import java.io.*;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.conversion.ExportTemplateBroker;
+import org.damap.base.enums.ETemplateType;
+import org.damap.base.exception.GlobalServerExceptionMapper;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.document.service.DocumentService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 
 /** DmpDocumentResource class. */
 @Path("/api/document")
 @Authenticated
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 @JBossLog
+@RegisterProvider(GlobalServerExceptionMapper.class)
 public class DmpDocumentResource {
 
   @Inject SecurityService securityService;

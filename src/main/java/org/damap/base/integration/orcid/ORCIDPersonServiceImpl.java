@@ -30,18 +30,14 @@ public class ORCIDPersonServiceImpl implements PersonService {
   @Override
   public ResultList<ContributorDO> search(Search search) {
     List<ContributorDO> contributors = null;
-    try {
-      var orcidSearch =
-          orcidRestClient.getAll(search.getQuery(), search.getPagination().getPerPage());
+    var orcidSearch =
+        orcidRestClient.getAll(search.getQuery(), search.getPagination().getPerPage());
 
-      if (orcidSearch.getNumFound() > 0 && orcidSearch.getPersons() != null) {
-        contributors =
-            orcidSearch.getPersons().stream()
-                .map(ORCIDMapper::mapExpandedSearchPersonEntityToDO)
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("Issue searching ORCID persons", e);
+    if (orcidSearch.getNumFound() > 0 && orcidSearch.getPersons() != null) {
+      contributors =
+          orcidSearch.getPersons().stream()
+              .map(ORCIDMapper::mapExpandedSearchPersonEntityToDO)
+              .collect(Collectors.toList());
     }
 
     return ResultList.fromItemsAndSearch(contributors, search);

@@ -67,9 +67,6 @@ public class DocumentService {
       multipartBodyDTO.file = tempFile;
 
       pdfBytes = gotenbergRestService.convertToPDF(multipartBodyDTO);
-    } catch (Exception e) {
-      log.error("Error converting document to PDF", e);
-      throw new RuntimeException("Error converting document to PDF");
     } finally {
       // Delete the temporary file if it exists
       if (tempFile.exists()) {
