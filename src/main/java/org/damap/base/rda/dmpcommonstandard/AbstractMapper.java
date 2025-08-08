@@ -1,4 +1,4 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 abstract class AbstractMapper {
   /**

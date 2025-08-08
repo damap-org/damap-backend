@@ -1,4 +1,4 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -6,7 +6,6 @@ import org.damap.base.enums.EDataAccessType;
 import org.damap.base.enums.EDataType;
 import org.damap.base.enums.EIdentifierType;
 import org.damap.base.enums.ELicense;
-import org.damap.base.integration.rest.*;
 import org.damap.base.rest.dmp.domain.DatasetDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 

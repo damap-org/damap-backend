@@ -1,9 +1,8 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.damap.base.integration.rest.*;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 
@@ -134,6 +133,9 @@ public final class DMPMapper extends AbstractMapper {
         target.setProject(projectMapper.convert(project, data.getDmpId().getIdentifier()));
       }
     }
+    var contact = data.getContact();
+    // TODO what do you do with the drunken contact?
+
     var contributors = data.getContributor();
     if (contributors != null) {
       target.setContributors(

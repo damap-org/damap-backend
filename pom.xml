@@ -253,13 +253,77 @@
         <version>7.14.0</version>
         <executions>
           <execution>
+            <id>commonstandard</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Project</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
-              <output>${project.build.directory}/generated-sources/integration</output>
+              <output>${project.build.directory}/generated-sources/rda-dmp-common-standard</output>
+              <generateApis>false</generateApis>
+              <configOptions>
+                <sourceFolder>src/java/main</sourceFolder>
+                <useJakartaEe>true</useJakartaEe>
+                <library>native</library>
+                <useBeanValidation>false</useBeanValidation>
+                <serializationLibrary>jackson</serializationLibrary>
+                <dateLibrary>java8</dateLibrary>
+                <annotationLibrary>none</annotationLibrary>
+                <apiPackage>org.damap.base.rda.dmpcommonstandard</apiPackage>
+                <modelPackage>org.damap.base.rda.dmpcommonstandard</modelPackage>
+                <invokerPackage>org.damap.base.rda.dmpcommonstandard</invokerPackage>
+                <configKey>rest-integration</configKey>
+                <artifactUrl>https://github.com/RDA-DMP-Common</artifactUrl>
+                <groupId>org.damap</groupId>
+                <artifactId>rda-dmp-common-standard</artifactId>
+                <artifactVersion>1.0.0</artifactVersion>
+                <artifactDescription>Auto-generated sources for the DAMAP integration for the RDA DMP common standard</artifactDescription>
+              </configOptions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/org/damap/base/integration/rest/openapi.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <output>${project.build.directory}/generated-sources/integration-rest</output>
+
+              <!-- This is needed to make the ProjectWithID inherit from Project properly: -->
+              <openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true</openapiNormalizer>
+
+              <!--region Name mappings -->
+              <!--
+              The following mappings reuse the objects generated in the execution above for the purposes of the client.
+              -->
+              <schemaMappings>
+                <schemaMapping>Project=org.damap.base.rda.dmpcommonstandard.Project</schemaMapping>
+                <schemaMapping>Funding=org.damap.base.rda.dmpcommonstandard.Funding</schemaMapping>
+                <schemaMapping>ContributorID=org.damap.base.rda.dmpcommonstandard.ContributorID</schemaMapping>
+                <schemaMapping>Contributor=org.damap.base.rda.dmpcommonstandard.Contributor</schemaMapping>
+                <schemaMapping>FunderID=org.damap.base.rda.dmpcommonstandard.FunderID</schemaMapping>
+                <schemaMapping>GrantID=org.damap.base.rda.dmpcommonstandard.GrantID</schemaMapping>
+                <schemaMapping>ContactID=org.damap.base.rda.dmpcommonstandard.ContactID</schemaMapping>
+                <schemaMapping>Contact=org.damap.base.rda.dmpcommonstandard.Contact</schemaMapping>
+              </schemaMappings>
+              <!--
+              The following mappings are needed because the OpenAPI generator ignores the object names from an
+              externally referenced OpenAPI schema and generates arbitrary names for them:
+              -->
+              <inlineSchemaNameMappings>
+                <inlineSchemaNameMappings>The_DMP_Project_Funding_Items_Schema=Funding</inlineSchemaNameMappings>
+                <inlineSchemaNameMappings>The_Contributor_ID_Schema=ContributorID</inlineSchemaNameMappings>
+                <inlineSchemaNameMappings>The_Contributor_Items_Schema=Contributor</inlineSchemaNameMappings>
+                <inlineSchemaNameMappings>The_Funder_ID_Schema=FunderID</inlineSchemaNameMappings>
+                <inlineSchemaNameMappings>The_Funding_Grant_ID_Schema=GrantID</inlineSchemaNameMappings>
+                <inlineSchemaNameMapping>The_Contact_ID_Schema=ContactID</inlineSchemaNameMapping>
+                <inlineSchemaNameMapping>The_DMP_Contact_Schema=Contact</inlineSchemaNameMapping>
+              </inlineSchemaNameMappings>
+              <!--endregion-->
+
               <configOptions>
                 <sourceFolder>src/java/main</sourceFolder>
                 <useJakartaEe>true</useJakartaEe>
@@ -272,14 +336,17 @@
                 <modelPackage>org.damap.base.integration.rest</modelPackage>
                 <invokerPackage>org.damap.base.integration.rest</invokerPackage>
                 <configKey>rest-integration</configKey>
-                <artifactUrl>org.damap</artifactUrl>
-                <artifactId>integration</artifactId>
+                <artifactUrl>https://damap.org/manual/cris/</artifactUrl>
+                <groupId>org.damap.integration</groupId>
+                <artifactId>rest</artifactId>
                 <artifactVersion>1.0.0</artifactVersion>
+                <artifactDescription>Auto-generated sources for the DAMAP REST API for CRIS integration using the RDA DMP common standard</artifactDescription>
               </configOptions>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
