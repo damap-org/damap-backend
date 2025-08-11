@@ -232,12 +232,9 @@ components:
         - type: object
           required:
             - id
-            - role
           properties:
             id:
               $ref: "#/components/schemas/SystemContactID"
-            role:
-              $ref: "#/components/schemas/DAMAPContributorRoles"
     Contributor:
       x-parent: true
       $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contributor"
@@ -246,8 +243,11 @@ components:
         - $ref: "#/components/schemas/Contributor"
         - type: object
           required:
+            - id
             - role
           properties:
+            id:
+              $ref: "#/components/schemas/SystemContactID"
             role:
               $ref: "#/components/schemas/DAMAPContributorRoles"
     DAMAPContributorRole:

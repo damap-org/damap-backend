@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import org.damap.base.integration.rest.DAMAPProject;
+import org.damap.base.integration.generic.DAMAPProject;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 
 /**

@@ -1,4 +1,4 @@
-package org.damap.base.integration.rest;
+package org.damap.base.integration.generic;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,28 +13,29 @@ import org.damap.base.rest.base.Search;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 @JBossLog
-public class RESTProjectService implements ProjectServiceProvider {
+public class GenericProjectService implements ProjectServiceProvider {
   // TODO add caching
-  @Inject Client client;
+  @Inject @RestClient Client client;
 
   private final ProjectMapper projectMapper;
   private final ContributorMapper contributorMapper;
 
-  public RESTProjectService() {
+  public GenericProjectService() {
     this(new ProjectMapper(false), new ContributorMapper(false));
   }
 
-  public RESTProjectService(ProjectMapper projectMapper, ContributorMapper contributorMapper) {
+  public GenericProjectService(ProjectMapper projectMapper, ContributorMapper contributorMapper) {
     this.projectMapper = projectMapper;
     this.contributorMapper = contributorMapper;
   }
 
   @Override
   public String getConfigID() {
-    return "REST";
+    return "generic";
   }
 
   @Override

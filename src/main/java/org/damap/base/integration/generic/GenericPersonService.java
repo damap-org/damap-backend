@@ -1,4 +1,4 @@
-package org.damap.base.integration.rest;
+package org.damap.base.integration.generic;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -9,6 +9,7 @@ import org.damap.base.rda.dmpcommonstandard.ContributorMapper;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
 import org.damap.base.rest.dmp.domain.ContributorDO;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /**
  * This class provides person lookup against a generic REST person service as defined by the OpenAPI
@@ -17,17 +18,17 @@ import org.damap.base.rest.dmp.domain.ContributorDO;
 @ApplicationScoped
 @Priority(-1)
 @JBossLog
-public class RESTPersonService implements PersonService {
+public class GenericPersonService implements PersonService {
   // TODO add caching
-  @Inject Client client;
+  @Inject @RestClient Client client;
 
   private final ContributorMapper contributorMapper;
 
-  public RESTPersonService() {
+  public GenericPersonService() {
     this(new ContributorMapper(false));
   }
 
-  public RESTPersonService(ContributorMapper contributorMapper) {
+  public GenericPersonService(ContributorMapper contributorMapper) {
     this.contributorMapper = contributorMapper;
   }
 

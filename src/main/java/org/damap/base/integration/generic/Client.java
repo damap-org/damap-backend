@@ -1,4 +1,4 @@
-package org.damap.base.integration.rest;
+package org.damap.base.integration.generic;
 
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.validation.constraints.Max;
@@ -9,14 +9,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 @RegisterRestClient(configKey = "rest.generic-cris")
 @Produces(MediaType.APPLICATION_JSON)
-@ClientHeaderParam(name = "Authorization", value = "Bearer ${apikey}")
-@ClientHeaderParam(name = "accept", value = MediaType.APPLICATION_JSON)
+@RegisterClientHeaders(ClientHeaderFactory.class)
 interface Client {
   @ClientExceptionMapper
   static RuntimeException toException(Response response) {
