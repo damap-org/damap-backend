@@ -9,17 +9,28 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.util.Date;
+import java.util.List;
+
+import org.thymeleaf.context.Context;
+
+
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.conversion.ExportTemplateBroker;
+import org.damap.base.enums.EComplianceType;
+import org.damap.base.enums.EDataKind;
 import org.damap.base.enums.ETemplateType;
+import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.document.service.DocumentService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /** DmpDocumentResource class. */
 @Path("/api/document")
-@Authenticated
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 @JBossLog
 public class DmpDocumentResource {
@@ -34,6 +45,27 @@ public class DmpDocumentResource {
 
   @Inject DocumentService documentService;
 
+  private final TemplateEngine templateEngine;
+
+  public DmpDocumentResource() {
+    ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+
+    // Tells the resolver to look inside the "templates" sub-folder
+    resolver.setPrefix("templates/");
+
+    // Appends ".html" to the template name we ask for
+    resolver.setSuffix(".html");
+
+    // Sets the template mode to HTML5
+    resolver.setTemplateMode(TemplateMode.HTML);
+
+    // Sets the character encoding
+    resolver.setCharacterEncoding("UTF-8");
+
+    // Create the engine and give it our resolver
+    this.templateEngine = new TemplateEngine();
+    this.templateEngine.setTemplateResolver(resolver);
+  }
   /**
    * exportTemplate.
    *
@@ -49,6 +81,43 @@ public class DmpDocumentResource {
     log.info("Return DMP document file for DMP with id=" + dmpId);
 
     return this.export(dmpId, template, true, "docx");
+  }
+
+  @GET
+  @Path("/dmp/html")
+  @Produces(MediaType.TEXT_HTML)
+  public Response exportDmpAsHtml() {
+    DmpDO dmp = createSampleDmp();
+
+    // 1. Create a Thymeleaf "Context" to hold our variables.
+    // This is the equivalent of the data map in the Quarkus extension.
+    Context context = new Context();
+    context.setVariable("dmp", dmp);
+
+    // 2. Process the template using our manually created engine.
+    // We provide the template name and the context with our data.
+    String htmlContent = templateEngine.process("thymeleafTemplate", context);
+
+    String fileName = "DMP-" + dmp.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + ".html";
+
+    return Response.ok(htmlContent)
+            .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+            .build();
+  }
+
+  // This helper method remains unchanged
+  private DmpDO createSampleDmp() {
+    DmpDO dmp = new DmpDO();
+    dmp.setId(1L);
+    dmp.setTitle("My Awesome Research Project DMP");
+    dmp.setCreated(new Date());
+    dmp.setModified(new Date());
+    dmp.setDescription("This plan outlines the data management strategy.");
+    dmp.setDataKind(EDataKind.SPECIFY);
+    dmp.setDataGeneration("Data will be collected via satellite tracking.");
+    dmp.setPersonalData(true);
+    dmp.setPersonalDataCompliance(List.of(EComplianceType.INFORMED_CONSENT, EComplianceType.ANONYMISATION));
+    return dmp;
   }
 
   @GET

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${dmp.title}">Data Management Plan</title>
+    <style>
+        /* This CSS works great for direct browser viewing */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h1 { color: #2E74B5; font-size: 2em; border-bottom: 2px solid #2E74B5; padding-bottom: 5px; }
+        h2 { color: #2E74B5; font-size: 1.5em; border-bottom: 1px solid #BFBFBF; margin-top: 1.5em; }
+        .section { margin-bottom: 1.5em; }
+        .question { font-weight: bold; margin-top: 1em; }
+        .answer { margin-left: 20px; color: #333; }
+        .answer-bool { font-style: italic; color: #00529B; }
+        ul { list-style-type: disc; padding-left: 40px; }
+    </style>
+</head>
+<body>
+
+<h1 th:text="${dmp.title}">DMP Title</h1>
+
+<!-- ============================================= -->
+<!-- SECTION 1: GENERAL INFORMATION                -->
+<!-- ============================================= -->
+<h2>1. General Information</h2>
+<div class="section">
+    <p class="question">Created:</p>
+    <p class="answer" th:text="${#dates.format(dmp.created, 'dd MMMM yyyy HH:mm z')}">01 January 2023</p>
+
+    <p class="question">Last Modified:</p>
+    <p class="answer" th:text="${#dates.format(dmp.modified, 'dd MMMM yyyy HH:mm z')}">02 January 2023</p>
+
+    <p class="question">Description:</p>
+    <p class="answer" th:text="${dmp.description}">Description of the project...</p>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 2: DATA DESCRIPTION                   -->
+<!-- ============================================= -->
+<h2>2. Data Description</h2>
+<div class="section">
+    <p class="question">Type of data:</p>
+    <p class="answer" th:text="${dmp.dataKind}">OBSERVATIONAL</p>
+
+    <p class="question">How will the data be generated or collected?</p>
+    <p class="answer" th:text="${dmp.dataGeneration}">Details about data generation...</p>
+</div>
+
+<!-- ============================================= -->
+<!-- SECTION 3: LEGAL AND ETHICAL ISSUES           -->
+<!-- ============================================= -->
+<h2>3. Legal &amp; Ethical Issues</h2>
+<div class="section">
+    <p class="question">Does the data contain personal data?</p>
+    <p class="answer answer-bool" th:text="${dmp.personalData ? 'Yes' : 'No'}">Yes</p>
+
+    <p class="question" th:if="${!dmp.personalDataCompliance.isEmpty()}">Personal Data Compliance:</p>
+    <ul th:if="${!dmp.personalDataCompliance.isEmpty()}">
+        <li class="answer" th:each="compliance : ${dmp.personalDataCompliance}" th:text="${compliance}">INFORMED_CONSENT</li>
+    </ul>
+</div>
+
+</body>
+</html>
