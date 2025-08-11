@@ -7,8 +7,9 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import jakarta.inject.Inject;
+import java.net.URI;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,21 +22,24 @@ import org.junit.jupiter.api.Test;
 @TestProfile(WireMockPureTestProfile.class)
 public class PurePersonsWireMockIntegrationTest {
 
-  @Inject PureAPI pureAPI;
-
   @ConfigProperty(name = "damap.elsevier-pure-api-key")
   String apiKey;
 
   private WireMockServer wireMockServer;
-  private String wireMockUrl;
+  private HTTPBasedPureAPI pureAPI;
 
   @BeforeEach
   public void setup() {
-    wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8089));
+    wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
     wireMockServer.start();
-    wireMockUrl = "http://localhost:8089";
 
+    String wireMockUrl = "http://localhost:" + wireMockServer.port();
     System.out.println("WireMock server started at: " + wireMockUrl);
+
+    pureAPI =
+        RestClientBuilder.newBuilder()
+            .baseUri(URI.create(wireMockUrl))
+            .build(HTTPBasedPureAPI.class);
   }
 
   @AfterEach
