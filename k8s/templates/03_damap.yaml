@@ -8,7 +8,7 @@ metadata:
 spec:
   storageClassName: "{{ .Values.damap.storage_class_name }}"
   claimRef:
-    namespace: "{{.Release.Namespace}}"
+    namespace: "{{ .Release.Namespace }}"
     name: damap-db
   capacity:
     storage: 5G
@@ -16,7 +16,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: "{{ .Values.damap.host_folder}}"
+    path: "{{ .Values.damap.host_folder }}"
 {{- end }}
 ---
 apiVersion: v1
@@ -322,7 +322,8 @@ spec:
         app: damap-db
     spec:
       securityContext:
-        runAsNonRoot: true
+        # runAsNonRoot: true
+        # runAsUser: 1001
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
@@ -368,8 +369,8 @@ spec:
               command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
             initialDelaySeconds: 5
             periodSeconds: 5
-          securityContext:
-            runAsNonRoot: true
+          # securityContext:
+            # runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service

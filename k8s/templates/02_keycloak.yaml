@@ -17,8 +17,8 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: {{ .Values.keycloak.host_folder}}
-{{ end }}
+    path: {{ .Values.keycloak.host_folder }}
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -33,6 +33,7 @@ spec:
       storage: 5G
   storageClassName: "{{ .Values.keycloak.storage_class_name }}"
   volumeMode: Filesystem
+{{ end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,9 +70,11 @@ spec:
             requests:
               cpu: 10m
               memory: 512Mi
+              ephemeral-storage: 1Gi
             limits:
               memory: 2G
               cpu: "0.5"
+              ephemeral-storage: 2Gi
           args:
             - start
             - --hostname={{ .Values.keycloak.hostname }}
@@ -174,14 +177,16 @@ spec:
         app: keycloak-db
     spec:
       securityContext:
-        runAsNonRoot: true
+        # runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
+{{ if .Values.keycloak.create_pv }}
       volumes:
       - name: keycloak-db
         persistentVolumeClaim:
           claimName: keycloak-db
+{{ end }}
       containers:
         - name: keycloak-db
           image: postgres:16
@@ -189,12 +194,16 @@ spec:
             requests:
               cpu: 10m
               memory: 512Mi
+              ephemeral-storage: 1Gi
             limits:
               memory: 2G
               cpu: "0.25"
+              ephemeral-storage: 2Gi
+{{ if .Values.keycloak.create_pv }}
           volumeMounts:
             - name: keycloak-db
               mountPath: /var/lib/postgresql/data
+{{ end }}
           env:
             - name: PGDATA
               value: /var/lib/postgresql/data/keycloak-db
@@ -222,7 +231,7 @@ spec:
             periodSeconds: 5
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            # runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
             capabilities:
