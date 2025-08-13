@@ -70,7 +70,7 @@ damap:
     ## Elsevier Pure integration:
     # - display-text: 'Pure'
     #   query-value: 'PURE'
-    #   class-name: 'org.damap.base.integration.pure.PurePersonService
+    #   class-name: 'org.damap.base.integration.pure.PurePersonService'
     - display-text: 'University'
       query-value: 'UNIVERSITY'
       class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'

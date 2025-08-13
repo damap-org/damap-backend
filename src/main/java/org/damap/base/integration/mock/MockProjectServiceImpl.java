@@ -22,7 +22,6 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  */
 @JBossLog
 @ApplicationScoped
-@DefaultBean
 public class MockProjectServiceImpl implements ProjectServiceProvider {
 
   @Inject @RestClient MockPersonRestService mockPersonRestService;
