@@ -226,15 +226,18 @@ spec:
             - containerPort: 5432
           livenessProbe:
             exec:
-              command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
+              command:
+                - sh
+                - -c
+                - /usr/bin/pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 5
             periodSeconds: 5
-          securityContext:
-            allowPrivilegeEscalation: false
-            # runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              drop:
-                - "ALL"
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          #   # runAsNonRoot: true
+          #   seccompProfile:
+          #     type: RuntimeDefault
+          #   capabilities:
+          #     drop:
+          #       - "ALL"
 {{ end }}

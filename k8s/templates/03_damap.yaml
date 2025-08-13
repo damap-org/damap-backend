@@ -192,6 +192,8 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
             seccompProfile:
               type: RuntimeDefault
             capabilities:
@@ -366,7 +368,10 @@ spec:
                   key: db_database
           livenessProbe:
             exec:
-              command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
+              command:
+                - sh
+                - -c
+                - /usr/bin/pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 5
             periodSeconds: 5
           # securityContext:

@@ -5,7 +5,11 @@ damap:
   backend_image: "ghcr.io/damap-org/damap-backend:next"
   db_name: damap
   db_user: damap
-  db_password: "" # Defaults to auto-generate
+  # NOTE: When db_password is empty, Helm will try to reuse the existing Secret if present.
+  # In a KinD setup, if the Secret is deleted (e.g., on 'helm delete') but the DB volume persists,
+  # a new password will be generated.
+  # This mismatch can cause DB/service failures. Use a fixed password or pre-created Secret to ensure stability.
+  db_password: "damap_pass" # Empty defaults to auto-generate.
   hostname: localhost
   protocol: http
   storage_class_name: ""
@@ -46,13 +50,13 @@ keycloak:
   admin_password: "" # Defaults to auto-generated, check the keycloak secret for the password after deployment
   db_name: keycloak
   db_user: keycloak
-  db_password: "" # Default to auto-generate
+  db_password: "keycloak123" # Empty defaults to auto-generate
   hostname: localhost
   protocol: http
   storage_class_name: ""
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true
-  host_folder: /tmp/key/cloak
+  host_folder: /tmp/keycloak
 # Create a custom backend build using the OpenShift CI pipeline.
 # Sadly, this doesn't work in vanilla Kubernetes.
 custom_build:
