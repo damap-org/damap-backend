@@ -49,9 +49,8 @@ public class PureServicesIntegrationTest {
 
     Assertions.assertNotNull(pureEndpointUrl, "PURE endpoint URL should be configured");
     Assertions.assertTrue(
-        pureEndpointUrl.contains("elsevierpure.com")
-            || pureEndpointUrl.equals("placeholder-url-here"),
-        "Should be valid PURE endpoint or placeholder");
+        pureEndpointUrl.contains("elsevierpure.com"),
+        "Should be valid PURE endpoint for integration testing");
     System.out.println("Configuration validation passed");
   }
 

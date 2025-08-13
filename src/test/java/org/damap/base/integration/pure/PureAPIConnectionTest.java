@@ -35,8 +35,8 @@ public class PureAPIConnectionTest {
     Assertions.assertNotNull(apiKey, "API key should be configured");
     Assertions.assertTrue(apiKey.length() > 0, "API key should be configured");
     Assertions.assertTrue(
-        endpointUrl.contains("elsevierpure.com") || endpointUrl.equals("placeholder-url-here"),
-        "Should use PURE endpoint or placeholder");
+        endpointUrl.contains("elsevierpure.com"),
+        "Should use PURE endpoint for integration testing");
     System.out.println("Configuration validation passed");
   }
 
