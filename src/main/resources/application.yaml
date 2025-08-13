@@ -58,7 +58,7 @@ damap:
   elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
   ## HTTP backend:
   elsevier-pure-backend: http
-  elsevier-pure-endpoint-url: "placeholder-url-here"
+  elsevier-pure-endpoint-url: ""
   elsevier-pure-api-key: "your API key here"
   ## Alternatively, the file-based backend:
   # elsevier-pure-backend: file
@@ -173,6 +173,7 @@ rest:
     title: "DAMAP (Testing)"
     repositories:
       recommendation: ['r3d100010468'] # Re3Data id(s)
+    elsevier-pure-endpoint-url: "http://localhost:9999/fake-pure-api"
   quarkus:
     datasource:
       db-kind: h2
@@ -181,3 +182,8 @@ rest:
         url: jdbc:h2:mem:test
     oidc:
       enabled: false
+    rest-client:
+      elsevier-pure:
+        url: "http://localhost:9999/fake-pure-api"
+  rest:
+    elsevier-pure/mp-rest/url: "http://localhost:9999/fake-pure-api"
