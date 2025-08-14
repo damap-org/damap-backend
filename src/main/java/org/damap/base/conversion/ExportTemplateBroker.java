@@ -6,6 +6,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.service.DmpService;
+import org.damap.base.rest.document.dto.ExportDocumentDTO;
 
 /** ExportTemplateBroker class. */
 @ApplicationScoped
@@ -16,6 +17,7 @@ public class ExportTemplateBroker {
   private final ExportScienceEuropeTemplate exportScienceEuropeTemplate;
   private final ExportFWFTemplate exportFWFTemplate;
   private final ExportHorizonEuropeTemplate exportHorizonEuropeTemplate;
+  private final ExportDTOTemplate exportDTOTemplate;
 
   private final TemplateSelectorServiceImpl templateSelectorService;
 
@@ -37,12 +39,14 @@ public class ExportTemplateBroker {
       ExportScienceEuropeTemplate exportScienceEuropeTemplate,
       ExportFWFTemplate exportFWFTemplate,
       ExportHorizonEuropeTemplate exportHorizonEuropeTemplate,
+      ExportDTOTemplate exportDTOTemplate,
       TemplateSelectorServiceImpl templateSelectorService) {
     this.dmpService = dmpService;
     this.exportScienceEuropeTemplate = exportScienceEuropeTemplate;
     this.exportFWFTemplate = exportFWFTemplate;
     this.exportHorizonEuropeTemplate = exportHorizonEuropeTemplate;
     this.templateSelectorService = templateSelectorService;
+    this.exportDTOTemplate = exportDTOTemplate;
   }
 
   /**
@@ -73,5 +77,9 @@ public class ExportTemplateBroker {
       default:
         return exportScienceEuropeTemplate.exportTemplate(dmpId);
     }
+  }
+
+  public ExportDocumentDTO exportDTO(long dmpId) {
+    return exportDTOTemplate.exportDTO(dmpId);
   }
 }

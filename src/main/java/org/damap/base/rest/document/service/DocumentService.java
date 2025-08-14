@@ -100,10 +100,6 @@ public class DocumentService {
   }
 
   public ExportDocumentDTO getExportDocument(long dmpId) {
-    ExportDocumentDTO exportDocumentDO = ExportDocumentDTO.builder()
-            .titlePageDTO(TitlePageDTO.builder().build())
-            .build();
-
-    return exportDocumentDO;
+    return exportTemplateBroker.exportDTO(dmpId);
   }
 }

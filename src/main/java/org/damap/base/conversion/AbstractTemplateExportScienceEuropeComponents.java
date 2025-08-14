@@ -14,6 +14,7 @@ import org.damap.base.enums.*;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
+import org.damap.base.rest.document.dto.TitlePageDTO;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 
 /**
@@ -61,6 +62,65 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         datasetTableIDs.put(dataset.id, "R" + ++reuseIDprogression);
       }
     }
+  }
+
+  public TitlePageDTO titlePageDTO() {
+    Project project = dmp.getProject();
+    TitlePageDTO titlePageDTO = TitlePageDTO.builder().build();
+
+    if (project == null) {
+      titlePageDTO.setStartdate("");
+      titlePageDTO.setEnddate("");
+      titlePageDTO.setFunderid("");
+      titlePageDTO.setGrantid("");
+      titlePageDTO.setProjectid("");
+      return titlePageDTO;
+    }
+
+    titlePageDTO.setProjectname(project.getTitle());
+    titlePageDTO.setProjectnameText(project.getTitle());
+    titlePageDTO.setAcronym(project.getAcronym());
+
+    titlePageDTO.setStartdate(
+        project.getStart() == null ? "" : formatter.format(project.getStart()));
+
+    titlePageDTO.setEnddate(
+        project.getEnd() == null ? "" : formatter.format(project.getEnd()));
+
+
+    // add funding program to funding item variables
+    ProjectDO projectCRIS = null;
+    if (project.getUniversityId() != null)
+      projectCRIS = projectService.read(project.getUniversityId());
+
+    List<String> fundingItems = new ArrayList<>();
+    if (projectCRIS != null
+            && projectCRIS.getFunding() != null
+            && projectCRIS.getFunding().getFundingProgram() != null) {
+      fundingItems.add(projectCRIS.getFunding().getFundingProgram());
+    }
+    // add grant number to funding item variables
+    if (project.getFundingGrantIdentifierIdentifier() != null) {
+      fundingItems.add(project.getFundingGrantIdentifierIdentifier());
+    }
+
+    if (project.getFundingFunderIdentifierIdentifier() != null) {
+      titlePageDTO.setFunderid(project.getFundingFunderIdentifierIdentifier());
+    } else {
+      titlePageDTO.setFunderid("");
+    }
+
+    // variable project funding, combination from funding item variables
+    if (!fundingItems.isEmpty()) {
+      titlePageDTO.setGrantid(String.join(", ", fundingItems));
+    } else {
+      titlePageDTO.setGrantid("");
+    }
+
+    // variable project ID
+    titlePageDTO.setProjectid(project.getUniversityId());
+
+    return titlePageDTO;
   }
 
   /** titlePage. */
