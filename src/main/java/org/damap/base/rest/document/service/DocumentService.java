@@ -13,7 +13,9 @@ import org.damap.base.conversion.ExportTemplateBroker;
 import org.damap.base.conversion.TemplateSelectorServiceImpl;
 import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.service.DmpService;
+import org.damap.base.rest.document.dto.ExportDocumentDTO;
 import org.damap.base.rest.document.dto.MultipartBodyDTO;
+import org.damap.base.rest.document.dto.TitlePageDTO;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
@@ -95,5 +97,13 @@ public class DocumentService {
 
   public ETemplateType getTemplateType(long dmpId) {
     return templateSelectorService.selectTemplate(dmpService.getDmpById(dmpId));
+  }
+
+  public ExportDocumentDTO getExportDocument(long dmpId) {
+    ExportDocumentDTO exportDocumentDO = ExportDocumentDTO.builder()
+            .titlePageDTO(TitlePageDTO.builder().build())
+            .build();
+
+    return exportDocumentDO;
   }
 }

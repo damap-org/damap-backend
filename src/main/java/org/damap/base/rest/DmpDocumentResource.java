@@ -1,6 +1,5 @@
 package org.damap.base.rest;
 
-import io.quarkus.security.Authenticated;
 import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.security.ForbiddenException;
 import jakarta.inject.Inject;
@@ -8,10 +7,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
-import java.io.*;
+
 import java.util.Date;
 import java.util.List;
 
+import org.damap.base.rest.document.dto.ExportDocumentDTO;
 import org.thymeleaf.context.Context;
 
 
@@ -82,6 +82,15 @@ public class DmpDocumentResource {
 
     return this.export(dmpId, template, true, "docx");
   }
+
+  @GET
+  @Path("/{dmpId}/export/do")
+  public ExportDocumentDTO getExportDocument(
+          @PathParam("dmpId") long dmpId
+  ) {
+    return this.documentService.getExportDocument(dmpId);
+  }
+
 
   @GET
   @Path("/dmp/html")
