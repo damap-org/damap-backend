@@ -5,19 +5,19 @@ kind: Route
 metadata:
   name: keycloak
   namespace: {{ .Release.Namespace }}
-{{- if eq .Values.keycloak.protocol "https"}}
+{{- if eq .Values.keycloak.protocol "https" }}
   annotations:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
 {{- end }}
 spec:
   host: "{{ .Values.keycloak.hostname }}"
-  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy)}}/realms/damap{{ else }}/{{ end }}"
+  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms/damap{{ else }}/{{ end }}"
   to:
     name: keycloak
     weight: 100
     kind: Service
   wildcardPolicy: None
-{{- if eq .Values.keycloak.protocol "https"}}
+{{- if eq .Values.keycloak.protocol "https" }}
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
@@ -34,14 +34,14 @@ spec:
     - host: "{{ .Values.keycloak.hostname }}"
       http:
         paths:
-          - path: "{{ if eq .Values.keycloak.hostname "localhost"}}/realms/damap{{ else }}/{{ end }}"
+          - path: "{{ if eq .Values.keycloak.hostname "localhost" }}/realms/damap{{ else }}/{{ end }}"
             pathType: Prefix
             backend:
               service:
                 name: keycloak
                 port:
                   number: 8080
-{{- if eq .Values.keycloak.hostname "localhost"}}
+{{- if eq .Values.keycloak.hostname "localhost" }}
           - path: "/resources"
             pathType: Prefix
             backend:

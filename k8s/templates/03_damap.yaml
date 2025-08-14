@@ -112,12 +112,12 @@ spec:
 {{- if .Values.keycloak.deploy }}
             - name: DAMAP_AUTH_BACKEND_URL
 {{- if eq .Values.keycloak.hostname "localhost" }}
-              value: "http://keycloak:8080/realms/damap"
+              value: "http://keycloak:8080/auth/realms/damap"
 {{- else }}
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
 {{- end }}
             - name: DAMAP_AUTH_FRONTEND_URL
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
 {{- else }}
             - name: DAMAP_AUTH_USER
               value: "{{ .Values.oidc.person_id_claim }}"
@@ -133,7 +133,7 @@ spec:
               value: "{{ .Values.oidc.frontend_endpoint }}"
 {{- end }}
             - name: DAMAP_ORIGINS
-              value: "{{ .Values.damap.protocol}}://{{ .Values.damap.hostname }}"
+              value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             - name: DAMAP_ENV
               value: "{{ if eq .Values.debug true }}DEV{{ else }}PROD{{ end }}"
 {{- if .Values.pure.enabled }}
