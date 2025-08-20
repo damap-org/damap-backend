@@ -22,10 +22,12 @@ run local instances of the front and backend. The backend can be started using m
    mvn compile quarkus:dev
 ```
 
-Start the frontend using the command:
+Start the frontend using the Angular CLI from the frontend repository:
 
 ```shell
-   nx serve damap-frontend
+cd ../damap-frontend
+npm ci
+npm start
 ```
 The locally run frontend will now be accessible at http://localhost:4200/, same username and password. The local instances
 will also automatically connect to the services provided by the docker containers. Now you have a running DAMAP setup with

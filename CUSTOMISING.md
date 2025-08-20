@@ -189,7 +189,7 @@ damap:
 
 ## Deploying the damap frontend
 
-For running and adapting the frontend refer to the **[damap frontend project]()**.
+For running and adapting the frontend refer to the damap-frontend project: https://github.com/damap-org/damap-frontend/blob/next/CUSTOMISING.md
 
 ## Further customisation
 
