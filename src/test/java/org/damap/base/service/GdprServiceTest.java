@@ -6,10 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.domain.Contributor;
 import org.damap.base.enums.EFunctionRole;
@@ -21,12 +24,10 @@ import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestProfile(TestProfiles.DefaultProfile.class)
 class GdprServiceTest extends TestSetup {
 
   @Inject GdprService gdprService;
-
-  @Inject TestDOFactory testDOFactory;
-
   @Test
   void testGdprExtendedData_shouldReturnData() {
     List<GdprResult> result = gdprService.getGdprExtendedData("012345");

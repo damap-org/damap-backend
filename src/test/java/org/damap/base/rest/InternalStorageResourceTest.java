@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -14,6 +15,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
+
+import org.damap.base.TestProfiles;
 import org.damap.base.rest.storage.InternalStorageDO;
 import org.damap.base.rest.storage.InternalStorageTranslationDO;
 import org.damap.base.util.TestDOFactory;
@@ -22,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestHTTPEndpoint(InternalStorageResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class InternalStorageResourceTest {
 
   @Inject TestDOFactory testDOFactory;

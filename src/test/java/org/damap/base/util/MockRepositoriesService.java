@@ -9,6 +9,7 @@ import org.damap.base.r3data.dto.RepositoryDetails;
 import org.damap.base.r3data.mapper.RepositoryMapper;
 import org.re3data.schema._2_2.*;
 
+// This mock is active globally in the tests and there is no way to overwrite it
 @Mock
 public class MockRepositoriesService extends RepositoriesService {
 

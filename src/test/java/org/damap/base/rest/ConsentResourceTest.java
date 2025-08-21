@@ -6,8 +6,10 @@ import static org.hamcrest.CoreMatchers.is;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.ws.rs.core.MediaType;
+import org.damap.base.TestProfiles;
 import org.damap.base.rest.administration.domain.ConsentDO;
 import org.damap.base.security.SecurityService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(ConsentResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class ConsentResourceTest {
 
   @InjectMock SecurityService securityService;

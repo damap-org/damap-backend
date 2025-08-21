@@ -2,6 +2,7 @@ package org.damap.base;
 
 import io.quarkus.test.junit.QuarkusTestProfile;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TestProfiles {
@@ -18,4 +19,23 @@ public class TestProfiles {
       return Collections.singletonMap("invenio.disabled", "false");
     }
   }
+
+  public static class DefaultProfile implements QuarkusTestProfile {
+
+    /**
+     * Makes sure that only the Mock services are used and not real systems like PURE
+     */
+    @Override
+    public Map<String, String> getConfigOverrides() {
+      Map<String, String> overrides = new HashMap<>();
+      overrides.put("damap.projects-service", "default");
+      return overrides;
+    }
+
+    @Override
+    public String getConfigProfile() {
+      return "test";
+    }
+  }
+
 }

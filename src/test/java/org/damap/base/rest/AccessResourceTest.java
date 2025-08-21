@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
+import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.enums.EFunctionRole;
 import org.damap.base.rest.access.domain.AccessDO;
@@ -18,6 +20,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(AccessResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class AccessResourceTest extends TestSetup {
   @Inject AccessService accessService;
 

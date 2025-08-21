@@ -5,23 +5,29 @@ import static org.hamcrest.Matchers.is;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
+import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.version.VersionService;
+import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(DataManagementPlanResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class DataManagementPlanResourceTest extends TestSetup {
 
   @Inject TestDOFactory testDOFactory;
 
   @Inject VersionService versionService;
+
+  @Inject SecurityService securityService;
 
   @Test
   void testGetAllPlansEndpoint_Invalid() {
