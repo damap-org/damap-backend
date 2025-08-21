@@ -3,12 +3,14 @@ package org.damap.base.rest.openaire;
 import com.google.common.io.Resources;
 import generated.Response;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.xml.bind.JAXBContext;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.TestProfiles;
 import org.damap.base.enums.*;
 import org.damap.base.rest.dmp.domain.DatasetDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @JBossLog
+@TestProfile(TestProfiles.DefaultProfile.class)
 class OpenAireTest {
 
   @Test

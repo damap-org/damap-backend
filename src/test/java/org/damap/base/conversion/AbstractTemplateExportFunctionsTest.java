@@ -1,14 +1,17 @@
 package org.damap.base.conversion;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import java.util.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.damap.base.TestProfiles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestProfile(TestProfiles.DefaultProfile.class)
 class AbstractTemplateExportFunctionsTest {
 
   @Inject Instance<AbstractTemplateExportFunctions> documentConversionServices;

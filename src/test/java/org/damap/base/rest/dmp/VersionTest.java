@@ -3,9 +3,12 @@ package org.damap.base.rest.dmp;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.TestProfiles;
+import org.damap.base.TestSetup;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.repo.DmpVersionRepo;
 import org.damap.base.rest.dmp.domain.DmpDO;
@@ -17,15 +20,12 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @JBossLog
-class VersionTest {
+@TestProfile(TestProfiles.DefaultProfile.class)
+class VersionTest extends TestSetup {
 
   @Inject TestDOFactory testDOFactory;
 
   @Inject VersionService versionService;
-
-  @Inject DmpVersionRepo dmpVersionRepo;
-
-  @Inject DmpRepo dmpRepo;
 
   @Inject DmpService dmpService;
 

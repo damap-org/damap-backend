@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import org.damap.base.TestProfiles;
 import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(GdprResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class GdprResourceTest {
 
   @InjectMock SecurityService securityService;

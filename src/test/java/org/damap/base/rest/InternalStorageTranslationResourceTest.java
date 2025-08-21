@@ -6,16 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.response.ValidatableResponse;
 import jakarta.inject.Inject;
 import java.util.List;
+
+import org.damap.base.TestProfiles;
 import org.damap.base.rest.storage.InternalStorageTranslationDO;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestHTTPEndpoint(InternalStorageTranslationResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class InternalStorageTranslationResourceTest {
 
   @Inject TestDOFactory testDOFactory;

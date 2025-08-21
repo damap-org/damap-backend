@@ -2,8 +2,11 @@ package org.damap.base.validation;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import java.util.List;
+
+import org.damap.base.TestProfiles;
 import org.damap.base.domain.Access;
 import org.damap.base.domain.Dmp;
 import org.damap.base.enums.EFunctionRole;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 @QuarkusTest
+@TestProfile(TestProfiles.DefaultProfile.class)
 class AccessValidatorTest {
 
   @Inject AccessValidator accessValidator;

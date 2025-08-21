@@ -6,8 +6,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import org.damap.base.TestProfiles;
+import org.damap.base.TestSetup;
 import org.damap.base.integration.mock.MockProjectServiceImpl;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.security.SecurityService;
@@ -18,21 +21,8 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(MaDmpResource.class)
-class MaDmpResourceTest {
-
-  @Inject TestDOFactory testDOFactory;
-
-  @InjectMock SecurityService securityService;
-
-  @InjectMock MockProjectServiceImpl mockProjectService;
-
-  /** setup. */
-  @BeforeEach
-  public void setup() {
-    Mockito.when(securityService.getUserId()).thenReturn("012345");
-    Mockito.when(securityService.getUserName()).thenReturn("testUser");
-    Mockito.when(mockProjectService.read(anyString())).thenReturn(testDOFactory.getTestProjectDO());
-  }
+@TestProfile(TestProfiles.DefaultProfile.class)
+class MaDmpResourceTest extends TestSetup {
 
   @Test
   void testGetByIdEndpoint_Invalid() {
@@ -48,7 +38,6 @@ class MaDmpResourceTest {
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testGetByIdEndpoint_Valid() {
-    DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
     given().when().get("/" + dmpDO.getId()).then().statusCode(200);
   }
 
@@ -66,7 +55,6 @@ class MaDmpResourceTest {
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testGetFileByIdEndpoint_Valid() {
-    DmpDO dmpDO = testDOFactory.getOrCreateTestDmpDO();
     given().when().get("/file/" + dmpDO.getId()).then().statusCode(200);
   }
 }

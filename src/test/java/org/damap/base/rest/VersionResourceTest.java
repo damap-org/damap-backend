@@ -6,9 +6,11 @@ import static org.hamcrest.Matchers.*;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
+import org.damap.base.TestProfiles;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.version.VersionDO;
 import org.damap.base.security.SecurityService;
@@ -19,6 +21,7 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 @TestHTTPEndpoint(VersionResource.class)
+@TestProfile(TestProfiles.DefaultProfile.class)
 class VersionResourceTest {
 
   @Inject TestDOFactory testDOFactory;

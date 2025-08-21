@@ -45,9 +45,15 @@ import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.RepositoryDO;
 import org.damap.base.rest.dmp.domain.StorageDO;
 import org.damap.base.rest.dmp.mapper.DmpDOMapper;
+import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.version.VersionDO;
 import org.damap.base.rest.version.VersionDOMapper;
 import org.damap.base.rest.version.VersionService;
+
+// Warning!!!!
+// This class can be dangerous since it does not have the test context @QuarkusTest
+// Therefore it uses the standard beans, which causes real API calls to be made
+// Should only be used together with TestSetup or with fitting OrcidService mocks
 
 /** TestDOFactory class. */
 @JBossLog
@@ -60,13 +66,11 @@ public class TestDOFactory {
 
   @Inject InternalStorageRepo internalStorageRepo;
 
-  @Inject MockDmpService dmpService;
+  @Inject DmpService dmpService;
 
   @Inject VersionService versionService;
 
   @Inject DmpVersionRepo dmpVersionRepo;
-
-  @Inject EntityManager entityManager;
 
   private final String editorId = "012345";
 
