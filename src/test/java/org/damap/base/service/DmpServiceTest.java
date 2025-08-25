@@ -1,5 +1,7 @@
 package org.damap.base.service;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -25,8 +27,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 @QuarkusTest
 @TestProfile(TestProfiles.DefaultProfile.class)
 @Log
@@ -37,7 +37,6 @@ class DmpServiceTest extends TestSetup {
 
   @ConfigProperty(name = "damap.projects-service")
   String activeProfile;
-
 
   @Test
   void updateProjectLeadTest() {
@@ -53,10 +52,10 @@ class DmpServiceTest extends TestSetup {
 
     Assertions.assertFalse(dmpDO.getContributors().isEmpty());
     Optional<ContributorDO> projectLead =
-            dmpDO.getContributors().stream()
-                    .filter(
-                            c -> c.getRoles() != null && c.getRoles().contains(EContributorRole.PROJECT_LEADER))
-                    .findFirst();
+        dmpDO.getContributors().stream()
+            .filter(
+                c -> c.getRoles() != null && c.getRoles().contains(EContributorRole.PROJECT_LEADER))
+            .findFirst();
     Assertions.assertTrue(projectLead.isPresent());
     Assertions.assertTrue(projectLead.get().isContact());
 
@@ -80,13 +79,13 @@ class DmpServiceTest extends TestSetup {
     Assertions.assertEquals(2, dmpDO.getContributors().size());
 
     projectLead =
-            dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
+        dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
 
     otherContributor =
-            dmpDO.getContributors().stream()
-                    .filter(c -> !c.getId().equals(projectLeadID))
-                    .findFirst()
-                    .get();
+        dmpDO.getContributors().stream()
+            .filter(c -> !c.getId().equals(projectLeadID))
+            .findFirst()
+            .get();
 
     Assertions.assertTrue(projectLead.isPresent());
     Assertions.assertFalse(projectLead.get().isContact());
@@ -106,7 +105,7 @@ class DmpServiceTest extends TestSetup {
 
     Assertions.assertEquals(1, dmpDO.getContributors().size());
     projectLead =
-            dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
+        dmpDO.getContributors().stream().filter(c -> c.getId().equals(projectLeadID)).findFirst();
 
     Assertions.assertTrue(projectLead.get().isContact());
     Assertions.assertEquals(Set.of(EContributorRole.PROJECT_LEADER), projectLead.get().getRoles());
@@ -132,12 +131,12 @@ class DmpServiceTest extends TestSetup {
     var contributorDOs = dmpDO.getContributors();
     Assertions.assertFalse(contributorDOs.isEmpty());
     Assertions.assertEquals(
-            testRecord.getPerson().getName().getGivenNames().getValue(),
-            contributorDOs.get(0).getFirstName());
+        testRecord.getPerson().getName().getGivenNames().getValue(),
+        contributorDOs.get(0).getFirstName());
 
     Assertions.assertEquals(
-            testRecord.getPerson().getName().getFamilyName().getValue(),
-            contributorDOs.get(0).getLastName());
+        testRecord.getPerson().getName().getFamilyName().getValue(),
+        contributorDOs.get(0).getLastName());
   }
 
   @Test
@@ -200,7 +199,6 @@ class DmpServiceTest extends TestSetup {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     Assertions.assertEquals("DMP_" + oldDmp.getId() + "_" + formatter.format(date), fileName);
   }
-
 
   @Test
   void givenValidDmp_whenDeletingDmp_thenShouldAlsoDeleteAllDependantEntities() {

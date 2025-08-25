@@ -9,8 +9,6 @@ import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
-import org.damap.base.repo.DmpRepo;
-import org.damap.base.repo.DmpVersionRepo;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.version.VersionDO;

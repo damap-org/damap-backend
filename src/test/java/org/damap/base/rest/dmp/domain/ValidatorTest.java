@@ -9,7 +9,6 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.rest.dmp.service.DmpService;
-import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

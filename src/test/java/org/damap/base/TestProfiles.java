@@ -22,9 +22,7 @@ public class TestProfiles {
 
   public static class DefaultProfile implements QuarkusTestProfile {
 
-    /**
-     * Makes sure that only the Mock services are used and not real systems like PURE
-     */
+    /** Makes sure that only the Mock services are used and not real systems like PURE */
     @Override
     public Map<String, String> getConfigOverrides() {
       Map<String, String> overrides = new HashMap<>();
@@ -37,5 +35,4 @@ public class TestProfiles {
       return "test";
     }
   }
-
 }

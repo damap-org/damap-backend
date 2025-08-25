@@ -22,7 +22,6 @@ import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import org.damap.base.TestProfiles;
-import org.damap.base.TestSetup;
 import org.damap.base.domain.Dmp;
 import org.damap.base.integration.mock.MockProjectServiceImpl;
 import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
@@ -34,7 +33,6 @@ import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.invenio_damap.DMPPayload;
 import org.damap.base.rest.invenio_damap.InvenioDAMAPResource;
 import org.damap.base.rest.madmp.dto.Dataset;
-import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,20 +60,18 @@ class InvenioDamapResourceEnabledTest {
 
   @InjectMock ORCIDPersonServiceImpl orcidPersonServiceImpl;
 
-  @InjectMock
-  MockProjectServiceImpl projectService;
-
-
+  @InjectMock MockProjectServiceImpl projectService;
 
   @BeforeEach
   public void setup() {
     Mockito.when(personService.read(any(String.class)))
-            .thenReturn(testDOFactory.getTestContributorDO());
+        .thenReturn(testDOFactory.getTestContributorDO());
     Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
-            .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
+        .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
     Mockito.when(projectService.getProjectLeader(any()))
-            .thenReturn(testDOFactory.getTestContributorDO());
+        .thenReturn(testDOFactory.getTestContributorDO());
   }
+
   @BeforeEach
   public void cleanup() {
     List<Dmp> dmps = dmpRepo.getAll();
