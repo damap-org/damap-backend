@@ -11,7 +11,6 @@ import jakarta.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.domain.Contributor;
@@ -20,7 +19,6 @@ import org.damap.base.rest.gdpr.domain.GdprQuery;
 import org.damap.base.rest.gdpr.domain.GdprResult;
 import org.damap.base.rest.gdpr.service.GdprQueryUtil;
 import org.damap.base.rest.gdpr.service.GdprService;
-import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -28,6 +26,7 @@ import org.junit.jupiter.api.Test;
 class GdprServiceTest extends TestSetup {
 
   @Inject GdprService gdprService;
+
   @Test
   void testGdprExtendedData_shouldReturnData() {
     List<GdprResult> result = gdprService.getGdprExtendedData("012345");

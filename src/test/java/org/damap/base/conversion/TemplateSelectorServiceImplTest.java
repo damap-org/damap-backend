@@ -1,6 +1,5 @@
 package org.damap.base.conversion;
 
-import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
@@ -22,8 +21,7 @@ class TemplateSelectorServiceImplTest extends TestSetup {
 
   @Inject TestDOFactory testDOFactory;
 
-  @Inject
-  DmpService dmpService;
+  @Inject DmpService dmpService;
 
   @Inject TemplateSelectorServiceImpl templateSelectorService;
 

@@ -1,6 +1,5 @@
 package org.damap.base.integration.mock;
 
-import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;

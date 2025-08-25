@@ -15,7 +15,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.List;
-
 import org.damap.base.TestProfiles;
 import org.damap.base.rest.storage.InternalStorageDO;
 import org.damap.base.rest.storage.InternalStorageTranslationDO;

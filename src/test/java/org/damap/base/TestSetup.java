@@ -3,14 +3,11 @@ package org.damap.base;
 import static org.mockito.ArgumentMatchers.any;
 
 import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.damap.base.integration.mock.MockProjectServiceImpl;
 import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
 import org.damap.base.integration.orcid.ORCIDMapper;
 import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
-import org.damap.base.integration.pure.PureIntegrationTestProfile;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
@@ -32,7 +29,9 @@ public class TestSetup {
 
   protected DmpDO dmpDO;
 
-  /** @BeforeEach in an extending class overrides this, use super.setup() to circumvent */
+  /**
+   * @BeforeEach in an extending class overrides this, use super.setup() to circumvent
+   */
   @BeforeEach
   public void setup() {
     Mockito.when(securityService.getUserId()).thenReturn("012345");
@@ -42,7 +41,7 @@ public class TestSetup {
     Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
         .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
     Mockito.when(projectService.getProjectLeader(any()))
-            .thenReturn(testDOFactory.getTestContributorDO());
+        .thenReturn(testDOFactory.getTestContributorDO());
     dmpDO = testDOFactory.getOrCreateTestDmpDO();
   }
 }

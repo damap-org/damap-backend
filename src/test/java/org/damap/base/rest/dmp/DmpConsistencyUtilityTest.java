@@ -3,11 +3,10 @@ package org.damap.base.rest.dmp;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.quarkus.test.junit.TestProfile;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.TestProfiles;
 import org.damap.base.enums.*;

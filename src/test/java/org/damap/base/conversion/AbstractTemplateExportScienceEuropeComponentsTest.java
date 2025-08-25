@@ -1,14 +1,12 @@
 package org.damap.base.conversion;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.damap.base.TestProfiles;
 import org.damap.base.domain.DatasetSizeRange;
 import org.damap.base.integration.mock.MockProjectServiceImpl;
@@ -16,8 +14,6 @@ import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
 import org.damap.base.integration.orcid.ORCIDMapper;
 import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
 import org.damap.base.rest.dmp.domain.DmpDO;
-import org.damap.base.rest.dmp.domain.ProjectDO;
-import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +38,11 @@ class AbstractTemplateExportScienceEuropeComponentsTest
   @BeforeEach
   public void setup() {
     Mockito.when(personService.read(any(String.class)))
-            .thenReturn(testDOFactory.getTestContributorDO());
+        .thenReturn(testDOFactory.getTestContributorDO());
     Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
-            .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
+        .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
     Mockito.when(projectService.getProjectLeader(any()))
-            .thenReturn(testDOFactory.getTestContributorDO());
+        .thenReturn(testDOFactory.getTestContributorDO());
   }
 
   @Test
