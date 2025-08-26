@@ -23,7 +23,7 @@ damap:
     # Role name used to identify DAMAP super admins
     # If DAMAP is locally deployed ADMIN_ROLE constant in the DefaultProfile test profile needs to be
     # the same as here, otherwise the tests fail
-    admin-role-name: DAMAP ADMIN
+    admin-role-name: Damap Admin
   repositories:
     # Zenodo, Open Science Framework, DRYAD, Mendeley Data
     # can also be [] for no repositories recommendation

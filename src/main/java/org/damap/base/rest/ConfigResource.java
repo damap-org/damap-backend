@@ -1,15 +1,21 @@
 package org.damap.base.rest;
 
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.domain.ColorTheme;
+import org.damap.base.domain.Image;
 import org.damap.base.rest.config.domain.ConfigDO;
 import org.damap.base.rest.config.domain.PersonServiceConfigurations;
+import org.damap.base.rest.theme.service.ColorThemeService;
+import org.damap.base.rest.theme.service.ImageThemeService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /** ConfigResource class. */
@@ -66,6 +72,10 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.title", defaultValue = "DAMAP Tool")
   String appTitle;
 
+  @Inject ColorThemeService colorThemeService;
+
+  @Inject ImageThemeService imageThemeService;
+
   /**
    * config.
    *
@@ -91,6 +101,12 @@ public class ConfigResource {
     configDO.setFitsServiceAvailable(getFitsServiceAvailability());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(ethicalReportEnabled);
+
+    ColorTheme colorTheme = colorThemeService.getTheme();
+    configDO.setColorTheme(colorTheme);
+
+    List<Image> images = imageThemeService.getImages();
+    configDO.setImages(images);
 
     return configDO;
   }

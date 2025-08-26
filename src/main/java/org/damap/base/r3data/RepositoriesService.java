@@ -1,17 +1,17 @@
 package org.damap.base.r3data;
 
 import io.quarkus.cache.CacheResult;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.domain.RecommendedRepository;
 import org.damap.base.enums.EIdentifierType;
 import org.damap.base.r3data.dto.RepositoryDetails;
 import org.damap.base.r3data.mapper.RepositoryMapper;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.re3data.schema._2_2.Re3Data;
 
@@ -21,9 +21,6 @@ import org.re3data.schema._2_2.Re3Data;
 public class RepositoriesService {
 
   @Inject @RestClient RepositoriesRemoteResource repositoriesRemoteResource;
-
-  @ConfigProperty(name = "damap.repositories.recommendation")
-  Optional<String[]> repositoriesRecommendation;
 
   /**
    * getAll.
@@ -40,24 +37,24 @@ public class RepositoriesService {
    *
    * @return a {@link java.util.List} object
    */
-  @CacheResult(cacheName = "recommendedRepositories")
   public List<RepositoryDetails> getRecommended() {
-    List<RepositoryDetails> recommendedRepositories = new ArrayList<>();
-    if (repositoriesRecommendation.isEmpty()) {
-      return recommendedRepositories;
-    }
+    List<RecommendedRepository> recommendedRepositories =
+        RecommendedRepository.listAll(Sort.by("id").ascending());
+    List<RepositoryDetails> recommendedRepositoryDetails = new ArrayList<>();
 
-    for (String id : repositoriesRecommendation.get()) {
-      if (id.startsWith("r3d")) {
-        try {
-          Re3Data repo = this.getById(id);
-          recommendedRepositories.add(RepositoryMapper.mapToRepositoryDetails(repo, id));
-        } catch (Exception e) {
-          log.infov("Failed to retrieve repository for ID {0}, error: {1}", id, e.getMessage());
-        }
+    for (RecommendedRepository recommendedRepository : recommendedRepositories) {
+      String repositoryId = recommendedRepository.getRepositoryId();
+
+      try {
+        Re3Data repo = this.getById(repositoryId);
+        RepositoryDetails details = RepositoryMapper.mapToRepositoryDetails(repo, repositoryId);
+        recommendedRepositoryDetails.add(details);
+      } catch (Exception e) {
+        log.infov(
+            "Failed to retrieve repository for ID {0}, error: {1}", repositoryId, e.getMessage());
       }
     }
-    return recommendedRepositories;
+    return recommendedRepositoryDetails;
   }
 
   /**

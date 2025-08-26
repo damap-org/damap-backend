@@ -24,7 +24,7 @@ public class TestProfiles {
 
     // admin role name is configured in application.yaml under damap.auth.admin-role-name
     // but @TestSecurity cannot read from the application.yaml, so it needs to be hardcoded here
-    public static final String ADMIN_ROLE = "DAMAP ADMIN";
+    public static final String ADMIN_ROLE = "Damap Admin";
 
     /** Makes sure that only the Mock services are used and not real systems like PURE */
     @Override

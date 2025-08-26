@@ -3,6 +3,8 @@ package org.damap.base.rest.config.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Data;
+import org.damap.base.domain.ColorTheme;
+import org.damap.base.domain.Image;
 
 /** ConfigDO class. */
 @Data
@@ -26,4 +28,6 @@ public class ConfigDO {
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
   private String appTitle;
+  private ColorTheme colorTheme;
+  private List<Image> images;
 }
