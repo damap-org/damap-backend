@@ -1,0 +1,100 @@
+databaseChangeLog:
+  - changeSet:
+      id: 25
+      author: Vlad Dancea
+      comment: Create color-theme, image-theme and recommended-repository tables
+      changes:
+        - createSequence:
+            sequenceName: color_theme_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createTable:
+            tableName: color_theme
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: exact_colors
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: colors
+                  type: CLOB
+                  constraints:
+                    nullable: false
+
+        - createSequence:
+            sequenceName: image_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createTable:
+            tableName: image
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: image_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: data
+                  type: BLOB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filesize
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mime_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+
+        - createSequence:
+            sequenceName: recommended_repository_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createTable:
+            tableName: recommended_repository
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: repository_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+      rollback:
+        - dropTable:
+            tableName: recommended_repository
+        - dropSequence:
+            sequenceName: recommended_repository_seq
+        - dropTable:
+            tableName: image
+        - dropSequence:
+            sequenceName: image_seq
+        - dropTable:
+            tableName: color_theme
+        - dropSequence:
+            sequenceName: color_theme_seq
