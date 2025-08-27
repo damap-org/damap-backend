@@ -4,10 +4,12 @@ import static org.mockito.ArgumentMatchers.any;
 
 import io.quarkus.test.InjectMock;
 import jakarta.inject.Inject;
+import org.damap.base.domain.User;
 import org.damap.base.integration.mock.MockProjectServiceImpl;
 import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
 import org.damap.base.integration.orcid.ORCIDMapper;
 import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
+import org.damap.base.repo.UserRepo;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.security.SecurityService;
 import org.damap.base.util.TestDOFactory;
@@ -27,6 +29,8 @@ public class TestSetup {
 
   @InjectMock MockProjectServiceImpl projectService;
 
+  @InjectMock protected UserRepo userRepo;
+
   protected DmpDO dmpDO;
 
   /**
@@ -42,6 +46,8 @@ public class TestSetup {
         .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
     Mockito.when(projectService.getProjectLeader(any()))
         .thenReturn(testDOFactory.getTestContributorDO());
+
+    Mockito.when(userRepo.findUserBySubject(any(String.class))).thenReturn(User.builder().build());
     dmpDO = testDOFactory.getOrCreateTestDmpDO();
   }
 }

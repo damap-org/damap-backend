@@ -20,6 +20,12 @@ public class ConfigDO {
   private boolean ethicalReportEnabled;
   private String appTitle;
 
+  private String dummySecret;
+  private String issuer;
+  private String loginUrl;
+  private String tokenEndpoint;
+  private String responseType;
+
   public void setAppTitle(String appTitle) {
     this.appTitle = appTitle;
   }

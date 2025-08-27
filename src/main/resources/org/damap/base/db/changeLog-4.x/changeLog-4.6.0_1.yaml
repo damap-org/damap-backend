@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 25
+      author: Geoffrey Karnbach
+      changes:
+        - createSequence:
+            sequenceName: damap_user_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createTable:
+            tableName: damap_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: subject
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: nickname
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: isadmin
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+      rollback:
+        - dropTable:
+            tableName: damap_user
+        - dropSequence:
+            sequenceName: damap_user_seq

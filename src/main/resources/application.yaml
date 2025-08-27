@@ -7,19 +7,26 @@ damap:
   auth:
     backend:
       # Configures the OIDC realm the DAMAP backend should query to verify authentication:
-      url: http://keycloak:8080/realms/damap
+      url: 'your URL here'
+      issuer: 'your issuer URL here'
+      loginUrl: 'your login URL here'
+      tokenEndpoint: 'your token endpoint URL here'
+      # This dummy secret is not an actual secret but used by a public frontend client for authentication.
+      # TODO: Make sure to replace this with your own dummy secret! Given that this is used in a public client, this is
+      # not a security issue, as it is only used as identifier for the public client and needed to satisfy the OIDC spec.
+      dummySecret: 'your dummy secret here'
       # Client ID as configured in the OIDC Server:
-      client: 'damap-be'
+      client: 'your backend client ID here'
     frontend:
       # Configures the OIDC URL the frontend should send users to in order to log in. This is typically the same
       # as the backend URL, but may differ if the backend can access the OIDC server over a non-public network.
-      url: http://localhost:8087/realms/damap
+      url: 'your URL here'
       # Client ID as configured in the OIDC Server:
-      client: 'damap'
+      client: 'your frontend client ID here'
     # Scopes to request during login:
-    scope: 'openid profile email offline_access microprofile-jwt roles personID' # your-backend-authentication-scope, including your variable for your user IDs
+    scope: 'openid profile email' # your-backend-authentication-scope, including your variable for your user IDs
     # The OIDC claim to use as a user ID:
-    user: 'personID'
+    user: 'sub'
   datasource:
     url: ${DAMAP_DATASOURCE_URL:jdbc:postgresql://damap-db:5432/damap}
     db-kind: ${DAMAP_DATASOURCE_DB_KIND:postgresql}
@@ -78,6 +85,9 @@ damap:
     - display-text: 'ORCID'
       query-value: 'ORCID'
       class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
+    - display-text: 'DAMAP'
+      query-value: 'DAMAP'
+      class-name: 'org.damap.base.rest.persons.DAMAPPersonServiceImpl'
 
 invenio:
   disabled: true
@@ -85,6 +95,19 @@ invenio:
 
 # general config settings
 quarkus:
+  log:
+    category:
+      "io.smallrye.jwt.auth":
+        level: TRACE
+      "io.smallrye.jwt":
+       level: TRACE
+      "org.jboss.resteasy.reactive":
+        level: TRACE
+      "org.eclipse.microprofile":
+        level: TRACE
+      "io.quarkus":
+       level: TRACE
+
   http:
     cors:
       ~: true
@@ -94,12 +117,25 @@ quarkus:
     # needed for the fits service. Specify how large a single file for upload may be.
     limits:
       max-body-size: 10M
+    auth:
+      permission:
+        permit-all:
+          paths: /api/auth/refresh
+          policy: permit
+      proactive: true
 
   oidc:
-    auth-server-url: ${damap.auth.backend.url}
+    enabled: false
+    discovery-enabled: false
+    auth-server-url: https://auth.researchdata.tuwien.ac.at/saml/oidc/authorization # The OIDC authorization endpoint
+    jwks-path: https://auth.researchdata.tuwien.ac.at/oidc/jwks # The OIDC server's JWKS endpoint
+
     client-id: ${damap.auth.backend.client}
+    credentials:
+      secret: ${damap.auth.backend.dummySecret}
+
     token:
-      issuer: ${damap.auth.frontend.url}
+      issuer: https://auth.researchdata.tuwien.ac.at
 
   datasource:
     jdbc:
@@ -142,6 +178,7 @@ rest:
   mock-projects/mp-rest/url: ${damap.mock-endpoint-url}
   mock-persons/mp-rest/url: ${damap.mock-endpoint-url}
   fits/mp-rest/url: ${damap.fits-url}
+  auth/mp-rest/url: ${damap.auth.backend.url}
   gotenberg/mp-rest/url: ${damap.gotenberg-url}
   r3data:
     repositories/mp-rest/url: https://www.re3data.org/api
@@ -150,13 +187,35 @@ rest:
   orcid:
     search/mp-rest/url: https://pub.orcid.org
 
+# JWT configuration
+smallrye:
+  jwt:
+    sign:
+      key:
+        # TODO: Replace this with your actual private key location
+        location: dummy_privateKey.pem
+mp:
+  jwt:
+    verify:
+      publickey:
+        # TODO: Replace this with your actual public key location
+        location: dummy_publicKey.pem
+        issuer: "damap-backend-api"
+
 "%dev":
   damap:
     title: "DAMAP (Development)"
+    env: DEV
     origins: http://localhost:4200
     auth:
       backend:
-        url: http://localhost:8087/realms/damap # https://your.authentication.server
+        url: http://localhost:8087/realms/damap
+        client: 'damap-be'
+      frontend:
+        url: http://localhost:8087/realms/damap
+        client: 'damap'
+      scope: 'openid profile email offline_access microprofile-jwt roles personID'
+      user: 'sub'
     datasource:
       url: jdbc:postgresql://localhost:8088/damap
       db-kind: postgresql
@@ -168,6 +227,27 @@ rest:
     mock-endpoint-url: http://localhost:8091
     fits-url: http://localhost:8089/fits
     gotenberg-url: http://localhost:3000
+  smallrye:
+    jwt:
+      sign:
+        key:
+          location: dummy_privateKey.pem
+  mp:
+    jwt:
+      verify:
+        publickey:
+          location: dummy_publicKey.pem
+          issuer: "damap-backend-api"
+  quarkus:
+    oidc:
+      enabled: false
+      discovery-enabled: true
+      auth-server-url: ${damap.auth.backend.url}
+      client-id: ${damap.auth.frontend.client}
+      token:
+        issuer: ${damap.auth.frontend.url}
+      credentials:
+        secret: ""
 
 "%test":
   damap:
@@ -185,3 +265,24 @@ rest:
       enabled: false
   rest:
     elsevier-pure/mp-rest/url: "http://localhost:9999/fake-pure-api"
+
+"%prod-local":
+  damap:
+    mock-endpoint-url: http://localhost:8091
+    fits-url: http://localhost:8089/fits
+    gotenberg-url: http://localhost:3000
+    origins: http://localhost:4200
+    env: PROD
+    datasource:
+      url: jdbc:postgresql://localhost:8088/damap
+  smallrye:
+    jwt:
+      sign:
+        key:
+          location: dummy_privateKey.pem
+  mp:
+    jwt:
+      verify:
+        publickey:
+          location: dummy_publicKey.pem
+          issuer: "damap-backend-api"

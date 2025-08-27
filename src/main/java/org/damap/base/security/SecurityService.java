@@ -2,9 +2,9 @@ package org.damap.base.security;
 
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.arc.Unremovable;
-import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,9 +39,9 @@ public class SecurityService {
    */
   public String getUserId() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+    if (!(principal instanceof DefaultJWTCallerPrincipal)) return null;
 
-    return ((OidcJwtCallerPrincipal) principal).getClaims().getClaimValue(authUser).toString();
+    return ((DefaultJWTCallerPrincipal) principal).getClaim(authUser).toString();
   }
 
   /**
@@ -51,34 +51,29 @@ public class SecurityService {
    */
   public String getUserName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
-    return ((OidcJwtCallerPrincipal) principal).getName();
+    if (!(principal instanceof DefaultJWTCallerPrincipal)) return null;
+    return ((DefaultJWTCallerPrincipal) principal).getName();
   }
 
   public String getDisplayName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) {
+    if (!(principal instanceof DefaultJWTCallerPrincipal)) {
       return null;
     }
 
-    OidcJwtCallerPrincipal oidcPrincipal = (OidcJwtCallerPrincipal) principal;
+    DefaultJWTCallerPrincipal jwtCallerPrincipal = (DefaultJWTCallerPrincipal) principal;
 
-    String name = getClaimValueAsString(oidcPrincipal, "name");
+    String name = getClaimValueAsString(jwtCallerPrincipal, "upn");
     if (name != null) {
       return name;
     }
 
-    String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
-    String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
-    if (firstName != null && lastName != null) {
-      return firstName + " " + lastName;
-    }
-
-    return getClaimValueAsString(oidcPrincipal, "email");
+    return getClaimValueAsString(jwtCallerPrincipal, "email");
   }
 
-  private String getClaimValueAsString(OidcJwtCallerPrincipal oidcPrincipal, String claimKey) {
-    Object claimValue = oidcPrincipal.getClaims().getClaimValue(claimKey);
+  private String getClaimValueAsString(
+      DefaultJWTCallerPrincipal jwtCallerPrincipal, String claimKey) {
+    Object claimValue = jwtCallerPrincipal.getClaim(claimKey);
     return claimValue != null ? claimValue.toString() : null;
   }
 

@@ -6,14 +6,17 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Access;
 import org.damap.base.domain.Dmp;
+import org.damap.base.domain.User;
 import org.damap.base.integration.PersonService;
 import org.damap.base.repo.AccessRepo;
 import org.damap.base.repo.DmpRepo;
+import org.damap.base.repo.UserRepo;
 import org.damap.base.rest.PersonServiceBroker;
 import org.damap.base.rest.access.domain.AccessDO;
 import org.damap.base.rest.access.mapper.AccessMapper;
@@ -37,6 +40,8 @@ public class AccessService {
 
   @Inject PersonServiceBroker personServiceBroker;
 
+  @Inject UserRepo userRepo;
+
   /**
    * getByDmpId.
    *
@@ -59,10 +64,38 @@ public class AccessService {
               // empty.
               if (accessDO.getMbox() == null) {
                 // TODO: Handle case when owner is no longer at university
-                ContributorDO owner = personService.read(access.getUniversityId());
-                accessDO.setFirstName(owner.getFirstName());
-                accessDO.setLastName(owner.getLastName());
-                accessDO.setMbox(owner.getMbox());
+                User user = userRepo.findUserBySubject(access.getUniversityId());
+                if (user == null) {
+                  log.warn(
+                      "No user found with subject: "
+                          + access.getUniversityId()
+                          + " for dmp id: "
+                          + dmpId
+                          + ". Leaving name and email empty in access response.");
+                  accessDO.setFirstName("");
+                  accessDO.setLastName("");
+                  accessDO.setMbox("");
+                  accessDOList.add(accessDO);
+                  return;
+                }
+
+                try {
+                  accessDO.setFirstName(user.getNickname().split(" ")[0]);
+                  accessDO.setLastName(
+                      String.join(
+                          " ",
+                          Arrays.copyOfRange(
+                              user.getNickname().split(" "),
+                              1,
+                              user.getNickname().split(" ").length)));
+                } catch (Exception e) {
+                  log.warn(
+                      "Could not split nickname into first and last name for user with subject: "
+                          + access.getUniversityId());
+                  accessDO.setFirstName(user.getNickname());
+                  accessDO.setLastName("");
+                }
+                accessDO.setMbox(user.getEmail());
               }
               accessDOList.add(accessDO);
             });

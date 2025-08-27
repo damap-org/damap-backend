@@ -48,6 +48,18 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.title", defaultValue = "DAMAP Tool")
   String appTitle;
 
+  @ConfigProperty(name = "damap.auth.backend.dummySecret")
+  String dummySecret;
+
+  @ConfigProperty(name = "damap.auth.backend.issuer")
+  String issuerUrl;
+
+  @ConfigProperty(name = "damap.auth.backend.loginUrl")
+  String loginUrl;
+
+  @ConfigProperty(name = "damap.auth.backend.tokenEndpoint")
+  String tokenEndpoint;
+
   /**
    * config.
    *
@@ -66,6 +78,13 @@ public class ConfigResource {
     configDO.setFitsServiceAvailable(getFitsServiceAvailability());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(ethicalReportEnabled);
+
+    // Set the dummy secret
+    configDO.setDummySecret(dummySecret);
+    configDO.setIssuer(issuerUrl);
+    configDO.setLoginUrl(loginUrl);
+    configDO.setTokenEndpoint(tokenEndpoint);
+    configDO.setResponseType("code");
 
     return configDO;
   }

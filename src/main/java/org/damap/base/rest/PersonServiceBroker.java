@@ -71,6 +71,7 @@ public class PersonServiceBroker {
    * @return a {@link PersonService} object
    */
   public PersonService getServiceForQueryParam(String searchServiceType) {
+    log.info(personServices.toString() + " looking for " + searchServiceType);
     PersonService searchService = personServices.get(searchServiceType);
     if (searchService == null && !personServices.isEmpty()) {
       searchService = personServices.entrySet().iterator().next().getValue();
