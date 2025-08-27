@@ -11,6 +11,7 @@ import org.damap.base.rest.base.Search;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
+import org.damap.base.security.SecurityService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -24,6 +25,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class PureProjectService implements ProjectServiceProvider {
   @Inject PureAPI pureAPI;
+  @Inject SecurityService securityService;
 
   /** Maps the configured Pure contributor role classification URIs to DAMAP roles. */
   @ConfigProperty(
@@ -111,7 +113,20 @@ public class PureProjectService implements ProjectServiceProvider {
 
   @Override
   public ResultList<ProjectDO> getRecommended(Search search) {
-    return this.search(search);
+    ResultList<ProjectDO> res = new ResultList<>();
+    res.setSearch(search);
+    res.setItems(
+        this.pureAPI.listAllProjects().stream()
+            .filter(
+                project ->
+                    project.participants.stream()
+                        .anyMatch(
+                            participant ->
+                                ((PureAPIInternalParticipantAssociation) participant)
+                                    .person.uuid.equals(securityService.getUserId())))
+            .map(project -> project.toProjectDO(descriptionClassification))
+            .toList());
+    return res;
   }
 
   @Override
