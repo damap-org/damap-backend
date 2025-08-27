@@ -34,7 +34,7 @@ public class DmpService {
 
   @Inject AccessRepo accessRepo;
 
-  @Inject ProjectService projectService;
+  @Inject ProjectService projectServiceBroker;
 
   @Inject MapperService mapperService;
 
@@ -244,7 +244,8 @@ public class DmpService {
     }
 
     String universityId = dmp.getProject().getUniversityId();
-    ProjectDO universityProject = (universityId != null) ? projectService.read(universityId) : null;
+    ProjectDO universityProject =
+        (universityId != null) ? projectServiceBroker.read(universityId) : null;
 
     if (universityProject != null && universityProject.getAcronym() != null) {
       return universityProject.getAcronym();
@@ -292,7 +293,7 @@ public class DmpService {
       ProjectSupplementDO projectSupplementDO = null;
       if (dmp.getProject().getUniversityId() != null) {
         projectSupplementDO =
-            projectService.getProjectSupplement(dmp.getProject().getUniversityId());
+            projectServiceBroker.getProjectSupplement(dmp.getProject().getUniversityId());
       }
       if (projectSupplementDO == null) projectSupplementDO = new ProjectSupplementDO();
       ProjectSupplementDOMapper.mapDOtoEntity(projectSupplementDO, dmp);
@@ -309,7 +310,7 @@ public class DmpService {
     if (dmp.getProjectUniversityId() == null) return;
 
     ContributorDO projectLeaderDO =
-        projectService.getProjectLeader(dmp.getProject().getUniversityId());
+        projectServiceBroker.getProjectLeader(dmp.getProject().getUniversityId());
     if (projectLeaderDO == null) return;
 
     List<Contributor> dmpContributors = dmp.getContributorList();

@@ -1,24 +1,27 @@
 package org.damap.base.conversion;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
 import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.FundingDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
-import org.damap.base.util.MockDmpService;
+import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.util.TestDOFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestProfile(TestProfiles.DefaultProfile.class)
 class TemplateSelectorServiceImplTest extends TestSetup {
 
   @Inject TestDOFactory testDOFactory;
 
-  @Inject MockDmpService dmpService;
+  @Inject DmpService dmpService;
 
   @Inject TemplateSelectorServiceImpl templateSelectorService;
 

@@ -39,9 +39,38 @@ damap:
   mock-endpoint-url: http://api-mock:80
 
   projects-service: default
+  ## Elsevier Pure integration:
+  # projects-service: elsevier-pure
+  # The following settings map Pure classification URIs to DAMAP properties. Pure classification URIs start with
+  # /dk/atira/pure, but are otherwise specific to the institutional setup in Pure.
 
-## Set up person lookups here:
+  # The project description field DAMAP should use:
+  elsevier-pure-description-classification: /dk/atira/pure/projectdescription
+  # How Pure project contributor classifications map to DAMAP:
+  elsevier-pure-contributor-role-classifications:
+    # DAMAP supports the following roles:
+    # DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER,
+    # PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER,
+    # RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR,
+    # PROJECT_COORDINATOR, OTHER
+    /dk/atira/pure/member: PROJECT_MEMBER
+  # Which Pure classification should be read as the project lead:
+  elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
+  ## HTTP backend:
+  elsevier-pure-backend: http
+  elsevier-pure-endpoint-url: ""
+  elsevier-pure-api-key: "your API key here"
+  ## Alternatively, the file-based backend:
+  # elsevier-pure-backend: file
+  elsevier-pure-projects-file: "file:///path/to/projects.json"
+  elsevier-pure-persons-file: "file:///path/to/persons.json"
+
+  ## Set up person lookups here:
   person-services:
+    ## Elsevier Pure integration:
+    # - display-text: 'Pure'
+    #   query-value: 'PURE'
+    #   class-name: 'org.damap.base.integration.pure.PurePersonService'
     - display-text: 'University'
       query-value: 'UNIVERSITY'
       class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
@@ -103,7 +132,12 @@ quarkus:
     always-include: true # set to false if swagger-ui should only be available in dev mode
     oauth-client-id: ${damap.auth.frontend.client}
 
+  rest-client:
+    elsevier-pure:
+      url: ${damap.elsevier-pure-endpoint-url}
+
 rest:
+  elsevier-pure/mp-rest/url: ${damap.elsevier-pure-endpoint-url}
   mock-projects/mp-rest/url: ${damap.mock-endpoint-url}
   mock-persons/mp-rest/url: ${damap.mock-endpoint-url}
   fits/mp-rest/url: ${damap.fits-url}
@@ -125,9 +159,9 @@ rest:
     datasource:
       url: jdbc:postgresql://localhost:8088/damap
       db-kind: postgresql
-    # FOR ORACLE INSTEAD USE:
-#      url: jdbc:oracle:thin:@localhost:8088/FREEPDB1
-#      db-kind: oracle
+      # FOR ORACLE INSTEAD USE:
+      #      url: jdbc:oracle:thin:@localhost:8088/FREEPDB1
+      #      db-kind: oracle
       username: damap
       password: pw4damap
     mock-endpoint-url: http://localhost:8091
@@ -139,6 +173,7 @@ rest:
     title: "DAMAP (Testing)"
     repositories:
       recommendation: ['r3d100010468'] # Re3Data id(s)
+    elsevier-pure-endpoint-url: "http://localhost:9999/fake-pure-api"
   quarkus:
     datasource:
       db-kind: h2
@@ -147,3 +182,8 @@ rest:
         url: jdbc:h2:mem:test
     oidc:
       enabled: false
+    rest-client:
+      elsevier-pure:
+        url: "http://localhost:9999/fake-pure-api"
+  rest:
+    elsevier-pure/mp-rest/url: "http://localhost:9999/fake-pure-api"

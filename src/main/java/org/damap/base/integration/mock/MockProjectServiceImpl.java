@@ -1,6 +1,5 @@
 package org.damap.base.integration.mock;
 
-import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  */
 @JBossLog
 @ApplicationScoped
-@DefaultBean
 public class MockProjectServiceImpl implements ProjectServiceProvider {
 
   @Inject @RestClient MockPersonRestService mockPersonRestService;

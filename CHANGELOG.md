@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+### Added
+ 
+- Support for Elsevier Pure project/person database integration [#392](https://github.com/damap-org/damap-backend/pull/392)
+
 ## [4.6.0] - 2025-07-08
 
 ### Added
@@ -19,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for granting and revoking owner rights, editors now cannot create more editor [#399](https://github.com/damap-org/damap-backend/pull/399)
 - Added new endpoint for updating the ORCID affiliation of contributors [#381](https://github.com/damap-org/damap-backend/pull/381)
 
-### Changed
+
+## [4.5.3] - 2025-06-11
 
 - Fixed container permissions for OpenShift deployment [#385](https://github.com/damap-org/damap-backend/pull/385)
 - Update Lombok dependency to 1.18.30 for developers on macOS [#367](https://github.com/damap-org/damap-backend/pull/367)

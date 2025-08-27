@@ -3,10 +3,12 @@ package org.damap.base.rest.dmp;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.TestProfiles;
 import org.damap.base.enums.*;
 import org.damap.base.rest.dmp.domain.*;
 import org.damap.base.rest.dmp.service.DmpConsistencyUtility;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @JBossLog
+@TestProfile(TestProfiles.DefaultProfile.class)
 class DmpConsistencyUtilityTest {
 
   @Test

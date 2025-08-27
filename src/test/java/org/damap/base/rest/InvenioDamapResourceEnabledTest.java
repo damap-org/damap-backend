@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -21,6 +23,10 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import org.damap.base.TestProfiles;
 import org.damap.base.domain.Dmp;
+import org.damap.base.integration.mock.MockProjectServiceImpl;
+import org.damap.base.integration.mock.MockUniversityPersonServiceImpl;
+import org.damap.base.integration.orcid.ORCIDMapper;
+import org.damap.base.integration.orcid.ORCIDPersonServiceImpl;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.service.DmpService;
@@ -31,6 +37,7 @@ import org.damap.base.util.TestDOFactory;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 // NOTE:
 // We could put tests for the same resource into one file and annotate sub classes with @Nested.
@@ -49,6 +56,21 @@ class InvenioDamapResourceEnabledTest {
   @Inject DmpRepo dmpRepo;
 
   @Inject DmpService dmpService;
+  @InjectMock MockUniversityPersonServiceImpl personService;
+
+  @InjectMock ORCIDPersonServiceImpl orcidPersonServiceImpl;
+
+  @InjectMock MockProjectServiceImpl projectService;
+
+  @BeforeEach
+  public void setup() {
+    Mockito.when(personService.read(any(String.class)))
+        .thenReturn(testDOFactory.getTestContributorDO());
+    Mockito.when(orcidPersonServiceImpl.read(any(String.class)))
+        .thenReturn(ORCIDMapper.mapRecordEntityToPersonDO(testDOFactory.getORCIDTestRecord()));
+    Mockito.when(projectService.getProjectLeader(any()))
+        .thenReturn(testDOFactory.getTestContributorDO());
+  }
 
   @BeforeEach
   public void cleanup() {
