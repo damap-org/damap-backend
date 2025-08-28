@@ -12,7 +12,7 @@ services:
     environment:
       DAMAP_TITLE: "DAMAP Tool"
       DAMAP_DATASOURCE_URL: "jdbc:postgresql://damap-db:5432/damap"
-      DAMAP_DATABASE_DB_KIND: "postgresql"
+      DAMAP_DATASOURCE_DB_KIND: "postgresql"
       DAMAP_DATASOURCE_USERNAME: "damap"
       DAMAP_DATASOURCE_PASSWORD: "pw4damap"
     depends_on:

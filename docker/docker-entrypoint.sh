@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-db_kind="${DAMAP_DATABASE_DB_KIND:-postgresql}"
+db_kind="${DAMAP_DATASOURCE_DB_KIND:-postgresql}"
 marker_file=".db_kind"
 
 # Check if reaugmentation is needed.

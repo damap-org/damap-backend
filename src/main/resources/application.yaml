@@ -22,8 +22,9 @@ damap:
     user: 'personID'
   datasource:
     url: ${DAMAP_DATASOURCE_URL:jdbc:postgresql://damap-db:5432/damap}
-    db-kind: ${DAMAP_DATABASE_DB_KIND:postgresql}
+    db-kind: ${DAMAP_DATASOURCE_DB_KIND:postgresql}
     driver: ${DAMAP_DATASOURCE_DRIVER:org.postgresql.Driver}
+
     username: ${DAMAP_DATASOURCE_USERNAME:damap}
     password: ${DAMAP_DATASOURCE_PASSWORD:pw4damap}
     dialect: ${DAMAP_DATASOURCE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}

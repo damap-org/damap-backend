@@ -14,7 +14,7 @@ services:
       DAMAP_DATASOURCE_URL: "jdbc:oracle:thin:@damap-db:1521/FREEPDB1"
       DAMAP_DATASOURCE_DIALECT: "org.hibernate.dialect.OracleDialect"
       DAMAP_DATASOURCE_DRIVER: "oracle.jdbc.driver.OracleDriver"
-      DAMAP_DATABASE_DB_KIND: "oracle"
+      DAMAP_DATASOURCE_DB_KIND: "oracle"
       DAMAP_DATASOURCE_USERNAME: "damap"
       DAMAP_DATASOURCE_PASSWORD: "pw4damap"
     depends_on:
