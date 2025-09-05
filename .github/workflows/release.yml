@@ -31,6 +31,8 @@ jobs:
         with:
           distribution: "adopt"
           java-version: 17.0
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
 
       - name: Change Maven version
         if: startsWith(github.ref, 'refs/tags/')
@@ -39,7 +41,7 @@ jobs:
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
       - name: Publish to GitHub packages
-        run: mvn -B deploy
+        run: mvn --batch-mode -P deploy-github-repository deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
