@@ -17,7 +17,6 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   hostPath:
     path: "{{ .Values.damap.host_folder }}"
-{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -32,6 +31,7 @@ spec:
       storage: 5G
   storageClassName: "{{ .Values.damap.storage_class_name }}"
   volumeMode: Filesystem
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -336,10 +336,12 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
+      {{- if .Values.damap.create_pv }}
       volumes:
         - name: damap-db
           persistentVolumeClaim:
             claimName: damap-db
+      {{- end }}
       containers:
         - name: damap-db
           image: postgres:16
