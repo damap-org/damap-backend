@@ -1,4 +1,4 @@
-{{ if .Values.pure.enabled }}
+{{- if .Values.pure.enabled }}
 ---
 apiVersion: v1
 kind: Secret
@@ -10,4 +10,4 @@ metadata:
 stringData:
   persons.json: {{ .Values.pure.persons_data | toJson | quote }}
   projects.json: {{ .Values.pure.projects_data | toJson | quote }}
-{{ end }}
+{{- end }}

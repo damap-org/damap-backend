@@ -61,11 +61,11 @@ spec:
         - name: damap
           secret:
             secretName: damap
-{{- if .Values.pure.enabled }}
+        {{- if .Values.pure.enabled }}
         - name: pure
           secret:
             secretName: damap-pure
-{{- end }}
+        {{- end }}
       containers:
         - name: damap-backend
           image: "{{ .Values.damap.backend_image }}"
@@ -112,16 +112,16 @@ spec:
                 secretKeyRef:
                   name: damap
                   key: frontend_auth_client_id
-{{- if .Values.keycloak.deploy }}
+            {{- if .Values.keycloak.deploy }}
             - name: DAMAP_AUTH_BACKEND_URL
-{{- if eq .Values.keycloak.hostname "localhost" }}
+              {{- if eq .Values.keycloak.hostname "localhost" }}
               value: "http://keycloak:8080/realms/damap"
-{{- else }}
+              {{- else }}
               value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
-{{- end }}
+              {{- end }}
             - name: DAMAP_AUTH_FRONTEND_URL
               value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
-{{- else }}
+            {{- else }}
             - name: DAMAP_AUTH_USER
               value: "{{ .Values.oidc.person_id_claim }}"
             - name: DAMAP_AUTH_SCOPE
@@ -134,7 +134,7 @@ spec:
               value: "{{ .Values.oidc.backend_endpoint }}"
             - name: DAMAP_AUTH_FRONTEND_URL
               value: "{{ .Values.oidc.frontend_endpoint }}"
-{{- end }}
+            {{- end }}
             - name: DAMAP_ORIGINS
               value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             - name: DAMAP_ENV
@@ -174,7 +174,7 @@ spec:
               value: "[{\"display-text\": \"Pure\", \"query-value\": \"PURE\", \"class-name\": \"org.damap.base.integration.pure.PurePersonService\"}]"
             {{- end }}
           volumeMounts:
-{{- if .Values.pure.enabled }}
+            {{- if .Values.pure.enabled }}
             - mountPath: /data/persons.json
               name: pure
               readOnly: true
@@ -183,7 +183,7 @@ spec:
               name: pure
               readOnly: true
               subPath: projects.json
-{{- end }}
+            {{- end }}
             # Workaround for reaugmentation write permissions:
             - mountPath: /quarkus-app/.db_kind
               name: damap

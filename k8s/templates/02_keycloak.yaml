@@ -1,5 +1,5 @@
-{{ if .Values.keycloak.deploy }}
-{{ if .Values.keycloak.create_pv }}
+{{- if .Values.keycloak.deploy }}
+{{- if .Values.keycloak.create_pv }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -32,7 +32,7 @@ spec:
       storage: 5G
   storageClassName: "{{ .Values.keycloak.storage_class_name }}"
   volumeMode: Filesystem
-{{ end }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -174,9 +174,9 @@ spec:
         app: keycloak-db
     spec:
       securityContext:
-        {{ if .Values.openshift }}
+        {{- if .Values.openshift }}
         runAsNonRoot: true
-        {{ end }}
+        {{- end }}
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
@@ -229,7 +229,7 @@ spec:
                 - /usr/bin/pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 5
             periodSeconds: 5
-          {{ if .Values.openshift }}
+          {{- if .Values.openshift }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
@@ -238,5 +238,5 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-          {{ end }}
-{{ end }}
+          {{- end }}
+{{- end }}
