@@ -139,7 +139,19 @@ spec:
               value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             - name: DAMAP_ENV
               value: "{{ if eq .Values.debug true }}DEV{{ else }}PROD{{ end }}"
-{{- if .Values.pure.enabled }}
+            {{- if .Values.debug }}
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT_AUTH__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_QUARKUS__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_ECLIPSE_MICROPROFILE__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_JBOSS_RESTEASY_REACTIVE__LEVEL
+              value: DEBUG
+            {{- end }}
+            {{- if .Values.pure.enabled }}
             - name: DAMAP_PROJECTS_SERVICE
               value: elsevier-pure
             - name: DAMAP_ELSEVIER_PURE_BACKEND
@@ -160,7 +172,7 @@ spec:
               value: {{ .Values.pure.role_classifications | toJson | quote }}
             - name: DAMAP_PERSON_SERVICES
               value: "[{\"display-text\": \"Pure\", \"query-value\": \"PURE\", \"class-name\": \"org.damap.base.integration.pure.PurePersonService\"}]"
-{{- end }}
+            {{- end }}
           volumeMounts:
 {{- if .Values.pure.enabled }}
             - mountPath: /data/persons.json
