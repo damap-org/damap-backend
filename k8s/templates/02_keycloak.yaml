@@ -74,14 +74,24 @@ spec:
               cpu: "0.5"
           args:
             - start
-            - --hostname={{ .Values.keycloak.hostname }}
             - --http-enabled=true
             - --proxy-headers
             - forwarded
             - --import-realm
           env:
+            {{- if eq .Values.keycloak.hostname "localhost" }}
+            {{- if .Values.debug }}
             - name: KC_LOG_LEVEL_ORG_KEYCLOAK
               value: debug
+            {{- end }}
+            - name: KC_HOSTNAME
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}"
+            - name: KC_HOSTNAME_BACKCHANNEL_DYNAMIC
+              value: "true"
+            {{- else }}
+              - name: KC_HOSTNAME
+              value: "{{ .Values.keycloak.hostname }}"
+            {{- end }}
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -92,8 +102,6 @@ spec:
                 secretKeyRef:
                   name: keycloak
                   key: admin_password
-            - name: KC_HOSTNAME
-              value: "{{ .Values.keycloak.hostname }}"
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
