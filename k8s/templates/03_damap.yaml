@@ -112,6 +112,10 @@ spec:
                 secretKeyRef:
                   name: damap
                   key: frontend_auth_client_id
+            - name: DAMAP_PERSON_SERVICES
+              value: {{ .Values.damap.person_services | toJson | quote }}
+            - name: DAMAP_PROJECTS_SERVICE
+              value: {{ .Values.damap.projects_service }}
             {{- if .Values.keycloak.deploy }}
             - name: DAMAP_AUTH_BACKEND_URL
               {{- if eq .Values.keycloak.hostname "localhost" }}
@@ -152,8 +156,6 @@ spec:
               value: DEBUG
             {{- end }}
             {{- if .Values.pure.enabled }}
-            - name: DAMAP_PROJECTS_SERVICE
-              value: elsevier-pure
             - name: DAMAP_ELSEVIER_PURE_BACKEND
               value: "{{ .Values.pure.backend }}"
             - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
@@ -170,8 +172,6 @@ spec:
               value: {{ .Values.pure.project_lead_classification | quote }}
             - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
               value: {{ .Values.pure.role_classifications | toJson | quote }}
-            - name: DAMAP_PERSON_SERVICES
-              value: "[{\"display-text\": \"Pure\", \"query-value\": \"PURE\", \"class-name\": \"org.damap.base.integration.pure.PurePersonService\"}]"
             {{- end }}
           volumeMounts:
             {{- if .Values.pure.enabled }}
