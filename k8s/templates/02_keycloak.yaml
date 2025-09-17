@@ -84,14 +84,11 @@ spec:
             - name: KC_LOG_LEVEL_ORG_KEYCLOAK
               value: debug
             {{- end }}
-            - name: KC_HOSTNAME
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}"
             - name: KC_HOSTNAME_BACKCHANNEL_DYNAMIC
               value: "true"
-            {{- else }}
-              - name: KC_HOSTNAME
-              value: "{{ .Values.keycloak.hostname }}"
             {{- end }}
+            - name: KC_HOSTNAME
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}"
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
