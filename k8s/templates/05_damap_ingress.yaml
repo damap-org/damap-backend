@@ -1,4 +1,4 @@
-{{- if .Values.openshift -}}
+{{- if .Values.openshift }}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -75,7 +75,7 @@ spec:
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
-{{ else -}}
+{{- else }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -115,4 +115,4 @@ spec:
                 name: damap-frontend
                 port:
                   number: 8080
-{{- end -}}
+{{- end }}

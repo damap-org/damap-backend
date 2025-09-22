@@ -5,13 +5,27 @@ damap:
   backend_image: "ghcr.io/damap-org/damap-backend:next"
   db_name: damap
   db_user: damap
-  db_password: "" # Defaults to auto-generate
+  # NOTE: When db_password is empty, Helm will try to reuse the existing Secret if present.
+  # In a KinD setup, if the Secret is deleted (e.g., on 'helm delete') but the DB volume persists,
+  # a new password will be generated.
+  # This mismatch can cause DB/service failures. Use a fixed password or pre-created Secret to ensure stability.
+  db_password: "damap_pass" # Empty defaults to auto-generate.
   hostname: localhost
   protocol: http
   storage_class_name: ""
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true
   host_folder: /tmp/damap
+  person_services:
+    # Elsevier Pure integration (pure.enabled must be true for this to work):
+    # NOTE: PURE must come before ORCID here, otherwise the ORCID will always be used.
+    - display-text: "Pure"
+      query-value: "PURE"
+      class-name: "org.damap.base.integration.pure.PurePersonService"
+    - display-text: "ORCID"
+      query-value: "ORCID"
+      class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
+  projects_service: elsevier-pure
 oidc:
   # The endpoint the DAMAP frontend should use from the browser. This should be
   # accessible from the user's computer. This setting will be ignored if
@@ -46,13 +60,13 @@ keycloak:
   admin_password: "" # Defaults to auto-generated, check the keycloak secret for the password after deployment
   db_name: keycloak
   db_user: keycloak
-  db_password: "" # Default to auto-generate
+  db_password: "keycloak123" # Empty defaults to auto-generate
   hostname: localhost
   protocol: http
   storage_class_name: ""
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true
-  host_folder: /tmp/key/cloak
+  host_folder: /tmp/keycloak
 # Create a custom backend build using the OpenShift CI pipeline.
 # Sadly, this doesn't work in vanilla Kubernetes.
 custom_build:
@@ -61,10 +75,211 @@ custom_build:
   ref: "next"
 pure:
   # Enable the Elsevier Pure integration.
-  enabled: false
+  enabled: true
   backend: file # Set to "http" to use the real API
-  persons_data: {} # Provide your export of the persons in your Pure installation here.
-  projects_data: {} # Provide the export of the projects in your Pure installation here.
+
+  # Mock persons data. Used when backend is "file".
+  persons_data:
+    count: 10
+    pageInformation:
+      offset: 0
+      size: 50
+    items:
+      - uuid: 123456
+        name:
+          firstName: Alice
+          lastName: Faketon
+        orcid: 0000-0000-0000-0001
+        email: alice.faketon@example.com
+      - uuid: 6542321
+        name:
+          firstName: Bob
+          lastName: Mockman
+        orcid: 0000-0000-0000-0002
+        email: bob.mockman@example.com
+      - uuid: 33333333-3333-3333-3333-333333333333
+        name:
+          firstName: Carol
+          lastName: Testerson
+        orcid: 0000-0000-0000-0003
+        email: carol.testerson@example.com
+      - uuid: 44444444-4444-4444-4444-444444444444
+        name:
+          firstName: David
+          lastName: Sampleman
+        orcid: 0000-0000-0000-0004
+        email: david.sampleman@example.com
+      - uuid: 55555555-5555-5555-5555-555555555555
+        name:
+          firstName: Eva
+          lastName: Faux
+        orcid: 0000-0000-0000-0005
+        email: eva.faux@example.com
+      - uuid: 66666666-6666-6666-6666-666666666666
+        name:
+          firstName: Frank
+          lastName: Pretend
+        orcid: 0000-0000-0000-0006
+        email: frank.pretend@example.com
+      - uuid: 77777777-7777-7777-7777-777777777777
+        name:
+          firstName: Grace
+          lastName: Makebelieve
+        orcid: 0000-0000-0000-0007
+        email: grace.makebelieve@example.com
+      - uuid: 88888888-8888-8888-8888-888888888888
+        name:
+          firstName: Henry
+          lastName: Invented
+        orcid: 0000-0000-0000-0008
+        email: henry.invented@example.com
+      - uuid: 99999999-9999-9999-9999-999999999999
+        name:
+          firstName: Ivy
+          lastName: Placeholder
+        orcid: 0000-0000-0000-0009
+        email: ivy.placeholder@example.com
+      - uuid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+        name:
+          firstName: Jack
+          lastName: Simulation
+        orcid: 0000-0000-0000-0010
+        email: jack.simulation@example.com
+
+  # Mock projects data. Used when backend is "file".
+  projects_data:
+    count: 2
+    pageInformation:
+      offset: 0
+      size: 50
+    items:
+      - typeDiscriminator: AwardManagementProject
+        uuid: ae91d2be-99a4-4d12-b172-a13ae282d808
+        acronym: Test1
+        participants:
+          - typeDiscriminator: InternalParticipantAssociation
+            pureId: 1234
+            name:
+              firstName: Alice
+              lastName: Faketon
+            role:
+              uri: "/dk/atira/pure/upmproject/roles/upmproject/pi"
+              term:
+                de_AT: Projektleitung
+                de_DE: Projektleitung
+                en_GB: Principal Investigator
+            person:
+              systemName: Person
+              uuid: 123456
+            organizations:
+              - systemName: Organization
+                uuid: 777530ec-d1a5-49d3-bf65-b4c3a683ddcc
+        descriptions:
+          - pureId: 111111
+            value:
+              en_GB: This is a test project 1
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/projectdescription"
+              term:
+                de_DE: Beschreibung
+                en_GB: Description
+          - pureId: 987654321
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/keyfindings"
+              term:
+                de_DE: Wichtigste Erkenntnisse
+                en_GB: Key findings
+        period:
+          startDate: "2022-01-01"
+          endDate: "2023-01-01"
+        title:
+          en_GB: Test Project 1
+        systemName: Project
+      - typeDiscriminator: AwardManagementProject
+        uuid: b994f445-f742-4667-943a-ce6a02e9c7cb
+        acronym: Test2
+        participants:
+          - typeDiscriminator: InternalParticipantAssociation
+            pureId: 5678
+            name:
+              firstName: Alice
+              lastName: Faketon
+            role:
+              uri: "/dk/atira/pure/upmproject/roles/upmproject/pi"
+              term:
+                de_AT: Projektleitung
+                de_DE: Projektleitung
+                en_GB: Principal Investigator
+            person:
+              systemName: Person
+              uuid: 123456
+            organizations:
+              - systemName: Organization
+                uuid: 777530ec-d1a5-49d3-bf65-b4c3a683ddcc
+        descriptions:
+          - pureId: 222222
+            value:
+              en_GB: This is a test project 2
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/projectdescription"
+              term:
+                de_DE: Beschreibung
+                en_GB: Description
+          - pureId: 987654321
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/keyfindings"
+              term:
+                de_DE: Wichtigste Erkenntnisse
+                en_GB: Key findings
+        period:
+          startDate: "2024-01-01"
+          endDate: "2025-01-01"
+        title:
+          en_GB: Test Project 2
+        systemName: Project
+      - typeDiscriminator: AwardManagementProject
+        uuid: cfbb25d5-f46c-4082-b52d-4f0e4f8d4c71
+        acronym: Test3
+        participants:
+          - typeDiscriminator: InternalParticipantAssociation
+            pureId: 9876
+            name:
+              firstName: Alice
+              lastName: Faketon
+            role:
+              uri: "/dk/atira/pure/upmproject/roles/upmproject/pi"
+              term:
+                de_AT: Projektleitung
+                de_DE: Projektleitung
+                en_GB: Principal Investigator
+            person:
+              systemName: Person
+              uuid: 654321
+            organizations:
+              - systemName: Organization
+                uuid: 777530ec-d1a5-49d3-bf65-b4c3a683ddcc
+        descriptions:
+          - pureId: 333333
+            value:
+              en_GB: This is a test project 3
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/projectdescription"
+              term:
+                de_DE: Beschreibung
+                en_GB: Description
+          - pureId: 123459876
+            type:
+              uri: "/dk/atira/pure/upmproject/descriptions/keyfindings"
+              term:
+                de_DE: Wichtigste Erkenntnisse
+                en_GB: Key findings
+        period:
+          startDate: "2026-01-01"
+          endDate: "2027-01-01"
+        title:
+          en_GB: Test Project 3
+        systemName: Project
+
   endpoint: https://...
   api_key: ...
   # Provide the classification values for the project description and project lead role here:

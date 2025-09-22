@@ -71,7 +71,7 @@ group "🚀 Start KinD cluster" $?
   set -euo pipefail
   for NODE in $(kind get nodes); do
       docker exec "${NODE}" mkdir -p "${REGISTRY_DIR}"
-      echo "[host.\"http://${REGISTRY_PORT}:5000\"]
+      echo "[host.\"http://registry:${REGISTRY_PORT}\"]
 plain_text = true" | docker exec -i "${NODE}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
     done
     if [ "$(docker inspect -f='{{json .NetworkSettings.Networks.kind}}' "${REGISTRY_CONTAINER_NAME}")" = 'null' ]; then

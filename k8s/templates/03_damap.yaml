@@ -8,7 +8,7 @@ metadata:
 spec:
   storageClassName: "{{ .Values.damap.storage_class_name }}"
   claimRef:
-    namespace: "{{.Release.Namespace}}"
+    namespace: "{{ .Release.Namespace }}"
     name: damap-db
   capacity:
     storage: 5G
@@ -16,8 +16,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: "{{ .Values.damap.host_folder}}"
-{{- end }}
+    path: "{{ .Values.damap.host_folder }}"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -32,6 +31,7 @@ spec:
       storage: 5G
   storageClassName: "{{ .Values.damap.storage_class_name }}"
   volumeMode: Filesystem
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -61,14 +61,17 @@ spec:
         - name: damap
           secret:
             secretName: damap
-{{- if .Values.pure.enabled }}
+        {{- if .Values.pure.enabled }}
         - name: pure
           secret:
             secretName: damap-pure
-{{- end }}
+        {{- end }}
       containers:
         - name: damap-backend
           image: "{{ .Values.damap.backend_image }}"
+          {{- if or (hasSuffix ":latest" .Values.damap.backend_image) (hasSuffix ":next" .Values.damap.backend_image) }}
+          imagePullPolicy: Always
+          {{- end }}
           securityContext:
             runAsNonRoot: true
           resources:
@@ -109,16 +112,20 @@ spec:
                 secretKeyRef:
                   name: damap
                   key: frontend_auth_client_id
-{{- if .Values.keycloak.deploy }}
+            - name: DAMAP_PERSON_SERVICES
+              value: {{ .Values.damap.person_services | toJson | quote }}
+            - name: DAMAP_PROJECTS_SERVICE
+              value: {{ .Values.damap.projects_service }}
+            {{- if .Values.keycloak.deploy }}
             - name: DAMAP_AUTH_BACKEND_URL
-{{- if eq .Values.keycloak.hostname "localhost" }}
+              {{- if eq .Values.keycloak.hostname "localhost" }}
               value: "http://keycloak:8080/realms/damap"
-{{- else }}
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
-{{- end }}
+              {{- else }}
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
+              {{- end }}
             - name: DAMAP_AUTH_FRONTEND_URL
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname}}/realms/damap"
-{{- else }}
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/realms/damap"
+            {{- else }}
             - name: DAMAP_AUTH_USER
               value: "{{ .Values.oidc.person_id_claim }}"
             - name: DAMAP_AUTH_SCOPE
@@ -131,14 +138,24 @@ spec:
               value: "{{ .Values.oidc.backend_endpoint }}"
             - name: DAMAP_AUTH_FRONTEND_URL
               value: "{{ .Values.oidc.frontend_endpoint }}"
-{{- end }}
+            {{- end }}
             - name: DAMAP_ORIGINS
-              value: "{{ .Values.damap.protocol}}://{{ .Values.damap.hostname }}"
+              value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             - name: DAMAP_ENV
               value: "{{ if eq .Values.debug true }}DEV{{ else }}PROD{{ end }}"
-{{- if .Values.pure.enabled }}
-            - name: DAMAP_PROJECTS_SERVICE
-              value: elsevier-pure
+            {{- if .Values.debug }}
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT_AUTH__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_QUARKUS__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_ECLIPSE_MICROPROFILE__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_JBOSS_RESTEASY_REACTIVE__LEVEL
+              value: DEBUG
+            {{- end }}
+            {{- if .Values.pure.enabled }}
             - name: DAMAP_ELSEVIER_PURE_BACKEND
               value: "{{ .Values.pure.backend }}"
             - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
@@ -155,11 +172,9 @@ spec:
               value: {{ .Values.pure.project_lead_classification | quote }}
             - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
               value: {{ .Values.pure.role_classifications | toJson | quote }}
-            - name: DAMAP_PERSON_SERVICES
-              value: "[{\"display-text\": \"Pure\", \"query-value\": \"PURE\", \"class-name\": \"org.damap.base.integration.pure.PurePersonService\"}]"
-{{- end }}
+            {{- end }}
           volumeMounts:
-{{- if .Values.pure.enabled }}
+            {{- if .Values.pure.enabled }}
             - mountPath: /data/persons.json
               name: pure
               readOnly: true
@@ -168,7 +183,7 @@ spec:
               name: pure
               readOnly: true
               subPath: projects.json
-{{- end }}
+            {{- end }}
             # Workaround for reaugmentation write permissions:
             - mountPath: /quarkus-app/.db_kind
               name: damap
@@ -192,6 +207,8 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
             seccompProfile:
               type: RuntimeDefault
             capabilities:
@@ -243,16 +260,19 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
-{{- if .Values.frontend.customize }}
+      {{- if .Values.frontend.customize }}
       volumes:
         - name: damap-customization
           secret:
             secretName: damap-customization
-{{- end }}
+      {{- end }}
       containers:
         - name: damap-frontend
           image: "{{ .Values.damap.frontend_image }}"
-{{- if .Values.frontend.customize }}
+          {{- if or (hasSuffix ":latest" .Values.damap.backend_image) (hasSuffix ":next" .Values.damap.backend_image) }}
+          imagePullPolicy: Always
+          {{- end }}
+          {{- if .Values.frontend.customize }}
           volumeMounts:
             - mountPath: /usr/share/nginx/html/assets/logo-cropped.svg
               name: damap-customization
@@ -262,7 +282,7 @@ spec:
               name: damap-customization
               subPath: logo.svg
               readOnly: true
-{{- end }}
+          {{- end }}
           resources:
             requests:
               cpu: 10m
@@ -322,14 +342,18 @@ spec:
         app: damap-db
     spec:
       securityContext:
+        {{- if .Values.openshift }}
         runAsNonRoot: true
+        {{- end }}
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
+      {{- if .Values.damap.create_pv }}
       volumes:
         - name: damap-db
           persistentVolumeClaim:
             claimName: damap-db
+      {{- end }}
       containers:
         - name: damap-db
           image: postgres:16
@@ -340,9 +364,11 @@ spec:
             limits:
               memory: 2G
               cpu: "0.25"
+          {{- if .Values.damap.create_pv }}
           volumeMounts:
             - name: damap-db
               mountPath: /var/lib/postgresql/data
+          {{- end }}
           ports:
             - containerPort: 5432
           env:
@@ -365,11 +391,16 @@ spec:
                   key: db_database
           livenessProbe:
             exec:
-              command: ["/usr/bin/pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DATABASE}"]
+              command:
+                - sh
+                - -c
+                - /usr/bin/pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             initialDelaySeconds: 5
             periodSeconds: 5
+          {{- if .Values.openshift }}
           securityContext:
             runAsNonRoot: true
+          {{- end }}
 ---
 apiVersion: v1
 kind: Service
