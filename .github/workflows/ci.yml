@@ -33,22 +33,24 @@ jobs:
           helm install damap ./ --values values.yaml
       - name: Run health check
         run: |
-          set -e
-          for i in $(seq 1 24); do
-            echo "Attempt $i..."
-            sleep 5
+          set -euo pipefail
+          max_attempts=8
+          sleep_interval=2
+
+          for i in $(seq 1 $max_attempts); do
             response=$(curl -s -w "%{http_code}" -o /dev/null http://localhost/api/config)
-            echo -e "Status code: $response"
             if [ "$response" == "200" ]; then
-              echo "Health check passed after $i attempt(s)."
-              break
+              echo "Backend is healthy after $i attempts."
+              exit 0
             fi
+            echo "Backend not healthy (status code: $response). Retrying in ${sleep_interval}s..."
+            sleep $sleep_interval
+            sleep_interval=$((sleep_interval * 2)) # Exponential backoff
           done
 
-          if [ "$response" != "200" ]; then
-            echo "Health check failed after 24 attempts."
-            exit 1
-          fi
+          echo "Health check failed after $max_attempts attempts."
+          exit 1
+
   # This job builds the Docker images and runs a health check to ensure the
   # backend service is up and running. It uses 2 databases: Oracle and Postgres.
   test-docker:
