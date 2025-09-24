@@ -12,7 +12,7 @@ metadata:
   {{- end }}
 spec:
   host: "{{ .Values.keycloak.hostname }}"
-  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms/damap{{ else }}/{{ end }}"
+  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms{{ else }}/{{ end }}"
   to:
     name: keycloak
     weight: 100
@@ -36,7 +36,7 @@ spec:
     - host: "{{ .Values.keycloak.hostname }}"
       http:
         paths:
-          - path: "{{ if eq .Values.keycloak.hostname "localhost" }}/realms/damap{{ else }}/{{ end }}"
+          - path: "{{ if eq .Values.keycloak.hostname "localhost" }}/realms{{ else }}/{{ end }}"
             pathType: Prefix
             backend:
               service:
