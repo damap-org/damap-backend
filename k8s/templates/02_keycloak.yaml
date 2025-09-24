@@ -64,7 +64,7 @@ spec:
             secretName: keycloak
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.2
+          image: quay.io/keycloak/keycloak:26.3
           resources:
             requests:
               cpu: 10m
