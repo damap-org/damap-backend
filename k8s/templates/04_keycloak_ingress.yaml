@@ -44,6 +44,13 @@ spec:
                 port:
                   number: 8080
           {{- if eq .Values.keycloak.hostname "localhost" }}
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
           - path: "/resources"
             pathType: Prefix
             backend:
