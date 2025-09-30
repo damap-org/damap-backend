@@ -1,0 +1,4 @@
+name: damap
+
+include:
+  - docker/prod/docker-compose.yaml

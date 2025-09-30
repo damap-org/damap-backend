@@ -1,23 +1,22 @@
-name: DAMAP DB
 services:
-  damap-db:
+  db:
     image: postgres:16
+    profiles:
+      - with_db
     environment:
       PGDATA: /var/lib/postgresql/data/damap-db
       POSTGRES_USER: ${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}
       POSTGRES_PASSWORD: ${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}
       POSTGRES_DB: ${DAMAP_DATABASE_NAME?The DAMAP database name is required}
-    profiles:
-      - with_db
     volumes:
       - ${DAMAP_DATABASE_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
+    networks:
+      damap-internal:
+        aliases:
+          - damap-db
     healthcheck:
       test: [ "CMD", "/bin/sh", "-c", "/usr/bin/pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
       interval: 5s
       start_period: 5s
       timeout: 15s
       retries: 5
-    networks:
-      damap-internal:
-        aliases:
-         - damap-db

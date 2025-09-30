@@ -1,23 +1,22 @@
-name: Keycloak DB
 services:
   keycloak-db:
     image: postgres:16
+    profiles:
+      - with_keycloak_db
     environment:
       PGDATA: /var/lib/postgresql/data/keycloak-db
       POSTGRES_USER: ${KEYCLOAK_DATABASE_USERNAME?The Keycloak datasource username is required}
       POSTGRES_PASSWORD: ${KEYCLOAK_DATABASE_PASSWORD?The Keycloak datasource password is required}
       POSTGRES_DB: ${KEYCLOAK_DATABASE_NAME?The Keycloak database name is required}
-    profiles:
-      - with_keycloak_db
     volumes:
       - ${KEYCLOAK_DATABASE_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
+    networks:
+      damap-internal:
+        aliases:
+          - keycloak-db
     healthcheck:
       test: [ "CMD", "/bin/sh", "-c", "/usr/bin/pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
       interval: 5s
       start_period: 5s
       timeout: 15s
       retries: 5
-    networks:
-      damap-internal:
-        aliases:
-          - keycloak-db

@@ -1,5 +1,5 @@
 services:
-  damap-fe:
+  frontend:
     # Since DAMAP containers are publicly available on GitHub packages one can
     # just pull the latest container image.
     image: ghcr.io/damap-org/damap-frontend:next
@@ -10,21 +10,22 @@ services:
     build:
       context: ../../damap-frontend
     depends_on:
-      - damap-be
+      - backend
 
   proxy:
     # Since several components share the same ports and address, this docker
     # configuration needs a proxy to manage the connections between them,
     # as well as access from the outside.
-    image: registry.hub.docker.com/library/nginx
+    image: nginx:1
     restart: unless-stopped
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf
     ports:
       - "8085:80"
     depends_on:
-      - damap-fe
-      - damap-be
+      - frontend
+      - backend
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.3
     pull_policy: always
@@ -51,6 +52,22 @@ services:
       - ./sample-damap-realm-export.json:/opt/keycloak/data/import/damap-realm-import.json
     depends_on:
       - keycloak-db
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "/bin/bash"
+        - "-c"
+        - |
+          exec 3<>/dev/tcp/localhost/8080
+          echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\nconnection: close\n\n" >&3
+          test "$(cat <&3 | grep -m 1 'HTTP/1.1 ')" = "HTTP/1.1 200 OK"
+          exec 3<&-
+          exec 3>&-
+          exit $?
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
 
   keycloak-db:
     image: postgres:16
@@ -72,6 +89,13 @@ services:
       - ./api-mock/data/routes.json:/data/routes.json
     ports:
       - "8091:80"
+
+  fits:
+    image: islandora/fits:main
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "8089:8080"
 
   gotenberg:
     image: gotenberg/gotenberg:8

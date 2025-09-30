@@ -1,5 +1,112 @@
 ## This file contains a production-grade setup of DAMAP as a Docker Compose file.
 name: DAMAP
+
+include:
+  - docker-compose.db.yaml
+  - docker-compose.keycloak.yaml
+
+services:
+  backend:
+    image: ghcr.io/damap-org/damap-backend:next
+    restart: unless-stopped
+    environment:
+      DAMAP_DATASOURCE_URL: "jdbc:postgresql://${DAMAP_DATABASE_HOST:-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}"
+      DAMAP_DATABASE_DB_KIND: "postgresql"
+      DAMAP_DATASOURCE_USERNAME: "${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}"
+      DAMAP_DATASOURCE_PASSWORD: "${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}"
+      DAMAP_ORIGINS: "${DAMAP_ORIGINS?The DAMAP origins setting is required}"
+      DAMAP_AUTH_BACKEND_URL: "${DAMAP_AUTH_BACKEND_URL?The OIDC URL is required}"
+      DAMAP_AUTH_FRONTEND_URL: "${DAMAP_AUTH_FRONTEND_URL?The OIDC URL is required}"
+      DAMAP_AUTH_BACKEND_CLIENT: "${DAMAP_AUTH_BACKEND_CLIENT?The OIDC client ID is required}"
+      DAMAP_AUTH_FRONTEND_CLIENT: "${DAMAP_AUTH_FRONTEND_CLIENT?The OIDC client ID is required}"
+    expose:
+      - 8080
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false # We don't require this since the DB only exists when the with_db profile is enabled.
+      keycloak:
+        condition: service_healthy
+        required: false # We don't require this since the DB only exists when the with_keycloak profile is enabled.
+    networks:
+      damap-internal:
+        aliases:
+          - damap-be
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+
+  frontend:
+    image: ghcr.io/damap-org/damap-frontend:next
+    restart: unless-stopped
+    expose:
+      - 8080
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      damap-internal:
+        aliases:
+          - damap-fe
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  proxy:
+    image: nginx:1
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - logs:/var/log
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    secrets:
+      - certificate
+      - private_key
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      api-mock:
+        condition: service_started
+    networks:
+      damap-internal:
+      damap-external:
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+
+  # TODO replace the API mock with a build-in mock:
+  api-mock:
+    image: clue/json-server
+    pull_policy: always
+    restart: unless-stopped
+    command: db.json --routes routes.json
+    configs:
+      - source: api-mock-db
+        target: /data/db.json
+      - source: api-mock-routes
+        target: /data/routes.json
+    networks:
+      damap-internal:
+        aliases:
+          - api-mock
+
 configs:
   api-mock-routes:
     content: |
@@ -7,6 +114,7 @@ configs:
         "/api/projects": "/projects",
         "/api/projects/*/staff": "/persons"
       }
+
   api-mock-db:
     content: |
       {
@@ -45,7 +153,7 @@ configs:
               listen [::]:443 ssl default_server;
               http2 on;
               ssl_certificate     /run/secrets/certificate;
-              ssl_certificate_key /run/secrets/privatekey;
+              ssl_certificate_key /run/secrets/private_key;
               add_header Strict-Transport-Security "max-age=63072000" always;
               location / {
                   proxy_pass http://damap-fe:8080;
@@ -109,11 +217,13 @@ configs:
           # Note: OCSP stapling is disabled as OCSP is being phased out,
           # see: https://letsencrypt.org/2024/12/05/ending-ocsp/
       }
+
 secrets:
   certificate:
     file: ./tls/bundle.crt
-  privatekey:
+  private_key:
     file: ./tls/private.pem
+
 volumes:
   logs:
     name: logs
@@ -122,105 +232,7 @@ volumes:
       o: bind
       type: none
       device: "${PROXY_LOG_HOST_PATH?Please specify a log path.}"
-include:
-  - docker-compose.db.yaml
-  - docker-compose.keycloak.yaml
-services:
-  damap-be:
-    image: ghcr.io/damap-org/damap-backend:next
-    restart: unless-stopped
-    environment:
-      DAMAP_DATASOURCE_URL: "jdbc:postgresql://${DAMAP_DATABASE_HOST:-damap-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}"
-      DAMAP_DATABASE_DB_KIND: "postgresql"
-      DAMAP_DATASOURCE_USERNAME: "${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}"
-      DAMAP_DATASOURCE_PASSWORD: "${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}"
-      DAMAP_ORIGINS: "${DAMAP_ORIGINS?The DAMAP origins setting is required}"
-      DAMAP_AUTH_BACKEND_URL: "${DAMAP_AUTH_BACKEND_URL?The OIDC URL is required}"
-      DAMAP_AUTH_FRONTEND_URL: "${DAMAP_AUTH_FRONTEND_URL?The OIDC URL is required}"
-      DAMAP_AUTH_BACKEND_CLIENT: "${DAMAP_AUTH_BACKEND_CLIENT?The OIDC client ID is required}"
-      DAMAP_AUTH_FRONTEND_CLIENT: "${DAMAP_AUTH_FRONTEND_CLIENT?The OIDC client ID is required}"
-    expose:
-      - 8080
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
-      start_period: 120s
-      interval: 30s
-      timeout: 15s
-      retries: 5
-    networks:
-      damap-internal:
-        aliases:
-          - damap-be
-    depends_on:
-      damap-db:
-        condition: service_healthy
-        required: false # We don't require this since the DB only exists when the with_db profile is enabled.
-      keycloak:
-        condition: service_healthy
-        required: false # We don't require this since the DB only exists when the with_keycloak profile is enabled.
-  damap-fe:
-    image: ghcr.io/damap-org/damap-frontend:next
-    restart: unless-stopped
-    expose:
-      - 8080
-    depends_on:
-      damap-be:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
-      start_period: 120s
-      interval: 30s
-      timeout: 15s
-      retries: 5
-    networks:
-      damap-internal:
-        aliases:
-          - damap-fe
-  proxy:
-    image: registry.hub.docker.com/library/nginx
-    restart: unless-stopped
-    volumes:
-      - logs:/var/log
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      damap-fe:
-        condition: service_healthy
-      damap-be:
-        condition: service_healthy
-      api-mock:
-        condition: service_started
-    configs:
-      - source: nginx
-        target: /etc/nginx/nginx.conf
-    secrets:
-      - certificate
-      - privatekey
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
-      start_period: 120s
-      interval: 30s
-      timeout: 15s
-      retries: 5
-    networks:
-      damap-internal:
-      damap-external:
-  # TODO replace the API mock with a build-in mock:
-  api-mock:
-    image: clue/json-server
-    pull_policy: always
-    restart: unless-stopped
-    command: db.json --routes routes.json
-    configs:
-      - source: api-mock-db
-        target: /data/db.json
-      - source: api-mock-routes
-        target: /data/routes.json
-    networks:
-      damap-internal:
-        aliases:
-          - api-mock
+
 networks:
   damap-external:
     name: damap-external
