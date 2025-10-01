@@ -86,7 +86,7 @@ services:
       damap-internal:
       damap-external:
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:80/q/health/live" ]
       start_period: 120s
       interval: 30s
       timeout: 15s
