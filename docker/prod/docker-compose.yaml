@@ -10,7 +10,9 @@ services:
     image: ghcr.io/damap-org/damap-backend:next
     restart: unless-stopped
     environment:
-      DAMAP_DATASOURCE_URL: "jdbc:postgresql://${DAMAP_DATABASE_HOST:-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}"
+      DAMAP_ENV: PROD
+      DAMAP_TITLE: "${DAMAP_TITLE:-DAMAP Tool}"
+      DAMAP_DATASOURCE_URL: "jdbc:postgresql://${DAMAP_DATABASE_HOST:-damap-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}"
       DAMAP_DATABASE_DB_KIND: "postgresql"
       DAMAP_DATASOURCE_USERNAME: "${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}"
       DAMAP_DATASOURCE_PASSWORD: "${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}"
