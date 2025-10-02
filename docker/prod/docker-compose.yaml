@@ -1,5 +1,5 @@
 ## This file contains a production-grade setup of DAMAP as a Docker Compose file.
-name: DAMAP
+name: damap
 
 include:
   - docker-compose.db.yaml
@@ -40,7 +40,6 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-
 
   frontend:
     image: ghcr.io/damap-org/damap-frontend:next
@@ -91,7 +90,6 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-
 
   # TODO replace the API mock with a build-in mock:
   api-mock:

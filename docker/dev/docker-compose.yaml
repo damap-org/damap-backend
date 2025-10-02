@@ -1,3 +1,6 @@
+## This file contains a development setup of DAMAP as a Docker Compose file.
+name: damap-dev
+
 include:
   - docker-compose.dev.common.yaml
 
