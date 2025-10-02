@@ -1,8 +1,10 @@
-## This file contains a development setup of DAMAP as a Docker Compose file.
+# This file contains a development setup of DAMAP as a Docker Compose file.
+# NOTE: This is NOT intended for production use!
+
 name: damap-dev
 
 include:
-  - docker-compose.dev.common.yaml
+  - docker-compose.common.yaml
 
 services:
   backend:
@@ -22,7 +24,7 @@ services:
       db:
         condition: service_started
       keycloak:
-          condition: service_healthy
+        condition: service_healthy
       api-mock:
         condition: service_started
       fits:

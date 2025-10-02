@@ -1,3 +1,7 @@
+# This file contains a production-grade setup of DAMAP as a Docker Compose file.
+# It is a shortcut for the production setup in docker/prod/docker-compose.yaml.
+# NOTE: You should still review the security aspects of the setup before using it in production!
+
 name: damap
 
 include:

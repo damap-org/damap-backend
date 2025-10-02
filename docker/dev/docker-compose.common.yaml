@@ -5,12 +5,17 @@ services:
     image: ghcr.io/damap-org/damap-frontend:next
     pull_policy: always
     restart: unless-stopped
-
-    # Assumed to be checked-out beside the 'damap-backend' repository.
-    build:
-      context: ../../damap-frontend
     depends_on:
       - backend
+    networks:
+      default:
+        aliases:
+          - damap-fe
+    # Assumed to be checked-out beside the 'damap-backend' repository.
+    # If you want to test changes to the frontend, you can build the image
+    # locally by commenting the 'image' line above.
+    build:
+      context: ../../damap-frontend
 
   proxy:
     # Since several components share the same ports and address, this docker
@@ -89,6 +94,15 @@ services:
       - ./api-mock/data/routes.json:/data/routes.json
     ports:
       - "8091:80"
+    networks:
+      default:
+        aliases:
+          - api-mock
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8091/" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
 
   fits:
     image: islandora/fits:main
