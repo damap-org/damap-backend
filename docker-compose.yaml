@@ -1,4 +1,4 @@
 name: damap-dev
 
 include:
-  - docker/dev/docker-compose.dev.postgres.yaml
+  - docker/dev/docker-compose.yaml

@@ -24,6 +24,10 @@ services:
         condition: service_started
       fits:
         condition: service_started
+    networks:
+      default:
+        aliases:
+          - damap-be
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
       interval: 30s
@@ -42,6 +46,10 @@ services:
       - "8088:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases:
+          - damap-db
     healthcheck:
       test: [ "CMD-SHELL", "sh -c 'pg_isready -U damap -d damap'" ]
       interval: 30s
