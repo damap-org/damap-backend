@@ -34,12 +34,6 @@ services:
       # --- Settings needed for DAMAP to use the Person and Projects services --- #
       DAMAP_PERSON_SERVICES: ${DAMAP_PERSON_SERVICES:-[{"display-text":"Pure","query-value":"PURE","class-name":"org.damap.base.integration.pure.PurePersonService"},{"display-text":"ORCID","query-value":"ORCID","class-name":"org.damap.base.integration.orcid.ORCIDPersonServiceImpl"}]}
       DAMAP_PROJECTS_SERVICE: ${DAMAP_PROJECTS_SERVICE:-elsevier-pure}
-
-      QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT_AUTH__LEVEL: DEBUG
-      QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT__LEVEL: DEBUG
-      QUARKUS_LOG_CATEGORY__IO_QUARKUS__LEVEL: DEBUG
-      QUARKUS_LOG_CATEGORY__ORG_ECLIPSE_MICROPROFILE__LEVEL: DEBUG
-      QUARKUS_LOG_CATEGORY__ORG_JBOSS_RESTEASY_REACTIVE__LEVEL: DEBUG
     expose:
       - 8080
     configs:
@@ -212,15 +206,15 @@ configs:
         "items": [
           {
             "uuid": "123456",
-            "name": { "firstName": "Alice", "lastName": "Faketon" },
+            "name": { "firstName": "User", "lastName": "User" },
             "orcid": "0000-0000-0000-0001",
-            "email": "alice.faketon@example.com"
+            "email": "user@example.com"
           },
           {
-            "uuid": "22222222-2222-2222-2222-222222222222",
-            "name": { "firstName": "Bob", "lastName": "Mockman" },
+            "uuid": "654321",
+            "name": { "firstName": "Admin", "lastName": "Admin" },
             "orcid": "0000-0000-0000-0002",
-            "email": "bob.mockman@example.com"
+            "email": "admin@example.com"
           }
         ]
       }
@@ -228,145 +222,321 @@ configs:
   pure-projects-data:
     content: |
       {
-        "count": 2,
+        "count": 5,
         "pageInformation": {
           "offset": 0,
           "size": 50
         },
         "items": [
           {
-            "typeDiscriminator": "AwardManagementProject",
-            "uuid": "ae91d2be-99a4-4d12-b172-a13ae282d808",
-            "acronym": "Test",
-            "participants": [
+            "acronym": "PROJ.FWF",
+            "descriptions": [
               {
-                "typeDiscriminator": "InternalParticipantAssociation",
-                "pureId": "1234",
-                "name": {
-                  "firstName": "Alice",
-                  "lastName": "Faketon"
-                },
-                "role": {
-                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                "pureId": "654321",
+                "type": {
+                  "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
                   "term": {
-                    "de_AT": "Projektleitung",
-                    "en_GB": "Principal Investigator",
-                    "de_DE": "Projektleitung"
+                    "en_GB": "This project is funded by the FWF and is recommended."
                   }
                 },
+                "value": {
+                  "en_GB": "This is a test project."
+                }
+              },
+              {
+                "pureId": "111111",
+                "type": {
+                  "term": {
+                    "en_GB": "Key findings"
+                  },
+                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings"
+                }
+              }
+            ],
+            "participants": [
+              {
+                "name": {
+                  "firstName": "User",
+                  "lastName": "User"
+                },
+                "organizations": [
+                  {
+                    "systemName": "Organization",
+                    "uuid": "org-uuid-001"
+                  }
+                ],
                 "person": {
                   "systemName": "Person",
                   "uuid": "123456"
                 },
-                "organizations": [
-                  {
-                    "systemName": "Organization",
-                    "uuid": "777530ec-d1a5-49d3-bf65-b4c3a683ddcc"
+                "pureId": "999991",
+                "role": {
+                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                  "term": {
+                    "en_GB": "Principal Investigator"
                   }
-                ]
+                },
+                "typeDiscriminator": "InternalParticipantAssociation"
               }
             ],
+            "period": {
+              "startDate": "2020-01-01",
+              "endDate": "2020-12-31"
+            },
+            "systemName": "Project",
+            "title": {
+              "en_GB": "FWF Sample Project"
+            },
+            "typeDiscriminator": "AwardManagementProject",
+            "uuid": "proj-uuid-001"
+          },
+          {
+            "acronym": "PROJ.HORIZON-EUROPE",
             "descriptions": [
               {
-                "pureId": "123456",
-                "value": {
-                  "en_GB": "This is a test project"
-                },
+                "pureId": "654322",
                 "type": {
                   "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
                   "term": {
-                    "en_GB": "Description",
-                    "de_DE": "Beschreibung"
+                    "en_GB": "This project is funded by the EU and is recommended."
                   }
+                },
+                "value": {
+                  "en_GB": "This is a test project."
                 }
               },
               {
-                "pureId": "987654321",
+                "pureId": "111112",
                 "type": {
-                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings",
                   "term": {
-                    "en_GB": "Key findings",
-                    "de_DE": "Wichtigste Erkenntnisse"
-                  }
+                    "en_GB": "Key findings"
+                  },
+                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings"
                 }
+              }
+            ],
+            "participants": [
+              {
+                "name": {
+                  "firstName": "User",
+                  "lastName": "User"
+                },
+                "organizations": [
+                  {
+                    "systemName": "Organization",
+                    "uuid": "org-uuid-002"
+                  }
+                ],
+                "person": {
+                  "systemName": "Person",
+                  "uuid": "123456"
+                },
+                "pureId": "999992",
+                "role": {
+                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                  "term": {
+                    "en_GB": "Principal Investigator"
+                  }
+                },
+                "typeDiscriminator": "InternalParticipantAssociation"
+              }
+            ],
+            "period": {
+              "startDate": "2021-01-01",
+              "endDate": "2021-12-31"
+            },
+            "systemName": "Project",
+            "title": {
+              "en_GB": "Horizon Europe Sample Project"
+            },
+            "typeDiscriminator": "AwardManagementProject",
+            "uuid": "proj-uuid-002"
+          },
+          {
+            "acronym": "PROJ.NO-FUNDING",
+            "descriptions": [
+              {
+                "pureId": "654323",
+                "type": {
+                  "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
+                  "term": {
+                    "en_GB": "This project has no funding and is recommended."
+                  }
+                },
+                "value": {
+                  "en_GB": "This is a test project."
+                }
+              },
+              {
+                "pureId": "111113",
+                "type": {
+                  "term": {
+                    "en_GB": "Key findings"
+                  },
+                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings"
+                }
+              }
+            ],
+            "participants": [
+              {
+                "name": {
+                  "firstName": "User",
+                  "lastName": "User"
+                },
+                "organizations": [
+                  {
+                    "systemName": "Organization",
+                    "uuid": "org-uuid-003"
+                  }
+                ],
+                "person": {
+                  "systemName": "Person",
+                  "uuid": "123456"
+                },
+                "pureId": "999993",
+                "role": {
+                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                  "term": {
+                    "en_GB": "Principal Investigator"
+                  }
+                },
+                "typeDiscriminator": "InternalParticipantAssociation"
               }
             ],
             "period": {
               "startDate": "2022-01-01",
-              "endDate": "2023-01-01"
+              "endDate": "2022-12-31"
             },
+            "systemName": "Project",
             "title": {
-              "en_GB": "Test Project, Test",
-              "de_DE": "Test Projekt, Test"
+              "en_GB": "Horizon Europe Sample Project"
             },
-            "systemName": "Project"
+            "typeDiscriminator": "AwardManagementProject",
+            "uuid": "proj-uuid-003"
           },
           {
-            "typeDiscriminator": "AwardManagementProject",
-            "uuid": "ae91d2be-99a4-4d12-b172-a13ae282d809",
-            "acronym": "Test2",
-            "participants": [
+            "acronym": "PROJ.UNKNOWN-FUNDING",
+            "descriptions": [
               {
-                "typeDiscriminator": "InternalParticipantAssociation",
-                "pureId": "5678",
-                "name": {
-                  "firstName": "Bob",
-                  "lastName": "Mockman"
-                },
-                "role": {
-                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                "pureId": "654324",
+                "type": {
+                  "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
                   "term": {
-                    "de_AT": "Projektleitung",
-                    "en_GB": "Principal Investigator",
-                    "de_DE": "Projektleitung"
+                    "en_GB": "This project is funded by an unknown entity and is recommended."
                   }
                 },
-                "person": {
-                  "systemName": "Person",
-                  "uuid": "22222222-2222-2222-2222-222222222222"
+                "value": {
+                  "en_GB": "This is a test project."
+                }
+              },
+              {
+                "pureId": "111114",
+                "type": {
+                  "term": {
+                    "en_GB": "Key findings"
+                  },
+                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings"
+                }
+              }
+            ],
+            "participants": [
+              {
+                "name": {
+                  "firstName": "User",
+                  "lastName": "User"
                 },
                 "organizations": [
                   {
                     "systemName": "Organization",
-                    "uuid": "88888888-d1a5-49d3-bf65-b4c3a683ddcc"
+                    "uuid": "org-uuid-004"
                   }
-                ]
-              }
-            ],
-            "descriptions": [
-              {
-                "pureId": "22222222",
-                "value": {
-                  "en_GB": "This is another test project"
+                ],
+                "person": {
+                  "systemName": "Person",
+                  "uuid": "123456"
                 },
-                "type": {
-                  "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
+                "pureId": "999994",
+                "role": {
+                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
                   "term": {
-                    "en_GB": "Description",
-                    "de_DE": "Beschreibung"
+                    "en_GB": "Principal Investigator"
                   }
-                }
-              },
-              {
-                "pureId": "987654322",
-                "type": {
-                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings",
-                  "term": {
-                    "en_GB": "Key findings",
-                    "de_DE": "Wichtigste Erkenntnisse"
-                  }
-                }
+                },
+                "typeDiscriminator": "InternalParticipantAssociation"
               }
             ],
             "period": {
               "startDate": "2023-01-01",
-              "endDate": "2024-01-01"
+              "endDate": "2023-12-31"
             },
+            "systemName": "Project",
             "title": {
-              "en_GB": "Test Project 2, Test",
-              "de_DE": "Test Projekt 2, Test"
+              "en_GB": "Horizon Europe Sample Project"
             },
-            "systemName": "Project"
+            "typeDiscriminator": "AwardManagementProject",
+            "uuid": "proj-uuid-004"
+          },
+          {
+            "acronym": "PROJ.ACRONYM",
+            "descriptions": [
+              {
+                "pureId": "654325",
+                "type": {
+                  "uri": "/dk/atira/pure/upmproject/descriptions/projectdescription",
+                  "term": {
+                    "en_GB": "This project won't be displayed in the recommended projects list for the user 'user'."
+                  }
+                },
+                "value": {
+                  "en_GB": "This is a test project."
+                }
+              },
+              {
+                "pureId": "111115",
+                "type": {
+                  "term": {
+                    "en_GB": "Key findings"
+                  },
+                  "uri": "/dk/atira/pure/upmproject/descriptions/keyfindings"
+                }
+              }
+            ],
+            "participants": [
+              {
+                "name": {
+                  "firstName": "Admin",
+                  "lastName": "Admin"
+                },
+                "organizations": [
+                  {
+                    "systemName": "Organization",
+                    "uuid": "org-uuid-005"
+                  }
+                ],
+                "person": {
+                  "systemName": "Person",
+                  "uuid": "654321"
+                },
+                "pureId": "999995",
+                "role": {
+                  "uri": "/dk/atira/pure/upmproject/roles/upmproject/pi",
+                  "term": {
+                    "en_GB": "Principal Investigator"
+                  }
+                },
+                "typeDiscriminator": "InternalParticipantAssociation"
+              }
+            ],
+            "period": {
+              "startDate": "2024-01-01",
+              "endDate": "2024-12-31"
+            },
+            "systemName": "Project",
+            "title": {
+              "en_GB": "Project Sample"
+            },
+            "typeDiscriminator": "AwardManagementProject",
+            "uuid": "proj-uuid-005"
           }
         ]
       }
