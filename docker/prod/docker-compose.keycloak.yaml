@@ -1,5 +1,4 @@
 include:
-  - docker-compose.keycloak.db.yaml
   - docker-compose.keycloak.config.yaml
 
 services:
@@ -16,9 +15,7 @@ services:
       - --proxy-headers
       - xforwarded
       - --import-realm
-      - --hostname-debug=true
     environment:
-      KC_LOG_LEVEL_ORG_KEYCLOAK: debug # TODO: set to info or warn in production
       KC_BOOTSTRAP_ADMIN_USERNAME: "${KEYCLOAK_ADMIN_USER?Please provide an admin user for Keycloak}"
       KC_BOOTSTRAP_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD?Please provide an admin password for Keycloak}"
       KC_HOSTNAME: "${DAMAP_HOSTNAME?Please provide a hostname for DAMAP}"
@@ -49,3 +46,25 @@ services:
           exec 3<&-
           exec 3>&-
           exit $?
+
+  keycloak-db:
+    image: postgres:16
+    profiles:
+      - with_keycloak_db
+    environment:
+      PGDATA: /var/lib/postgresql/data/keycloak-db
+      POSTGRES_USER: ${KEYCLOAK_DATABASE_USERNAME?The Keycloak datasource username is required}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DATABASE_PASSWORD?The Keycloak datasource password is required}
+      POSTGRES_DB: ${KEYCLOAK_DATABASE_NAME?The Keycloak database name is required}
+    volumes:
+      - ${KEYCLOAK_DATABASE_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
+    networks:
+      damap-internal:
+        aliases:
+          - keycloak-db
+    healthcheck:
+      test: [ "CMD", "/bin/sh", "-c", "/usr/bin/pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
+      interval: 5s
+      start_period: 5s
+      timeout: 15s
+      retries: 5
