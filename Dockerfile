@@ -49,6 +49,9 @@ ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jb
     LANG="en_US.UTF-8" \
     LANGUAGE="en_US:en"
 
+# to start in multitenant mode, pass -Dquarkus.profile=multitenant
+ENV QUARKUS_PROFILES=""
+
 WORKDIR /quarkus-app
 
 COPY --from=builder /home/app/target/quarkus-app/ ./

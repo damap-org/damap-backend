@@ -208,6 +208,80 @@ damap:
   env: DEV
 ```
 
+### Configuring Multitenancy
+
+One DAMAP instance can be configured to support multiple separate tenants (usually universities), which is most useful
+in Kubernetes-based deployments. This works by assigning each new tenant their own separate database, and by checking 
+authentication tokens to determine which organisation a user belongs to. Depending on affiliation, the correct database
+is used - this way user data stays completely separate between tenants.
+
+Since every new tenant needs a separate database, you need to create them first. With the standard postgresql database, 
+you can use this command:
+
+```shell
+CREATE DATABASE tenant_1 OWNER damap;
+```
+**Warning:** Rewrite this after EduId integration is done
+`tenant_1` is a stand-in for the tenants' id. It's generated from the eduPersonScopedAffiliation field by taking the
+affiliation after the @. The multitenancy feature is therefore only available when using EduId Authentication.
+
+To enable multitenancy, set the `QUARKUS_PROFILES` environment variable to `-Dquarkus.profile=multitenant` in order to
+activate the multitenant quarkus profile. If you need to activate multiple profiles, pass a value like this:
+`-Dquarkus.profile.activate=multitenant,xyz`. 
+
+**Warning:** Rewrite this after Helm Chart is done
+After enabling multitenancy mode, you need to configure new tenants by creating a yaml config file. This file does not
+need to be in the classpath. To create the file, you can use this template, `tenant_1` and `tenant_2` are again
+stand-ins for the tenants' id - they have to match the id you used when creating the tenants' database:
+
+```yaml
+tenants: ['tenant_1', 'tenant_2']
+"%multitenant":
+  quarkus:
+    datasource:
+      tenant_1:
+        jdbc:
+          url: jdbc:postgresql://damap-db:5432/tenant_1
+          driver: ${damap.datasource.driver}
+        db-kind: ${damap.datasource.db-kind}
+        username: ${damap.datasource.username}
+        password: ${damap.datasource.password}
+      tenant_2:
+        jdbc:
+          url: jdbc:postgresql://damap-db:5432/tenant_2
+          driver: ${damap.datasource.driver}
+        db-kind: ${damap.datasource.db-kind}
+        username: ${damap.datasource.username}
+        password: ${damap.datasource.password}
+
+    liquibase:
+      tenant_1:
+        migrate-at-start: true
+        change-log: org/damap/base/db/changeLog-root.yaml
+      tenant_2:
+        migrate-at-start: true
+        change-log: org/damap/base/db/changeLog-root.yaml
+```
+
+To load the config file, set the `DAMAP_MULTITENANT_CONFIG` variable to point to the file path of the tenant
+config. Use this way of specifying the file path : `file:///path/to/config/file.yaml`.
+In a local deployment, you can also go into the `application.yaml` under profile `"%multitenant"` and set the config
+path value there.
+
+```yaml
+config:
+  locations: ${DAMAP_MULTITENANT_CONFIG:file:///path/to/config/file.yaml}"
+```
+
+And now you are done - DAMAP automatically runs the [reaugmentation](https://quarkus.io/guides/reaugmentation) process when the container or pod starts up, 
+which rebuilds quarkus bytecode without compiling sourcecode. This process then adds nd enables the newly configured
+tenants.
+
+To add new tenants after the fact, create a database for them and update the config yaml file accordingly. To off board
+tenants, remove their entries from the yaml file. Then just restart the container or pod.
+Now you just need to run these command which reaugment and restart the application (important: this only works when the
+package has been built with the `-Dquarkus.package.jar.type=mutable-jar` flag, which the Dockerfile does by default):
+
 ## Deploying the damap frontend
 
 For running and adapting the frontend refer to the [damap-frontend project](https://github.com/damap-org/damap-frontend/blob/next/CUSTOMISING.md).
