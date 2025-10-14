@@ -1208,9 +1208,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         }
 
         if (dataset.getLicense() != null) {
-          // TODO second String license option for reused datasets.
           // TODO use addHyperlinkRun to create hyperlinks - see publication table
-          docVar.add("");
+          docVar.add(dataset.getLicense().getAcronym());
         } else {
           docVar.add("");
         }
@@ -1224,6 +1223,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         } else {
           docVar.add("no");
         }
+
+        docVar.add(Optional.ofNullable(dataset.getDescription()).orElse(""));
 
         insertTableCells(xwpfTable, newRow, docVar);
       }
