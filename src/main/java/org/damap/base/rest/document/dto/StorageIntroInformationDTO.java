@@ -9,7 +9,11 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StorageIntroInformationDTO {
 
-    private String storageintro;
+    private String coordinatorFullName;
+
+    private Boolean usesExternalStorage;
+
+    private Boolean isManagedInternally;
 
 
 }

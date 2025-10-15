@@ -91,44 +91,6 @@ public class DmpDocumentResource {
     return this.documentService.getExportDocument(dmpId);
   }
 
-
-  @GET
-  @Path("/dmp/html")
-  @Produces(MediaType.TEXT_HTML)
-  public Response exportDmpAsHtml() {
-    DmpDO dmp = createSampleDmp();
-
-    // 1. Create a Thymeleaf "Context" to hold our variables.
-    // This is the equivalent of the data map in the Quarkus extension.
-    Context context = new Context();
-    context.setVariable("dmp", dmp);
-
-    // 2. Process the template using our manually created engine.
-    // We provide the template name and the context with our data.
-    String htmlContent = templateEngine.process("thymeleafTemplate", context);
-
-    String fileName = "DMP-" + dmp.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + ".html";
-
-    return Response.ok(htmlContent)
-            .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
-            .build();
-  }
-
-  // This helper method remains unchanged
-  private DmpDO createSampleDmp() {
-    DmpDO dmp = new DmpDO();
-    dmp.setId(1L);
-    dmp.setTitle("My Awesome Research Project DMP");
-    dmp.setCreated(new Date());
-    dmp.setModified(new Date());
-    dmp.setDescription("This plan outlines the data management strategy.");
-    dmp.setDataKind(EDataKind.SPECIFY);
-    dmp.setDataGeneration("Data will be collected via satellite tracking.");
-    dmp.setPersonalData(true);
-    dmp.setPersonalDataCompliance(List.of(EComplianceType.INFORMED_CONSENT, EComplianceType.ANONYMISATION));
-    return dmp;
-  }
-
   @GET
   @Path("/{dmpId}/export")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -139,6 +101,8 @@ public class DmpDocumentResource {
       @QueryParam("filetype") @DefaultValue("docx") String filetype) {
 
     log.info("Returning DMP document file for DMP with id=" + dmpId);
+
+    var res = this.documentService.getExportDocument(dmpId);
 
     String personId = this.getPersonId();
     if (!accessValidator.canViewDmp(dmpId, personId)) {
