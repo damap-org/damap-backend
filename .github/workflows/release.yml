@@ -26,24 +26,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Sets up JDK17 and the GPG agent with our GPG private key and the passphrase to access its content.
       - name: Set up JDK 17
         uses: actions/setup-java@v4.2.1
         with:
-          distribution: "adopt"
+          distribution: 'temurin'
           java-version: 17.0
+          cache: 'maven'
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_KEY_PASS }}
 
+      # Replace the "0.0.0-SNAPSHOT" placeholder in pom.xml by the version we get from the Github context.
       - name: Change Maven version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           VERSION=$(echo -n '${{ github.ref_name }}' | sed -e 's/v//')
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
+      # Upload the 4 jar files to Github Packages. The maven gpg plugin first automatically signs the files using the
+      # gpg private key.
       - name: Publish to GitHub packages
-        run: mvn --batch-mode -P deploy-github-repository deploy
+        run: mvn deploy --batch-mode -P deploy-github-repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS }}
 
   container-build-publish:
     runs-on: ubuntu-latest

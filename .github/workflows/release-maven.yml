@@ -1,38 +1,57 @@
 name: release maven central repository
-
 on:
   push:
     tags:
       - v*
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version to test (e.g., 0.0.1-test)'
+        required: true
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   maven-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        # Get the version either from the Github tag if CI release, or from user input if workflow manually
+        # triggered. In both cases, replace the "0.0.0-SNAPSHOT" placeholder in pom.xml by the version.
       - name: Change Maven version
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         run: |
-          VERSION=$(echo -n '${{ github.ref_name }}' | sed -e 's/v//')
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION=$(echo -n '${{ github.ref_name }}' | sed -e 's/v//')
+            echo "Using version from tag: $VERSION"
+          else
+            # This is a manual test run, use the version from the input
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Using version from manual input: $VERSION"
+          fi
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
+
+      # Sets up JDK17 and the GPG agent with our GPG private key and the passphrase to access its content.
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v4.2.1
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: 17.0
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_KEY_PASS }}
+
+      # This step publishes the jar files to Maven Central and the maven-gpg-plugin automatically signs the jar files
+      # using our GPG key passed above.
+      # Maven Central needs the step above to define server-id this way. But the side effect is that a settings.xml
+      # file is created. Without specifying MAVEN_GPG_PASSPHRASE again below, maven would see that file, ignore the gpg
+      # agent and looks for a non-existent settings-security.xml to retrieve the gpg pass phrase.
       - name: Publish package
         run: mvn --batch-mode -P deploy-mvn-repository deploy # same profile id as specified in pom.xml for maven deployment
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS}}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS }}

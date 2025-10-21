@@ -56,14 +56,6 @@
     <spotless.version>2.44.0.BETA1</spotless.version>
   </properties>
 
-  <distributionManagement>
-    <repository>
-      <id>github</id>
-      <name>GitHub</name>
-      <url>https://maven.pkg.github.com/damap-org/damap-backend</url>
-    </repository>
-  </distributionManagement>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -452,10 +444,16 @@
 
     <profile>
       <id>deploy-github-repository</id>
+      <distributionManagement>
+        <repository>
+          <id>github</id>
+          <name>GitHub</name>
+          <url>https://maven.pkg.github.com/damap-org/damap-backend</url>
+        </repository>
+      </distributionManagement>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>3.2.4</version>
             <executions>
@@ -465,6 +463,13 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                  <passphraseServerId/>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -477,7 +482,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>3.2.4</version>
             <executions>
@@ -487,6 +491,13 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                  <passphraseServerId/>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -497,7 +508,7 @@
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
-              <autoPublish>true</autoPublish>
+              <autoPublish>false</autoPublish>
               <waitUntil>published</waitUntil>
             </configuration>
           </plugin>
