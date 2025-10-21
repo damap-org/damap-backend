@@ -29,7 +29,7 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_KEY_PASS }}
       - name: Publish package
         run: mvn --batch-mode -P deploy-mvn-repository deploy # same profile id as specified in pom.xml for maven deployment
         env:
