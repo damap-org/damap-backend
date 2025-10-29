@@ -9,25 +9,25 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExportDocumentDTO {
 
-    private TitlePageDTO titlePageDTO;
+  private TitlePageDTO titlePageDTO;
 
-    private ContributorInformationDTO contributorInformationDTO;
+  private ContributorInformationDTO contributorInformationDTO;
 
-    private DatasetInformationDTO datasetInformationDTO;
+  private DatasetInformationDTO datasetInformationDTO;
 
-    private StorageIntroInformationDTO storageIntroInformationDTO;
+  private StorageIntroInformationDTO storageIntroInformationDTO;
 
-    private StorageInformationDTO storageInformationDTO;
+  private StorageInformationDTO storageInformationDTO;
 
-    private DataQualityDTO dataQualityDTO;
+  private DataQualityDTO dataQualityDTO;
 
-    private SensitiveDataInformationDTO sensitiveDataInformationDTO;
+  private SensitiveDataInformationDTO sensitiveDataInformationDTO;
 
-    private LegalEthicalInformationDTO legalEthicalInformationDTO;
+  private LegalEthicalInformationDTO legalEthicalInformationDTO;
 
-    private RepoInfoAndToolsInformationDTO repoInfoAndToolsInformationDTO;
+  private RepoInfoAndToolsInformationDTO repoInfoAndToolsInformationDTO;
 
-    private CostInformationDTO costInformationDTO;
+  private CostInformationDTO costInformationDTO;
 
-    private WorkPackageLeadersInformationDTO workPackageLeadersInformationDTO;
+  private WorkPackageLeadersInformationDTO workPackageLeadersInformationDTO;
 }

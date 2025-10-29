@@ -7,21 +7,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
-
-import java.util.Date;
-import java.util.List;
-
-import org.damap.base.rest.document.dto.ExportDocumentDTO;
-import org.thymeleaf.context.Context;
-
-
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.conversion.ExportTemplateBroker;
-import org.damap.base.enums.EComplianceType;
-import org.damap.base.enums.EDataKind;
 import org.damap.base.enums.ETemplateType;
-import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.service.DmpService;
+import org.damap.base.rest.document.dto.ExportDocumentDTO;
 import org.damap.base.rest.document.service.DocumentService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
@@ -66,6 +56,7 @@ public class DmpDocumentResource {
     this.templateEngine = new TemplateEngine();
     this.templateEngine.setTemplateResolver(resolver);
   }
+
   /**
    * exportTemplate.
    *
@@ -85,9 +76,7 @@ public class DmpDocumentResource {
 
   @GET
   @Path("/{dmpId}/export/do")
-  public ExportDocumentDTO getExportDocument(
-          @PathParam("dmpId") long dmpId
-  ) {
+  public ExportDocumentDTO getExportDocument(@PathParam("dmpId") long dmpId) {
     return this.documentService.getExportDocument(dmpId);
   }
 

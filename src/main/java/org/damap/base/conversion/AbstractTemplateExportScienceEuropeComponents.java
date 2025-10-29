@@ -14,10 +14,7 @@ import org.damap.base.enums.*;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
-import org.damap.base.rest.document.dto.ContributorInformationDTO;
-import org.damap.base.rest.document.dto.DatasetInformationDTO;
-import org.damap.base.rest.document.dto.StorageIntroInformationDTO;
-import org.damap.base.rest.document.dto.TitlePageDTO;
+import org.damap.base.rest.document.dto.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 
 /**
@@ -67,6 +64,10 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
   }
 
+  /**
+   * Generates the TitlePageDTO object.
+   * @return TitlePageDTO object containing title page information
+   */
   public TitlePageDTO titlePageDTO() {
     Project project = dmp.getProject();
     TitlePageDTO titlePageDTO = TitlePageDTO.builder().build();
@@ -87,9 +88,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     titlePageDTO.setStartdate(
         project.getStart() == null ? "" : formatter.format(project.getStart()));
 
-    titlePageDTO.setEnddate(
-        project.getEnd() == null ? "" : formatter.format(project.getEnd()));
-
+    titlePageDTO.setEnddate(project.getEnd() == null ? "" : formatter.format(project.getEnd()));
 
     // add funding program to funding item variables
     ProjectDO projectCRIS = null;
@@ -98,8 +97,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     List<String> fundingItems = new ArrayList<>();
     if (projectCRIS != null
-            && projectCRIS.getFunding() != null
-            && projectCRIS.getFunding().getFundingProgram() != null) {
+        && projectCRIS.getFunding() != null
+        && projectCRIS.getFunding().getFundingProgram() != null) {
       fundingItems.add(projectCRIS.getFunding().getFundingProgram());
     }
     // add grant number to funding item variables
@@ -127,80 +126,9 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   }
 
   // TODO: Remove
-  public void titlePage() {
-    Project project = dmp.getProject();
-    if (project == null) {
-      addReplacement(replacements, "[startdate]", "");
-      addReplacement(replacements, "[enddate]", "");
-      addReplacement(replacements, "[funderid]", "");
-      addReplacement(replacements, "[grantid]", "");
-      addReplacement(replacements, "[projectid]", "");
-      return;
-    }
+  public void titlePage() {}
 
-    // mapping general information
-    Integer titleLength = (project.getTitle() == null) ? 0 : project.getTitle().length();
-
-    // variable project name
-    if (titleLength / 25 > 2) { // Title too long, need to be resized
-      addReplacement(replacements, "[projectname]", project.getTitle() + "#oversize");
-    } else {
-      addReplacement(replacements, "[projectname]", project.getTitle());
-    }
-
-    addReplacement(replacements, "[projectnameText]", project.getTitle());
-    addReplacement(footerMap, "[projectnameText]", project.getTitle());
-
-    addReplacement(replacements, "[acronym]", project.getAcronym());
-    addReplacement(footerMap, "[acronym]", project.getAcronym());
-
-    // variable project start date and end date
-    addReplacement(
-        replacements,
-        "[startdate]",
-        project.getStart() == null ? "" : formatter.format(project.getStart()));
-    addReplacement(
-        replacements,
-        "[enddate]",
-        project.getEnd() == null ? "" : formatter.format(project.getEnd()));
-
-    // add funding program to funding item variables
-    ProjectDO projectCRIS = null;
-    if (project.getUniversityId() != null)
-      projectCRIS = projectService.read(project.getUniversityId());
-
-    titlePageFunding(project, projectCRIS);
-
-    // variable project ID
-    addReplacement(replacements, "[projectid]", project.getUniversityId());
-  }
-
-  private void titlePageFunding(Project project, ProjectDO projectCRIS) {
-    List<String> fundingItems = new ArrayList<>();
-    if (projectCRIS != null
-        && projectCRIS.getFunding() != null
-        && projectCRIS.getFunding().getFundingProgram() != null) {
-      fundingItems.add(projectCRIS.getFunding().getFundingProgram());
-    }
-    // add grant number to funding item variables
-    if (project.getFundingGrantIdentifierIdentifier() != null) {
-      fundingItems.add(project.getFundingGrantIdentifierIdentifier());
-    }
-
-    if (project.getFundingFunderIdentifierIdentifier() != null) {
-      addReplacement(replacements, "[funderid]", project.getFundingFunderIdentifierIdentifier());
-    } else {
-      addReplacement(replacements, "[funderid]", "");
-    }
-
-    // variable project funding, combination from funding item variables
-    if (!fundingItems.isEmpty()) {
-      addReplacement(replacements, "[grantid]", String.join(", ", fundingItems));
-    } else {
-      addReplacement(replacements, "[grantid]", "");
-    }
-    addReplacement(footerMap, "[grantid]", replacements.get("[grantid]"));
-  }
+  private void titlePageFunding(Project project, ProjectDO projectCRIS) {}
 
   private String getContributorPersonIdentifier(Contributor contributor) {
     String identifier = null;
@@ -230,180 +158,21 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     return identifier;
   }
 
-  private void contactPersonInformation() {
-    // mapping contact information
-
-    Contributor contact = dmp.getContact();
-    List<String> contactItems = new ArrayList<>();
-    String contactName = "";
-    String contactMail = "";
-    String contactId = "";
-    String contactAffiliation = "";
-    String contactAffiliationId = "";
-
-    if (contact == null) {
-      addReplacement(replacements, "[contact]", joinWithComma(contactItems));
-      return;
-    }
-
-    if (contact.getFirstName() != null && contact.getLastName() != null) {
-      contactName = contact.getFirstName() + " " + contact.getLastName();
-      contactItems.add(contactName);
-    }
-
-    if (contact.getMbox() != null) {
-      contactMail = contact.getMbox();
-      contactItems.add(contactMail);
-    }
-
-    contactId = getContributorPersonIdentifier(contact);
-    if (contactId != null) {
-      contactItems.add(contactId);
-    }
-
-    if (contact.getAffiliation() != null) {
-      contactAffiliation = contact.getAffiliation();
-      contactItems.add(contactAffiliation);
-    }
-
-    contactAffiliationId = getContributorAffiliationIdentifier(contact);
-    if (contactAffiliationId != null) {
-      contactItems.add(contactAffiliationId);
-    }
-
-    addReplacement(replacements, "[contact]", joinWithComma(contactItems));
-  }
-
-  private void projectCoordinatorInformation() {
-
-    if (projectCoordinators == null) {
-      addReplacement(replacements, "[coordinator]", "");
-      return;
-    }
-
-    StringBuilder coordinatorInfos = new StringBuilder();
-    // mapping project coordinator information
-    for (ContributorDO contributor : projectCoordinators) {
-
-      List<String> coordinatorProperties = new ArrayList<>();
-      String coordinatorIdentifierId = "";
-      String coordinatorAffiliationIdentifierId = "";
-
-      if (contributor == null) {
-        addReplacement(replacements, "[coordinator]", joinWithComma(coordinatorProperties));
-        return;
-      }
-
-      if (contributor.getFirstName() != null && contributor.getLastName() != null)
-        coordinatorProperties.add(contributor.getFirstName() + " " + contributor.getLastName());
-
-      if (contributor.getMbox() != null) coordinatorProperties.add(contributor.getMbox());
-
-      if (contributor.getPersonId() != null) {
-        coordinatorIdentifierId = contributor.getPersonId().getIdentifier();
-
-        if (nullExclusiveEquals(contributor.getPersonId().getType(), EIdentifierType.ORCID)) {
-          String coordinatorId = "ORCID iD: " + coordinatorIdentifierId;
-          coordinatorProperties.add(coordinatorId);
-        }
-      }
-
-      if (contributor.getAffiliation() != null)
-        coordinatorProperties.add(contributor.getAffiliation());
-
-      if (contributor.getAffiliationId() != null) {
-        coordinatorAffiliationIdentifierId = contributor.getAffiliationId().getIdentifier();
-
-        if (nullExclusiveEquals(contributor.getAffiliationId().getType(), EIdentifierType.ROR)) {
-          String coordinatorAffiliationIdentifierType = "ROR: ";
-          String coordinatorAffiliationId =
-              coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
-          coordinatorProperties.add(coordinatorAffiliationId);
-        }
-      }
-
-      if (contributor.getRoles() != null && !contributor.getRoles().isEmpty()) {
-        String coordinatorRoles =
-            contributor.getRoles().stream()
-                .map(EContributorRole::getRoles)
-                .collect(Collectors.joining(", "));
-        coordinatorProperties.add(coordinatorRoles);
-      }
-
-      coordinatorInfos.append(joinWithComma(coordinatorProperties));
-      coordinatorInfos.append(";");
-
-      this.projectCoordinatorOrInvestigatorIds.add(contributor.getUniversityId());
-    }
-
-    addReplacement(replacements, "[coordinator]", coordinatorInfos.toString());
-  }
+  // TODO: Remove
+  private void contactPersonInformation() {}
 
   // TODO: Remove
-  private void dmpContributorInformation() {
-    // Mapping contributor information
-    List<String> contributorList = new ArrayList<>();
-    String contributorPerson = "";
+  private void projectCoordinatorInformation() {}
 
-    List<Contributor> contributors =
-        Optional.ofNullable(dmp.getContributorList()).orElse(List.of());
-
-    for (Contributor contributor : contributors) {
-      List<String> contributorProperties = new ArrayList<>();
-      String contributorName = "";
-      String contributorMail = "";
-      String contributorId = "";
-      String contributorAffiliation = "";
-      String contributorAffiliationId = "";
-
-      // Handling multiple roles correctly
-      Set<EContributorRole> roles = contributor.getContributorRoles();
-      if (roles != null && !roles.isEmpty()) {
-        String rolesString =
-            roles.stream().map(EContributorRole::getRoles).collect(Collectors.joining(", "));
-        contributorProperties.add(rolesString);
-      }
-
-      if (contributor.getFirstName() != null && contributor.getLastName() != null) {
-        contributorName = contributor.getFirstName() + " " + contributor.getLastName();
-        contributorProperties.add(contributorName);
-      }
-
-      if (contributor.getMbox() != null) {
-        contributorMail = contributor.getMbox();
-        contributorProperties.add(contributorMail);
-      }
-
-      contributorId = getContributorPersonIdentifier(contributor);
-      if (contributorId != null) {
-        contributorProperties.add(contributorId);
-      }
-
-      if (contributor.getAffiliation() != null) {
-        contributorAffiliation = contributor.getAffiliation();
-        contributorProperties.add(contributorAffiliation);
-      }
-
-      contributorAffiliationId = getContributorAffiliationIdentifier(contributor);
-      if (contributorAffiliationId != null) {
-        contributorProperties.add(contributorAffiliationId);
-      }
-
-      // Check if contributor has one of the key roles
-      if (roles.stream().anyMatch(EContributorRole::isLeadershipRole)
-          || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
-        continue; // Skip adding to the list
-      }
-
-      contributorPerson = joinWithComma(contributorProperties);
-      contributorList.add(contributorPerson);
-    }
-
-    addReplacement(replacements, "[contributors]", String.join(";", contributorList));
-  }
+  // TODO: Remove
+  private void dmpContributorInformation() {}
 
   // TODO: REMOVE
-  public void storageIntroInformation() {
+  public void storageIntroInformation() {}
+
+  public StorageIntroInformationDTO storageIntroInformationDTO() {
+    StorageIntroInformationDTO storageIntroInformationDTO =
+        StorageIntroInformationDTO.builder().build();
     String coordinatorFullName = null;
 
     List<Contributor> contributorPool = new ArrayList<>(dmp.getContributorList());
@@ -458,77 +227,6 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
                         || (host instanceof ExternalStorage
                             && ((ExternalStorage) host).getIsManagedInternally()));
 
-    String propName = "storageIntro.none";
-    if (usesExternalStorage && !isManagedInternally) {
-      propName = "storageIntro.external";
-    } else if (isManagedInternally && !usesExternalStorage) {
-      propName = "storageIntro.internal";
-    } else if (isManagedInternally && usesExternalStorage) {
-      propName = "storageIntro.both";
-    }
-
-    String storageIntroReplacement = loadResourceService.loadVariableFromResource(prop, propName);
-    storageIntroReplacement = storageIntroReplacement.replace("[name]", coordinatorFullName);
-
-    addReplacement(replacements, "[storageintro]", storageIntroReplacement);
-  }
-
-  public StorageIntroInformationDTO storageIntroInformationDTO() {
-    StorageIntroInformationDTO storageIntroInformationDTO = StorageIntroInformationDTO.builder().build();
-    String coordinatorFullName = null;
-
-    List<Contributor> contributorPool = new ArrayList<>(dmp.getContributorList());
-    for (ContributorDO contributorDO : projectCoordinators) {
-      contributorPool.add(ContributorDOMapper.mapDOtoEntity(contributorDO, new Contributor()));
-    }
-
-    // List of prioritized roles to search for
-    List<EContributorRole> prioritizedRoles =
-            List.of(
-                    EContributorRole.DATA_MANAGER,
-                    EContributorRole.PROJECT_LEADER,
-                    EContributorRole.PRINCIPAL_INVESTIGATOR,
-                    EContributorRole.PROJECT_COORDINATOR);
-
-    for (EContributorRole role : prioritizedRoles) {
-      for (Contributor contributor : contributorPool) {
-        Set<EContributorRole> roles = contributor.getContributorRoles();
-        if (roles.contains(role)) {
-          coordinatorFullName = contributor.getFirstName() + " " + contributor.getLastName();
-          break;
-        }
-      }
-      if (coordinatorFullName != null) {
-        break;
-      }
-    }
-
-    // Fallback 1: Contact person
-    if (coordinatorFullName == null && dmp.getContact() != null) {
-      coordinatorFullName = dmp.getContact().getFirstName() + " " + dmp.getContact().getLastName();
-    }
-
-    // Fallback 2: Generic string
-    if (coordinatorFullName == null) {
-      coordinatorFullName = "the project leader";
-    }
-
-    boolean usesExternalStorage =
-            dmp.getHostList().stream()
-                    .filter(ExternalStorage.class::isInstance)
-                    .map(ExternalStorage.class::cast)
-                    .anyMatch(
-                            storage ->
-                                    storage.getIsManagedInternally() != null && !storage.getIsManagedInternally());
-
-    boolean isManagedInternally =
-            dmp.getHostList().stream()
-                    .anyMatch(
-                            host ->
-                                    (host instanceof Storage)
-                                            || (host instanceof ExternalStorage
-                                            && ((ExternalStorage) host).getIsManagedInternally()));
-
     storageIntroInformationDTO.setCoordinatorFullName(coordinatorFullName);
     storageIntroInformationDTO.setUsesExternalStorage(usesExternalStorage);
     storageIntroInformationDTO.setIsManagedInternally(isManagedInternally);
@@ -536,14 +234,11 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
   }
 
   // TODO: Remove
-  public void contributorInformation() {
-    contactPersonInformation();
-    projectCoordinatorInformation();
-    dmpContributorInformation();
-  }
+  public void contributorInformation() {}
 
   public ContributorInformationDTO contributorInformationDTO() {
-    ContributorInformationDTO contributorInformationDTO = ContributorInformationDTO.builder().build();
+    ContributorInformationDTO contributorInformationDTO =
+        ContributorInformationDTO.builder().build();
 
     // Contact section
     Contributor contact = dmp.getContact();
@@ -626,16 +321,16 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           if (nullExclusiveEquals(contributor.getAffiliationId().getType(), EIdentifierType.ROR)) {
             String coordinatorAffiliationIdentifierType = "ROR: ";
             String coordinatorAffiliationId =
-                    coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
+                coordinatorAffiliationIdentifierType + coordinatorAffiliationIdentifierId;
             coordinatorProperties.add(coordinatorAffiliationId);
           }
         }
 
         if (contributor.getRoles() != null && !contributor.getRoles().isEmpty()) {
           String coordinatorRoles =
-                  contributor.getRoles().stream()
-                          .map(EContributorRole::getRoles)
-                          .collect(Collectors.joining(", "));
+              contributor.getRoles().stream()
+                  .map(EContributorRole::getRoles)
+                  .collect(Collectors.joining(", "));
           coordinatorProperties.add(coordinatorRoles);
         }
 
@@ -655,7 +350,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     String contributorPerson = "";
 
     List<Contributor> contributors =
-            Optional.ofNullable(dmp.getContributorList()).orElse(List.of());
+        Optional.ofNullable(dmp.getContributorList()).orElse(List.of());
 
     for (Contributor contributor : contributors) {
       List<String> contributorProperties = new ArrayList<>();
@@ -669,7 +364,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       Set<EContributorRole> roles = contributor.getContributorRoles();
       if (roles != null && !roles.isEmpty()) {
         String rolesString =
-                roles.stream().map(EContributorRole::getRoles).collect(Collectors.joining(", "));
+            roles.stream().map(EContributorRole::getRoles).collect(Collectors.joining(", "));
         contributorProperties.add(rolesString);
       }
 
@@ -700,7 +395,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
       // Check if contributor has one of the key roles
       if (roles.stream().anyMatch(EContributorRole::isLeadershipRole)
-              || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
+          || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
         continue; // Skip adding to the list
       }
 
@@ -713,91 +408,37 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     return contributorInformationDTO;
   }
 
-  /** costInformation. */
-  public void costInformation() {
+  public CostInformationDTO costInformationDTO() {
+    CostInformationDTO costInformationDTO = CostInformationDTO.builder().build();
+
     StringBuilder newDescription = new StringBuilder();
     if (nullExclusiveEquals(Boolean.TRUE, dmp.getCostsExist())) {
-      addReplacement(
-          replacements,
-          "[costs]",
-          loadResourceService.loadVariableFromResource(prop, "costs.avail"));
+      costInformationDTO.setCosts(true);
     } else {
-      addReplacement(
-          replacements, "[costs]", loadResourceService.loadVariableFromResource(prop, "costs.no"));
-      addReplacement(replacements, "[costsDescriptions]", "");
+      costInformationDTO.setCosts(false);
+      costInformationDTO.setCostsDescriptions("");
     }
     if (!costList.isEmpty()) {
-      boolean longDescriptionExists = false;
       for (Cost cost : costList) {
         if (cost.getDescription() != null && cost.getDescription().length() >= 255) {
           newDescription.append("Description for \"");
           newDescription.append(cost.getTitle()).append("\": ");
           newDescription.append(cost.getDescription()).append(";");
-          longDescriptionExists = true;
         }
-        addReplacement(replacements, "[costsDescriptions]", newDescription.toString());
+        costInformationDTO.setCostsDescriptions(newDescription.toString());
       }
-      addReplacement(
-          replacements,
-          "[costCoverage]",
-          (longDescriptionExists ? ";" : "")
-              + loadResourceService.loadVariableFromResource(prop, "costCoverage"));
     } else {
-      addReplacement(replacements, "[costsDescriptions]", "");
-      addReplacement(replacements, "[costCoverage]", "");
+      costInformationDTO.setCostsDescriptions("");
     }
+
+    return costInformationDTO;
   }
 
-  /** datasetsInformation. */
-  public void datasetsInformation() {
-    addReplacement(replacements, "[datageneration]", dmp.getDataGeneration());
-    addReplacement(replacements, "[documentation]", dmp.getDocumentation());
-    if (dmp.getTargetAudience() != null)
-      addReplacement(replacements, "[targetaudience]", dmp.getTargetAudience());
-    else addReplacement(replacements, "[targetaudience]", "");
+  // TODO: Remove
+  public void costInformation() {}
 
-    StringBuilder reusedDescription = new StringBuilder();
-    List<Dataset> reusedDatasets = getReusedDatasets();
-    for (int i = 0; i < reusedDatasets.size(); i++) {
-      Dataset dataset = reusedDatasets.get(i);
-      if (dataset.getDescription() != null && !dataset.getDescription().isEmpty()) {
-        reusedDescription.append("Description for \"");
-        reusedDescription.append(dataset.getTitle()).append("\": ;");
-        reusedDescription.append(dataset.getDescription()).append(";");
-      }
-    }
-
-    addReplacement(replacements, "[reuseddatadescription]", reusedDescription.toString());
-
-    StringBuilder newDescription = new StringBuilder();
-    List<Dataset> newDatasets = getNewDatasets();
-    for (int i = 0; i < newDatasets.size(); i++) {
-      Dataset dataset = newDatasets.get(i);
-      if (dataset.getDescription() != null && !dataset.getDescription().isEmpty()) {
-        newDescription.append("Description for \"");
-        newDescription.append(dataset.getTitle()).append("\": ;");
-        newDescription.append(dataset.getDescription()).append(";");
-      }
-    }
-
-    addReplacement(replacements, "[produceddatadescription]", newDescription.toString());
-
-    StringBuilder newDatasetTechnicalResources = new StringBuilder();
-    for (Dataset dataset : newDatasets) {
-      if (dataset.getTechnicalResources() != null && !dataset.getTechnicalResources().isEmpty()) {
-        newDatasetTechnicalResources.append("Technical resources for \"");
-        newDatasetTechnicalResources.append(dataset.getTitle()).append("\": ;");
-        List<TechnicalResource> technicalResource = dataset.getTechnicalResources();
-        for (int i = 0; i < technicalResource.size(); i++) {
-          newDatasetTechnicalResources.append(technicalResource.get(i).getName());
-          if (i + 1 < technicalResource.size()) newDatasetTechnicalResources.append(", ");
-        }
-      }
-    }
-
-    addReplacement(
-        replacements, "[datasetTechnicalResources]", newDatasetTechnicalResources.toString());
-  }
+  // TODO: Remove
+  public void datasetsInformation() {}
 
   public DatasetInformationDTO datasetInformationDTO() {
 
@@ -807,11 +448,12 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     datasetInformationDTO.setDocumentation(dmp.getDocumentation());
 
     if (dmp.getTargetAudience() != null) {
-        datasetInformationDTO.setTargetaudience(dmp.getTargetAudience());
+      datasetInformationDTO.setTargetaudience(dmp.getTargetAudience());
     } else {
-        datasetInformationDTO.setTargetaudience("");
+      datasetInformationDTO.setTargetaudience("");
     }
 
+    // Handling reused datasets descriptions
     StringBuilder reusedDescription = new StringBuilder();
     List<Dataset> reusedDatasets = getReusedDatasets();
     for (int i = 0; i < reusedDatasets.size(); i++) {
@@ -825,6 +467,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     datasetInformationDTO.setReuseddatadescription(reusedDescription.toString());
 
+    // Handling new datasets descriptions
     StringBuilder newDescription = new StringBuilder();
     List<Dataset> newDatasets = getNewDatasets();
     for (int i = 0; i < newDatasets.size(); i++) {
@@ -838,6 +481,7 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     datasetInformationDTO.setProduceddatadescription(newDescription.toString());
 
+    // Handling new datasets technical resources
     StringBuilder newDatasetTechnicalResources = new StringBuilder();
     for (Dataset dataset : newDatasets) {
       if (dataset.getTechnicalResources() != null && !dataset.getTechnicalResources().isEmpty()) {
@@ -855,90 +499,95 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     return datasetInformationDTO;
   }
 
-  /** storageInformation. */
-  public void storageInformation() {
+  /**
+   * This method generates the StorageInformationDTO object.
+   * For each host in the DMP, it collects the relevant dataset summaries and storage details,
+   * and constructs the corresponding StorageLocation objects.
+   * @return StorageInformationDTO object containing storage information
+   */
+  public StorageInformationDTO storageInformationDTO() {
+
+    List<StorageInformationDTO.StorageLocation> storageLocations = new ArrayList<>();
+
     List<Host> hostList = dmp.getHostList();
-    String storageVar = "";
 
     for (Host host : hostList) {
       List<Distribution> distributions = host.getDistributionList();
-      String hostVar = "";
-      StringBuilder distVar = new StringBuilder();
 
-      if (host.getTitle() != null) {
-        hostVar = host.getTitle();
-      }
+      StorageInformationDTO.StorageLocation storageLocation =
+              StorageInformationDTO.StorageLocation.builder()
+                      .title(host.getTitle())
+                      .build();
 
+      List<StorageInformationDTO.DatasetSummary> datasetSummaries = new ArrayList<>();
       for (Distribution dist : distributions) {
-        distVar
-            .append(datasetTableIDs.get(dist.getDataset().getId()))
-            .append(" (")
-            .append(dist.getDataset().getTitle())
-            .append(")");
-        if (distributions.indexOf(dist) + 1 < distributions.size()) distVar.append(", ");
+        datasetSummaries.add(
+                StorageInformationDTO.DatasetSummary.builder()
+                        .datasetId(datasetTableIDs.get(dist.getDataset().getId()))
+                        .title(dist.getDataset().getTitle())
+                        .build()
+        );
       }
 
-      if (Storage.class.isAssignableFrom(
-          host.getClass())) { // only write information related to the storage, repository will be
-        // written in section 5
-        if (!distVar.toString().isEmpty()) {
-          String storageDescription = "";
-          InternalStorageTranslation storageTranslation =
-              internalStorageTranslationRepo.getInternalStorageById(
-                  ((Storage) host).getInternalStorageId().id, "eng");
+      if (Storage.class.isAssignableFrom(host.getClass())) {
+        // Case for internal storage
+        Storage internalHost = (Storage) host;
+        String storageDescription = "";
 
-          if (storageTranslation == null) {
-            storageTranslation =
-                internalStorageTranslationRepo
-                    .getAllInternalStorageTranslationsByStorageId(
-                        ((Storage) host).getInternalStorageId().id)
-                    .get(0);
-          }
+        InternalStorageTranslation storageTranslation =
+                internalStorageTranslationRepo.getInternalStorageById(
+                        internalHost.getInternalStorageId().id, "eng");
 
-          storageDescription = storageTranslation.getDescription();
-          storageVar =
-              storageVar.concat(
-                  distVar
-                      + " "
-                      + loadResourceService.loadVariableFromResource(prop, "distributionStorage")
-                      + " "
-                      + hostVar);
-          if (storageDescription != null && !storageDescription.isEmpty()) {
-            storageVar = storageVar.concat(": " + storageDescription);
-          }
+        if (storageTranslation == null) {
+          storageTranslation =
+                  internalStorageTranslationRepo
+                          .getAllInternalStorageTranslationsByStorageId(
+                                  internalHost.getInternalStorageId().id)
+                          .get(0);
         }
-      } else if (ExternalStorage.class.isAssignableFrom(
-          host.getClass())) { // case for external storage, will have null host Id
-        if (!distVar.toString().isEmpty()) {
-          storageVar =
-              storageVar.concat(
-                  distVar
-                      + " "
-                      + loadResourceService.loadVariableFromResource(prop, "distributionStorage")
-                      + " "
-                      + hostVar
-                      + ".");
-          if (dmp.getExternalStorageInfo() != null
-              && !dmp.getExternalStorageInfo().isEmpty()
-              && ((ExternalStorage) host).getIsManagedInternally() != null
-              && !((ExternalStorage) host).getIsManagedInternally()) {
-            storageVar =
-                storageVar.concat(
-                    " "
-                        + loadResourceService.loadVariableFromResource(prop, "distributionExternal")
-                        + " "
-                        + dmp.getExternalStorageInfo().toLowerCase());
-          }
-        }
-      }
 
-      if (hostList.indexOf(host) + 1 < hostList.size() && !distributions.isEmpty()) {
-        storageVar = storageVar.concat(";");
+        storageDescription = storageTranslation.getDescription();
+
+
+        storageLocations.add(
+                StorageInformationDTO.StorageLocation.builder()
+                        .title(host.getTitle())
+                        .type(StorageInformationDTO.StorageType.INTERNAL)
+                        .description(storageDescription)
+                        .datasets(datasetSummaries)
+                        .build()
+        );
+      } else if (ExternalStorage.class.isAssignableFrom(host.getClass())) {
+        // Case for external storage
+        ExternalStorage externalHost = (ExternalStorage) host;
+        String extraInfo = null;
+
+        if (dmp.getExternalStorageInfo() != null
+                && !dmp.getExternalStorageInfo().isEmpty()
+                && externalHost.getIsManagedInternally() != null
+                && !externalHost.getIsManagedInternally()) {
+          extraInfo = dmp.getExternalStorageInfo().toLowerCase();
+        }
+
+        storageLocations.add(
+                StorageInformationDTO.StorageLocation.builder()
+                        .title(host.getTitle())
+                        .type(StorageInformationDTO.StorageType.EXTERNAL)
+                        .isManagedInternally(externalHost.getIsManagedInternally())
+                        .externalStorageInfo(extraInfo)
+                        .datasets(datasetSummaries)
+                        .build()
+        );
       }
     }
 
-    addReplacement(replacements, "[storage]", storageVar);
+    return StorageInformationDTO.builder()
+            .storageLocations(storageLocations)
+            .build();
   }
+
+  // TODO: Remove
+  public void storageInformation() {}
 
   /** dataQuality. */
   public void dataQuality() {

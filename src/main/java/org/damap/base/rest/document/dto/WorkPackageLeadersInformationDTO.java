@@ -9,7 +9,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WorkPackageLeadersInformationDTO {
 
-    private String workPackageLeaders;
-
-
+  private String workPackageLeaders;
 }

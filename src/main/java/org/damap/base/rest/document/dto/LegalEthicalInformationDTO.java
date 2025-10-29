@@ -9,9 +9,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LegalEthicalInformationDTO {
 
-    private String personaldata;
-    private String legalrestriction;
-    private String ethicalissues;
-
-
+  private String personaldata;
+  private String legalrestriction;
+  private String ethicalissues;
 }

@@ -9,8 +9,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RepoInfoAndToolsInformationDTO {
 
-    private String tools;
-    private String restrictedAccessInfo;
-
-
+  private String tools;
+  private String restrictedAccessInfo;
 }

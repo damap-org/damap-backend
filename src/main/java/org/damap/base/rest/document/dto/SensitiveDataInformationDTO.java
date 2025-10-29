@@ -9,7 +9,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SensitiveDataInformationDTO {
 
-    private String sensitivedata;
-
-
+  private String sensitivedata;
 }

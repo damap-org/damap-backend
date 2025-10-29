@@ -9,8 +9,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContributorInformationDTO {
 
-    private String contact;
-    private String coordinator;
-    private String contributors;
-
+  private String contact;
+  private String coordinator;
+  private String contributors;
 }

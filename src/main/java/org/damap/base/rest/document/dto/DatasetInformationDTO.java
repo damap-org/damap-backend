@@ -9,13 +9,13 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetInformationDTO {
 
-    private String datageneration;
-    private String documentation;
-    private String targetaudience;
-    private String reuseddatadescription;
-    private String produceddatadescription;
-    private String datasetTechnicalResources;
-    private String datamananager;
-    private String datamanagerInfo;
+  private String datageneration;
+  private String documentation;
+  private String targetaudience;
 
+  private String reuseddatadescription;
+  private String produceddatadescription;
+  private String datasetTechnicalResources;
+  private String datamananager;
+  private String datamanagerInfo;
 }

@@ -9,9 +9,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataQualityDTO {
 
-    private String metadata;
-    private String dataorganisation;
-    private String dataqualitycontrol;
-
-
+  private String metadata;
+  private String dataorganisation;
+  private String dataqualitycontrol;
 }

@@ -9,9 +9,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CostInformationDTO {
 
-    private String costs;
-    private String costsDescriptions;
-    private String costCoverage;
-
-
+  private Boolean costs;
+  private String costsDescriptions;
 }

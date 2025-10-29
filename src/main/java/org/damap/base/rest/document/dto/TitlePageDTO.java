@@ -9,14 +9,13 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TitlePageDTO {
 
-    private String startdate;
-    private String enddate;
-    private String funderid;
-    private String grantid;
-    private String projectid;
+  private String startdate;
+  private String enddate;
+  private String funderid;
+  private String grantid;
+  private String projectid;
 
-    private String projectname;
-    private String projectnameText;
-    private String acronym;
-
+  private String projectname;
+  private String projectnameText;
+  private String acronym;
 }

@@ -15,7 +15,6 @@ import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.document.dto.ExportDocumentDTO;
 import org.damap.base.rest.document.dto.MultipartBodyDTO;
-import org.damap.base.rest.document.dto.TitlePageDTO;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
