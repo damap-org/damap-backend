@@ -52,7 +52,7 @@ ethicalReviewed.avail=The research plan of the project was reviewed by an ethics
 ethicalReportIntro=Ethical issue report number:
 ethicalStatement=Ethical issues in the project have been identified and discussed with the Ethics Coordinator. They are described in detail in separate documents.
 
-closeddatasetreasons.intro=Closed Dataset Reasons:
-restricteddatasetreasons.intro=Restricted Dataset Reasons:
+closeddatasetreasons.intro=Rationale for closing access:
+restricteddatasetreasons.intro=Rationale for restricting access, and access conditions:
 
 costCoverage=Coverage of costs:;...
