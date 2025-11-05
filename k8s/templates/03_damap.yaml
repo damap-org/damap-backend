@@ -207,8 +207,10 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
+            {{- if not .Values.openshift }}
             runAsUser: 1001
             runAsGroup: 1001
+            {{- end }}
             seccompProfile:
               type: RuntimeDefault
             capabilities:
