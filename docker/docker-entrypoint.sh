@@ -6,16 +6,8 @@
 
 set -euo pipefail
 
-db_kind="${DAMAP_DATASOURCE_DB_KIND:-postgresql}"
-marker_file=".db_kind"
+echo "$(date +"%Y-%m-%d %H:%M:%S,%3N") INFO  [docker-entrypoint.sh] Running Quarkus re-augmentation."
+java ${JAVA_OPTIONS} -Dquarkus.launch.rebuild=true -jar quarkus-run.jar
 
-# Check if reaugmentation is needed.
-if [[ ! -f "${marker_file}" ]] || [[ "$(cat ${marker_file})" != "${db_kind}" ]]; then
-    echo "docker-entrypoint.sh: [INFO] Running re-augmentation for db_kind: ${db_kind}."
-    java ${JAVA_OPTIONS} -Dquarkus.launch.rebuild=true -jar quarkus-run.jar
-    echo "${db_kind}" > "${marker_file}"
-    echo "docker-entrypoint.sh: [INFO] Re-augmentation complete."
-fi
-
-echo "docker-entrypoint.sh: [INFO] Starting application."
+echo "$(date +"%Y-%m-%d %H:%M:%S,%3N") INFO  [docker-entrypoint.sh] Starting application."
 exec java ${JAVA_OPTIONS} -jar quarkus-run.jar
