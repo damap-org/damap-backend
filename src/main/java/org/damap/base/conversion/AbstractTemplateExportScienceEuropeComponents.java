@@ -1227,6 +1227,14 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         docVar.add(Optional.ofNullable(dataset.getDescription()).orElse(""));
 
         insertTableCells(xwpfTable, newRow, docVar);
+        if (dataset.getLicense() != null) {
+          ELicense license = reusedDatasets.get(i).getLicense();
+          XWPFParagraph paragraph = newRow.getCell(3).getParagraphs().get(0);
+          if (license != ELicense.NOLICENSE && license != ELicense.CUSTOM) {
+            turnRunIntoHyperlinkRun(paragraph.getRuns().get(0), license.getUrl());
+          }
+          commitTableRows(xwpfTable);
+        }
       }
       xwpfTable.removeRow(xwpfTable.getRows().size() - 1);
       xwpfTable.removeRow(1);
