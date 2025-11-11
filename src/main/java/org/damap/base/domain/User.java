@@ -4,12 +4,11 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+/** Entity representing a user in the DAMAP system. Is built from the IDP user info or JWT. */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@ToString
 @Entity(name = "damap_user")
 @Table(name = "damap_user")
 public class User extends PanacheEntity {
@@ -23,6 +22,10 @@ public class User extends PanacheEntity {
   @Column(name = "email")
   private String email;
 
-  @Column(name = "isadmin")
+  // This field indicates if the user has admin privileges
+  // We consider this field as the source of truth for admin status
+  // We only set it a first time initially for the "keycloak" IDP
+  // mode, afterward it is managed internally
+  @Column(name = "is_admin")
   private boolean isAdmin;
 }

@@ -6,7 +6,7 @@ databaseChangeLog:
         - createSequence:
             sequenceName: damap_user_seq
             startValue: 1
-            incrementBy: 1
+            incrementBy: 50
 
         - createTable:
             tableName: damap_user
@@ -16,27 +16,18 @@ databaseChangeLog:
                   type: BIGINT
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
                   name: subject
                   type: VARCHAR(255)
-                  constraints:
-                    nullable: true
               - column:
                   name: nickname
                   type: VARCHAR(255)
-                  constraints:
-                    nullable: true
               - column:
-                  name: isadmin
+                  name: is_admin
                   type: BOOLEAN
-                  constraints:
-                    nullable: true
               - column:
                   name: email
                   type: VARCHAR(255)
-                  constraints:
-                    nullable: true
 
       rollback:
         - dropTable:

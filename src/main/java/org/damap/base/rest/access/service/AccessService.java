@@ -6,7 +6,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
@@ -66,6 +65,7 @@ public class AccessService {
                 // TODO: Handle case when owner is no longer at university
                 User user = userRepo.findUserBySubject(access.getUniversityId());
                 if (user == null) {
+                  // TODO: Handle this case!!
                   log.warn(
                       "No user found with subject: "
                           + access.getUniversityId()
@@ -79,21 +79,18 @@ public class AccessService {
                   return;
                 }
 
-                try {
-                  accessDO.setFirstName(user.getNickname().split(" ")[0]);
-                  accessDO.setLastName(
-                      String.join(
-                          " ",
-                          Arrays.copyOfRange(
-                              user.getNickname().split(" "),
-                              1,
-                              user.getNickname().split(" ").length)));
-                } catch (Exception e) {
+                String nickname = user.getNickname();
+
+                if (nickname == null || nickname.isBlank()) {
                   log.warn(
-                      "Could not split nickname into first and last name for user with subject: "
+                      "Nickname is null or blank for user with subject: {}"
                           + access.getUniversityId());
-                  accessDO.setFirstName(user.getNickname());
+                  accessDO.setFirstName("");
                   accessDO.setLastName("");
+                } else {
+                  String[] parts = nickname.trim().split("\\s+", 2);
+                  accessDO.setFirstName(parts[0]);
+                  accessDO.setLastName(parts.length > 1 ? parts[1] : "");
                 }
                 accessDO.setMbox(user.getEmail());
               }

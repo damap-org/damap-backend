@@ -8,7 +8,7 @@ import org.damap.base.rest.auth.domain.AuthDO;
 import org.damap.base.rest.auth.service.AuthService;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-/** AdminResource class. */
+/** AuthResource class. */
 @Path("/api/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @JBossLog

@@ -50,7 +50,6 @@ public class PersonResource implements ResourceRead<ContributorDO>, ResourceSear
     ResultList<ContributorDO> result = ResultList.fromItemsAndSearch(null, search);
 
     if (searchService != null) {
-      log.info("Using service " + searchService.getClass().getCanonicalName());
       result = searchService.search(Search.fromMap(queryParams));
     }
 

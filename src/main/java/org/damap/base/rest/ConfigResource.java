@@ -79,7 +79,7 @@ public class ConfigResource {
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(ethicalReportEnabled);
 
-    // Set the dummy secret
+    // Handle needed config fields for the OIDC flow using the federation mode in the frontend
     configDO.setDummySecret(dummySecret);
     configDO.setIssuer(issuerUrl);
     configDO.setLoginUrl(loginUrl);

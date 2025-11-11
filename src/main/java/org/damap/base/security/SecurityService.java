@@ -24,7 +24,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 public class SecurityService {
   @Inject SecurityIdentity securityIdentity;
 
-  @ConfigProperty(name = "damap.auth.user")
+  @ConfigProperty(name = "damap.auth.internalUserId")
   String authUser;
 
   @ConfigProperty(name = "invenio.shared-secret")
