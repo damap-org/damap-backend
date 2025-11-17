@@ -94,13 +94,51 @@ All deployment settings are managed in a `values.yaml` file. Below are the main 
 | logo_cropped | Base64-encoded SVG for the cropped logo. Combined with `logo`, total must not exceed 1 MB.      |         |
 
 
+## Secrets (WIP)
+| deploy |	use_existing_secret |	Behavior | Comments
+|--------|----------------------|--------------|----|
+| false	   | true	| External Keycloak, use operator-provided sealed secret |
+|false    |	false|	External Keycloak, credentials managed from Helm `values.yaml` |
+|true|	true	|Deploy Keycloak, use existing sealed secret|
+|true	|false	|Deploy Keycloak + create secret (from Helm `values.yaml`) |
+
+
+From GitOps side (e.g set up with argoCD)
+
+1. Creating a secret (example values):
+
+    ```bash
+    oc create secret generic damap-secret \
+      --from-literal=db_kind=postgresql \
+      --from-literal=db_username=damap \
+      --from-literal=db_password=damap_pass \
+      --from-literal=db_database=damap \
+      --from-literal=backend_auth_client_id=damap \
+      --from-literal=frontend_auth_client_id=damap \
+      --from-literal=auth_backend_url=http://keycloak:8080/realms/damap \
+      --dry-run=client -o yaml > damap-base.yaml
+    ```
+
+2. Seal the secret:
+
+    ```bash
+    kubeseal \
+      --controller-namespace=sealed-secrets-controller \
+      --controller-name=sealed-secrets \
+      --format yaml \
+      --namespace <NAMESPACE> \
+      < secret-base.yml > sealed-secret.yml
+    ```
+
+3. Commit the result
+
 ## Deployment
 
 Once you have reviewed and customized the `values.yaml` file, you can deploy DAMAP into your Kubernetes or OpenShift cluster using Helm.
 
 Install or upgrade the release:
 ```bash 
-helm upgrade --install --values values.yaml <release_name> ./
+helm upgrade --install --values values.yaml <RELEASE_NAME> ./
 ```
 
 To override specific values without editing the file, use the `--set` flag:
@@ -109,7 +147,7 @@ helm upgrade --install \
   --set damap.hostname=damap.example.org \
   --set damap.protocol=https \
   --values values.yaml \
-  <release_name> ./
+  <RELEASE_NAME> ./
 ```
 
 If you deploy Keycloak (`keycloak.deploy: true`), its admin credentials are stored in a Kubernetes secret. Retrieve them with:
@@ -123,7 +161,7 @@ kubectl get secret keycloak -o jsonpath='{.data.admin-password}' | base64 -d
 You can deploy DAMAP on a local [KinD](https://kind.sigs.k8s.io/) cluster for end-to-end testing:
 ```bash
 ./test/create-test-cluster.sh                        # Create a test cluster.
-helm install --values values.yaml <release_name> ./  # Install the chart.
+helm install --values values.yaml <RELEASE_NAME> ./  # Install the chart.
 ```
 
 ## Common issues and solutions

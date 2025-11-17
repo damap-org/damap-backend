@@ -1,6 +1,7 @@
 openshift: false
 debug: true
 damap:
+  use_existing_secret: false
   frontend_image: "ghcr.io/damap-org/damap-frontend:next"
   backend_image: "ghcr.io/damap-org/damap-backend:next"
   db_name: damap
@@ -54,6 +55,7 @@ oidc:
   # Claim for the person ID:
   person_id_claim: personID
 keycloak:
+  use_existing_secret: false
   # Set this to false in order to use your own OIDC server:
   deploy: true
   admin_user: admin
