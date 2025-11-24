@@ -180,11 +180,6 @@ spec:
               readOnly: true
               subPath: projects.json
             {{- end }}
-            # Workaround for reaugmentation write permissions:
-            - mountPath: /quarkus-app/.db_kind
-              name: damap
-              readOnly: true
-              subPath: db_kind
           livenessProbe:
             httpGet:
               path: /q/health/live
