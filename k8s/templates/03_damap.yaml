@@ -1,4 +1,5 @@
 {{- if .Values.damap.create_pv }}
+{{- if not .Values.openshift }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -17,6 +18,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   hostPath:
     path: "{{ .Values.damap.host_folder }}"
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

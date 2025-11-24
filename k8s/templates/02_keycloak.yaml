@@ -1,5 +1,6 @@
 {{- if .Values.keycloak.deploy }}
 {{- if .Values.keycloak.create_pv }}
+{{- if not .Values.openshift }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -18,6 +19,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   hostPath:
     path: {{ .Values.keycloak.host_folder }}
+{{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
