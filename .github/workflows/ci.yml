@@ -7,6 +7,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   # This job builds the Docker images and runs a health check to ensure the
   # backend service is up and running. It uses 2 databases: Oracle and Postgres.
