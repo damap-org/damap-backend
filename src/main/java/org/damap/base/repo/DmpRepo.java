@@ -16,6 +16,6 @@ public class DmpRepo implements PanacheRepository<Dmp> {
    * @return a {@link java.util.List} object
    */
   public List<Dmp> getAll() {
-    return listAll(Sort.by("id"));
+    return listAll(Sort.descending("created"));
   }
 }

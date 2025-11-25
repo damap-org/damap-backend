@@ -83,7 +83,7 @@ public class DmpService {
                     new DmpListItemDO(),
                     versionService.getDmpVersions(access.getDmp().id))));
 
-    dmpListItemDOS.sort(Comparator.comparing(DmpListItemDO::getId));
+    dmpListItemDOS.sort(Comparator.comparing(DmpListItemDO::getCreated).reversed());
 
     return dmpListItemDOS;
   }
