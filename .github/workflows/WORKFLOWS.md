@@ -46,7 +46,11 @@ but this time with a configuration for Maven Central. As before, the artifacts a
 signed by a GPG agent by the maven-gpg-plugin, and then published on Maven Central using
 the Central credentials retrieved from the Github secrets.
 
-For context, our partner institutions currently use the Maven releases for deployment.
+Once the JAR files are released to Maven Central, they can be consumed as follows:
+- Import the JAR files as a dependency in a new `<dependency>` block in a separate `pom.xml`.
+Specify the `<groupId>`, `<artifactId>` and `<version>`.
+- Declare the dependency in Gradle in the `dependencies` block. The `implementation` configuration 
+can be used for this.
 
 
 

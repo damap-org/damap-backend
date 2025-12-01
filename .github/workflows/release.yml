@@ -43,8 +43,12 @@ jobs:
           VERSION=$(echo -n '${{ github.ref_name }}' | sed -e 's/v//')
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
-      # Upload the 4 jar files to Github Packages. The maven gpg plugin first automatically signs the files using the
-      # gpg private key.
+      # The maven gpg plugin automatically signs the following 4 files using the gpg private key.
+      # 1. Javadoc: base-<version>-javadoc.jar
+      # 2. Sources: base-<version>-sources.jar
+      # 3. Main jar: base-<version>.jar
+      # 4. Pom: base-<version>.pom
+      # All resulting JAR artefacts, checksums and asc signature files are then uploaded to GitHub Packages
       - name: Publish to GitHub packages
         run: mvn deploy --batch-mode -P deploy-github-repository
         env:
