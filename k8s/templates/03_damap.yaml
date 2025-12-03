@@ -74,8 +74,6 @@ spec:
           {{- if or (hasSuffix ":latest" .Values.damap.backend_image) (hasSuffix ":next" .Values.damap.backend_image) }}
           imagePullPolicy: Always
           {{- end }}
-          securityContext:
-            runAsNonRoot: true
           resources:
             requests:
               cpu: 10m
