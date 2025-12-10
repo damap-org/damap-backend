@@ -225,9 +225,9 @@ CREATE DATABASE tenant_1 OWNER damap;
 `tenant_1` is a stand-in for the tenants' id. It's generated from the eduPersonScopedAffiliation field by taking the
 affiliation after the @. The multitenancy feature is therefore only available when using EduId Authentication.
 
-To enable multitenancy, set the `QUARKUS_PROFILES` environment variable to `-Dquarkus.profile=multitenant` in order to
+To enable multitenancy, set the `QUARKUS_PROFILE` environment variable in the .env file to `multitenant` in order to
 activate the multitenant quarkus profile. If you need to activate multiple profiles, pass a value like this:
-`-Dquarkus.profile.activate=multitenant,xyz`. 
+`multitenant,xyz`. 
 
 **Warning:** Rewrite this after Helm Chart is done
 After enabling multitenancy mode, you need to configure new tenants by creating a yaml config file. This file does not

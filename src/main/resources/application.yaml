@@ -210,5 +210,5 @@ rest:
       multitenant: DATABASE
 
     config:
-      # should point to a (out of classpath) config file like this file:///path/to/config/file.yaml
+      # should point to a (out of classpath) config file like this /path/to/config/file.yaml
       locations: ${DAMAP_MULTITENANT_CONFIG:}

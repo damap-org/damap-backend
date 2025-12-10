@@ -15,6 +15,10 @@ services:
       DAMAP_DATASOURCE_DB_KIND: "postgresql"
       DAMAP_DATASOURCE_USERNAME: "damap"
       DAMAP_DATASOURCE_PASSWORD: "pw4damap"
+      QUARKUS_PROFILE: ${QUARKUS_PROFILE}
+      DAMAP_MULTITENANT_CONFIG: ${DAMAP_MULTITENANT_CONFIG}
+    volumes:
+      - ./tenants.yaml:/${DAMAP_MULTITENANT_CONFIG}:ro
     depends_on:
       - damap-db
       - keycloak

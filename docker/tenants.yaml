@@ -1,0 +1,26 @@
+tenants: ['tenant_1', 'tenant_2']
+"%multitenant":
+  quarkus:
+    datasource:
+      tenant_1:
+        jdbc:
+          url: jdbc:postgresql://damap-db:5432/tenant_1
+          driver: ${damap.datasource.driver}
+        db-kind: ${damap.datasource.db-kind}
+        username: ${damap.datasource.username}
+        password: ${damap.datasource.password}
+      tenant_2:
+        jdbc:
+          url: jdbc:postgresql://damap-db:5432/tenant_2
+          driver: ${damap.datasource.driver}
+        db-kind: ${damap.datasource.db-kind}
+        username: ${damap.datasource.username}
+        password: ${damap.datasource.password}
+
+    liquibase:
+      tenant_1:
+        migrate-at-start: true
+        change-log: org/damap/base/db/changeLog-root.yaml
+      tenant_2:
+        migrate-at-start: true
+        change-log: org/damap/base/db/changeLog-root.yaml
