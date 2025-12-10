@@ -120,6 +120,11 @@ public class PureProjectService implements ProjectServiceProvider {
             .filter(
                 project ->
                     project.participants.stream()
+                        // Filter by internal participants only, since external participants are
+                        // not able to have a DAMAP account now and for the foreseeable future.
+                        .filter(
+                            participant ->
+                                participant instanceof PureAPIInternalParticipantAssociation)
                         .anyMatch(
                             participant ->
                                 ((PureAPIInternalParticipantAssociation) participant)
