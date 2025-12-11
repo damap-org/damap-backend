@@ -7,9 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [4.7.0] - 2025-12-11
+
 ### Added
  
 - Support for Elsevier Pure project/person database integration [#392](https://github.com/damap-org/damap-backend/pull/392)
+
+### Changed
+
+- Switched to different image provider for keycloak [#429](https://github.com/damap-org/damap-backend/pull/429)
+- Quarkus now reaugments for all db-kinds to support multitenancy [#446](https://github.com/damap-org/damap-backend/pull/446)
+- Changed permissions for /quarkus-app/quarkus in images to allow rewriting by reaugmentation [#446](https://github.com/damap-org/damap-backend/pull/446)
+- Upgraded org.apache.poi and poi-ooxml dependencies from 4.1.12 to 5.4.0 to [#379](https://github.com/damap-org/damap-backend/pull/379)
+
+### Fixed
+
+- Reverted unnecessary datasource environment variable name change in docker compose file [#424](https://github.com/damap-org/damap-backend/pull/424)
+- Fixed broken Maven and GitHub deployment pipelines [#436](https://github.com/damap-org/damap-backend/pull/436)
+
+### Resource Files
+
+- Changed wording for closed/restricted dataset reasons [#443](https://github.com/damap-org/damap-backend/pull/443)
 
 ## [4.6.0] - 2025-07-08
 
