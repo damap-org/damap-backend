@@ -54,7 +54,15 @@ configs:
                   proxy_set_header X-Forwarded-Proto $$scheme;
                   proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
               }
-              # TODO find a way to conditionally apply these only:
+              # TODO:fix collision with DAMAP's /admin path
+              # TODO: find a way to conditionally apply these only:
+              location /admin {
+                  proxy_pass http://keycloak:8080;
+                  proxy_set_header Host $$host;
+                  proxy_set_header X-Forwarded-Host $$host;
+                  proxy_set_header X-Forwarded-Proto $$scheme;
+                  proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              }
               location /realms {
                   proxy_pass http://keycloak:8080;
                   proxy_set_header Host $$host;
