@@ -1,0 +1,107 @@
+databaseChangeLog:
+  - changeSet:
+      id: 28
+      author: Translation Management System
+      comment: Create translation table for backend translation management
+      changes:
+        - createTable:
+            tableName: translation
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: VARCHAR(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_value
+                  type: CLOB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: CLOB
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: translation
+            columnNames: key, language
+            constraintName: uk_translation_key_language
+        - createIndex:
+            tableName: translation
+            indexName: idx_translation_language_active
+            columns:
+              - column:
+                  name: language
+              - column:
+                  name: active
+        - createTable:
+            tableName: translation_aud
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rev
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revtype
+                  type: SMALLINT
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+              - column:
+                  name: language
+                  type: VARCHAR(2)
+              - column:
+                  name: default_value
+                  type: CLOB
+              - column:
+                  name: value
+                  type: CLOB
+              - column:
+                  name: active
+                  type: BOOLEAN
+              - column:
+                  name: version
+                  type: BIGINT
+        - addPrimaryKey:
+            tableName: translation_aud
+            columnNames: id, rev
+            constraintName: pk_translation_aud
+        - addForeignKeyConstraint:
+            baseTableName: translation_aud
+            baseColumnNames: rev
+            constraintName: fk_translation_aud_revinfo
+            referencedTableName: revinfo
+            referencedColumnNames: id
+      rollback:
+        - dropTable:
+            tableName: translation_aud
+        - dropTable:
+            tableName: translation
