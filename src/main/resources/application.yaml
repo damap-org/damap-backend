@@ -1,24 +1,37 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
-  title: ${DAMAP_TITLE:DAMAP Tool}
+  title: DAMAP Tool
   env: DEV # override in your custom project with PROD for production deployment
   origins: http://localhost:8085 # https://your.frontend.com,https://*.yourdomain.com
   auth:
-    backend:
-      # Configures the OIDC realm the DAMAP backend should query to verify authentication:
-      url: http://keycloak:8080/realms/damap      # Client ID as configured in the OIDC Server:
-      client: 'damap-be'
-    frontend:
-      # Configures the OIDC URL the frontend should send users to in order to log in. This is typically the same
-      # as the backend URL, but may differ if the backend can access the OIDC server over a non-public network.
-      url: http://localhost:8087/realms/damap
-      # Client ID as configured in the OIDC Server:
-      client: 'damap'
+    # Configures the OIDC realm the DAMAP backend should query to verify authentication:
+    server-url: http://localhost:8087/realms/damap
+    # Configures the OIDC URL the frontend should send users to in order to log in. This is typically the same
+    # as the backend URL, but may differ if the backend can access the OIDC server over a non-public network.
+    issuer: http://localhost:8087/realms/damap
+    # Client ID as configured in the OIDC Server:
+    clientID: damap
     # Scopes to request during login:
-    scope: 'openid profile email offline_access microprofile-jwt roles personID' # your-backend-authentication-scope, including your variable for your user IDs
+    scope: openid profile affiliation
+    # The OIDC claim path that will hold your DAMAP roles in the access token
+    user-roles-claim-path: roles
     # The OIDC claim to use as a user ID:
-    user: 'personID'
+    user-id-claim: sub
+    # The OIDC claim that holds the users full name
+    name-claim: name
+    # The OIDC claim that holds the users given name
+    given-name-claim: given_name
+    # The OIDC claim that holds the users family name
+    family-name-claim: family_name
+    # The OIDC claim that holds the users email
+    email-claim: email
+    # The OIDC claim that holds the users affiliations
+    affiliations-claim: affiliation
+    # Role name used to identify DAMAP super admins
+    # If its value is not damap-super-admin, ADMIN_ROLE constant in the
+    # DefaultProfile test profile needs to be changed accordingly
+    admin-role-name: damap-super-admin
   datasource:
     url: ${DAMAP_DATASOURCE_URL:jdbc:postgresql://damap-db:5432/damap}
     db-kind: ${DAMAP_DATASOURCE_DB_KIND:postgresql}
@@ -95,10 +108,12 @@ quarkus:
       max-body-size: 10M
 
   oidc:
-    auth-server-url: ${damap.auth.backend.url}
-    client-id: ${damap.auth.backend.client}
+    auth-server-url: ${damap.auth.server-url}
+    client-id: ${damap.auth.clientID}
     token:
-      issuer: ${damap.auth.frontend.url}
+      issuer: ${damap.auth.issuer}
+    roles:
+      role-claim-path: ${damap.auth.user-roles-claim-path}
 
   datasource:
     jdbc:
@@ -130,7 +145,7 @@ quarkus:
 
   swagger-ui:
     always-include: true # set to false if swagger-ui should only be available in dev mode
-    oauth-client-id: ${damap.auth.frontend.client}
+    oauth-client-id: ${damap.auth.clientID}
 
   rest-client:
     elsevier-pure:
@@ -154,8 +169,13 @@ rest:
     title: "DAMAP (Development)"
     origins: http://localhost:4200
     auth:
-      backend:
-        url: http://localhost:8087/realms/damap # https://your.authentication.server
+      server-url: http://localhost:8087/realms/damap
+      issuer: http://localhost:8087/realms/damap
+      clientID: damap
+      scope: 'openid profile email offline_access microprofile-jwt roles personID'
+      user-id-claim: personID
+      user-roles-claim-path: realm_access/roles
+      admin-role-name: Damap Admin
     datasource:
       url: jdbc:postgresql://localhost:8088/damap
       db-kind: postgresql

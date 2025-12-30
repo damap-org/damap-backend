@@ -18,17 +18,35 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @PermitAll
 @JBossLog
 public class ConfigResource {
-  @ConfigProperty(name = "damap.auth.frontend.url")
-  String authUrl;
+  @ConfigProperty(name = "damap.auth.server-url")
+  String issuer;
 
-  @ConfigProperty(name = "damap.auth.frontend.client")
-  String authClient;
+  @ConfigProperty(name = "damap.auth.clientID")
+  String clientID;
 
   @ConfigProperty(name = "damap.auth.scope")
-  String authScope;
+  String scope;
 
-  @ConfigProperty(name = "damap.auth.user")
-  String authUser;
+  @ConfigProperty(name = "damap.auth.user-roles-claim-path")
+  String userRolesClaimPath;
+
+  @ConfigProperty(name = "damap.auth.user-id-claim")
+  String userIdClaim;
+
+  @ConfigProperty(name = "damap.auth.name-claim")
+  String nameClaim;
+
+  @ConfigProperty(name = "damap.auth.given-name-claim")
+  String givenNameClaim;
+
+  @ConfigProperty(name = "damap.auth.family-name-claim")
+  String familyNameClaim;
+
+  @ConfigProperty(name = "damap.auth.email-claim")
+  String emailClaim;
+
+  @ConfigProperty(name = "damap.auth.admin-role-name")
+  String adminRoleName;
 
   @ConfigProperty(name = "damap.env")
   String env;
@@ -56,10 +74,17 @@ public class ConfigResource {
   @GET
   public ConfigDO config() {
     ConfigDO configDO = new ConfigDO();
-    configDO.setAuthUrl(authUrl);
-    configDO.setAuthClient(authClient);
-    configDO.setAuthScope(authScope);
-    configDO.setAuthUser(authUser);
+    configDO.setIssuer(issuer);
+    configDO.setClientID(clientID);
+    configDO.setScope(scope);
+    configDO.setUserRolesClaimPath(userRolesClaimPath);
+    configDO.setUserIdClaim(userIdClaim);
+    configDO.setNameClaim(nameClaim);
+    configDO.setGivenNameClaim(givenNameClaim);
+    configDO.setFamilyNameClaim(familyNameClaim);
+    configDO.setEmailClaim(emailClaim);
+    configDO.setAdminRoleName(adminRoleName);
+    configDO.setResponseType("code"); // hardcoded since DAMAP only supports this flow
     configDO.setEnv(env);
     configDO.setAppTitle(appTitle);
     configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());

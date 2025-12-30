@@ -22,6 +22,10 @@ public class TestProfiles {
 
   public static class DefaultProfile implements QuarkusTestProfile {
 
+    // admin role name is configured in application.yaml under damap.auth.admin-role-name
+    // but @TestSecurity cannot read from the application.yaml, so it needs to be hardcoded here
+    public static final String ADMIN_ROLE = "damap-super-admin";
+
     /** Makes sure that only the Mock services are used and not real systems like PURE */
     @Override
     public Map<String, String> getConfigOverrides() {

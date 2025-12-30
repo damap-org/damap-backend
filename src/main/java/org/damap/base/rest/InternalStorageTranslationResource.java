@@ -29,7 +29,7 @@ public class InternalStorageTranslationResource
   private static final String MESSAGE_START = "{\"message\":\"";
 
   @Override
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public InternalStorageTranslationDO create(@Valid InternalStorageTranslationDO data) {
     log.debug("Create internal storage translation");
     log.debug(data);
@@ -46,7 +46,7 @@ public class InternalStorageTranslationResource
   }
 
   @Override
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public void delete(String id) {
     log.info("Delete internal storage translation with id " + id);
     try {
@@ -77,7 +77,7 @@ public class InternalStorageTranslationResource
   }
 
   @Override
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public InternalStorageTranslationDO update(String id, @Valid InternalStorageTranslationDO data) {
     log.info("Update internal storage translation with id " + id);
     log.info(data);

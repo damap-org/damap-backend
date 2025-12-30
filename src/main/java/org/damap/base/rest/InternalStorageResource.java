@@ -40,7 +40,7 @@ public class InternalStorageResource
   @POST
   @Path("")
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public InternalStorageDO create(@Valid InternalStorageDO data) {
     log.debug("Create internal storage option");
     log.debug(data);
@@ -95,7 +95,7 @@ public class InternalStorageResource
   @PUT
   @Path("/{id}")
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public InternalStorageDO update(@PathParam("id") String id, @Valid InternalStorageDO data) {
     log.debug("Update internal storage option with id " + id);
     log.debug(data);
@@ -110,7 +110,7 @@ public class InternalStorageResource
    */
   @Override
   @DELETE
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   @Path("/{id}")
   public void delete(@PathParam("id") String id) {
     log.debug("Delete internal storage option with id " + id);

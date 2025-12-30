@@ -1,6 +1,7 @@
 package org.damap.base.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.damap.base.TestProfiles.DefaultProfile.ADMIN_ROLE;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -111,7 +112,7 @@ class InternalStorageResourceTest {
 
   // POST tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateEndpointAsAdminWithMissingTranslation_BadRequest() {
     InternalStorageDO invalidData = this.getValidInternalStorageDO();
     invalidData.setTranslations(List.of());
@@ -128,7 +129,7 @@ class InternalStorageResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateEndpointAsAdminWithEmptyURL_BadRequest() {
     InternalStorageDO invalidData = this.getValidInternalStorageDO();
     invalidData.setUrl("");
@@ -148,7 +149,7 @@ class InternalStorageResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateEndpointAsAdminWithValidData_Created() {
     InternalStorageDO validData = this.getValidInternalStorageDO();
 
@@ -177,7 +178,7 @@ class InternalStorageResourceTest {
 
   // PUT tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testPutEndpointAsAdminWithNonExistingId_NotFound() {
     InternalStorageDO validData = this.getValidInternalStorageDO();
     given()
@@ -190,7 +191,7 @@ class InternalStorageResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testPutEndpointAsAdminValid_Updated() {
     Long id = testDOFactory.prepareInternalStorageOption();
 
@@ -219,13 +220,13 @@ class InternalStorageResourceTest {
 
   // DELETE tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteEndpointAsAdminWithNonExistingId_NotFound() {
     given().when().delete("/-1").then().statusCode(404);
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteEndpointAsAdminValidId_Deleted() {
     Long id = testDOFactory.prepareInternalStorageOption();
     given().when().delete("/" + id).then().statusCode(204);

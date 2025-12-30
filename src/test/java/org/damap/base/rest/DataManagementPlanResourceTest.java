@@ -1,6 +1,7 @@
 package org.damap.base.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.damap.base.TestProfiles.DefaultProfile.ADMIN_ROLE;
 import static org.hamcrest.Matchers.is;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -41,7 +42,7 @@ class DataManagementPlanResourceTest extends TestSetup {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testGetAllPlansEndpoint_ValidRole() {
     given().when().get("/all").then().statusCode(200);
   }

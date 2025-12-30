@@ -1,6 +1,7 @@
 package org.damap.base.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.damap.base.TestProfiles.DefaultProfile.ADMIN_ROLE;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.Test;
 @TestHTTPEndpoint(InternalStorageTranslationResource.class)
 @TestProfile(TestProfiles.DefaultProfile.class)
 class InternalStorageTranslationResourceTest {
+
+  final String test = "damap-super-admin";
 
   @Inject TestDOFactory testDOFactory;
 
@@ -109,7 +112,7 @@ class InternalStorageTranslationResourceTest {
 
   // Create tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateTranslationInvalidStorageID_NotFound() {
     InternalStorageTranslationDO data = new InternalStorageTranslationDO();
     data.setStorageId(-1);
@@ -129,7 +132,7 @@ class InternalStorageTranslationResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateTranslationDuplicateLanguageCode_BadRequest() {
 
     Long id = testDOFactory.prepareInternalStorageTranslationOption(false).get(0);
@@ -154,7 +157,7 @@ class InternalStorageTranslationResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = test)
   void testCreateEndpointValidData_Created() {
     Long id = testDOFactory.prepareInternalStorageOption();
 
@@ -194,7 +197,7 @@ class InternalStorageTranslationResourceTest {
 
   // Update tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testUpdateEndpointInvalidID_NotFound() {
     InternalStorageTranslationDO data = new InternalStorageTranslationDO();
     data.setTitle("Test Storage Title ENG");
@@ -213,7 +216,7 @@ class InternalStorageTranslationResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testUpdateEndpointValidData_Updated() {
     List<Long> ids = testDOFactory.prepareInternalStorageTranslationOption(false);
 
@@ -252,13 +255,13 @@ class InternalStorageTranslationResourceTest {
 
   // Delete tests
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteEndpointInvalidID_NotFound() {
     given().pathParam("storageId", -1).when().delete("/-1").then().statusCode(404);
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteEndpointLastTranslation_BadRequest() {
     List<Long> ids = testDOFactory.prepareInternalStorageTranslationOption(false);
 
@@ -274,7 +277,7 @@ class InternalStorageTranslationResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteEndpointValidID_Deleted() {
     List<Long> id = testDOFactory.prepareInternalStorageTranslationOption(true);
     Long translationId = id.get(2);

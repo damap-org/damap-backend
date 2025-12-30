@@ -15,7 +15,6 @@ import org.damap.base.rest.madmp.dto.Dmp;
 import org.damap.base.rest.madmp.service.MaDmpService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /** MaDmpResource class. */
 @Path("/api/madmp")
@@ -32,9 +31,6 @@ public class MaDmpResource {
   @Inject MaDmpService maDmpService;
 
   @Inject DmpService dmpService;
-
-  @ConfigProperty(name = "damap.auth.user")
-  String authUser;
 
   /**
    * getById.

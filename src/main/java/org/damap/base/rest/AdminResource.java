@@ -28,7 +28,7 @@ public class AdminResource {
 
   @POST
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public BannerDO createAppBanner(@Valid BannerDO bannerDO) {
     log.info("POST /admin/banner");
     log.info(bannerDO);
@@ -37,7 +37,7 @@ public class AdminResource {
 
   @PUT
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public BannerDO updateAppBanner(@Valid BannerDO bannerDO) {
     log.info("PUT /admin/banner");
     log.info(bannerDO);
@@ -46,7 +46,7 @@ public class AdminResource {
 
   @DELETE
   @Path("/banner")
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public void deleteAppBanner() {
     log.info("DELETE /admin/banner");
     this.adminService.deleteAppBanner();

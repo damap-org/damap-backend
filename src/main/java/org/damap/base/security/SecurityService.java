@@ -9,8 +9,12 @@ import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonString;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -24,8 +28,17 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 public class SecurityService {
   @Inject SecurityIdentity securityIdentity;
 
-  @ConfigProperty(name = "damap.auth.user")
-  String authUser;
+  @ConfigProperty(name = "damap.auth.user-id-claim")
+  String userIdClaim;
+
+  @ConfigProperty(name = "damap.auth.admin-role-name")
+  String adminRoleName;
+
+  @ConfigProperty(name = "damap.auth.affiliations-claim")
+  String affiliationsClaim;
+
+  @ConfigProperty(name = "tenants", defaultValue = "")
+  Optional<List<String>> tenants;
 
   @ConfigProperty(name = "invenio.shared-secret")
   String sharedSecret;
@@ -41,7 +54,7 @@ public class SecurityService {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
 
-    return ((OidcJwtCallerPrincipal) principal).getClaims().getClaimValue(authUser).toString();
+    return ((OidcJwtCallerPrincipal) principal).getClaims().getClaimValue(userIdClaim).toString();
   }
 
   /**
@@ -52,16 +65,14 @@ public class SecurityService {
   public String getUserName() {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
-    return ((OidcJwtCallerPrincipal) principal).getName();
+    return principal.getName();
   }
 
   public String getDisplayName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal)) {
+    if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
       return null;
     }
-
-    OidcJwtCallerPrincipal oidcPrincipal = (OidcJwtCallerPrincipal) principal;
 
     String name = getClaimValueAsString(oidcPrincipal, "name");
     if (name != null) {
@@ -88,7 +99,47 @@ public class SecurityService {
    * @return a boolean
    */
   public boolean isAdmin() {
-    return securityIdentity.hasRole("Damap Admin");
+    return securityIdentity.hasRole(adminRoleName);
+  }
+
+  public String getAffiliation() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
+      return null;
+    }
+
+    // affiliations come from the eduPersonScopedAffiliation attribute - in EduID they are
+    // structured like role@institution
+    // EduGain does not have this convention - currently we just throw an error if the affiliation
+    // doesnt follow the EduID style
+    // for more information see:
+    // https://wiki.univie.ac.at/spaces/federation/pages/47025278/eduPersonScopedAffiliation
+    List<String> affiliations =
+        ((JsonArray) oidcPrincipal.getClaims().getClaimValue(affiliationsClaim))
+            .stream()
+                .map(JsonString.class::cast)
+                .map(JsonString::getString)
+                .map(
+                    aff -> {
+                      if (!aff.contains("@")) {
+                        throw new UnauthorizedException(
+                            "Affiliation is expected to include an @: " + aff);
+                      }
+                      return aff.split("@")[1];
+                    })
+                .distinct()
+                .toList();
+
+    List<String> tenantList = tenants.orElse(List.of());
+
+    // check if affiliations are actual tenants and if exactly one unique affiliation  is present
+    // currently DAMAP cannot handle multiple affiliations
+    List<String> validAffiliations = affiliations.stream().filter(tenantList::contains).toList();
+    if (validAffiliations.size() == 1) {
+      return validAffiliations.get(0);
+    } else {
+      throw new UnauthorizedException("Exactly one affiliation to a registered tenant is expected");
+    }
   }
 
   /**

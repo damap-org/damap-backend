@@ -43,7 +43,7 @@ public class DataManagementPlanResource {
    */
   @GET
   @Path("/all")
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public List<DmpListItemDO> getAll() {
     log.info("Return all Dmps");
     return dmpService.getAll();
@@ -51,7 +51,7 @@ public class DataManagementPlanResource {
 
   /*@GET
   @Path("/person/{personId}")
-  @RolesAllowed("Damap Admin")
+  @RolesAllowed("${damap.auth.admin-role-name}")
   public List<DmpListItemDO> getDmpListByPerson(@RestPath String personId) {
       log.info("Return dmp for person id: " + personId);
       return dmpService.getDmpListByPersonId(personId);

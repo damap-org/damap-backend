@@ -9,22 +9,21 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigDO {
 
-  private String authUrl;
-  private String authClient;
-  private String authScope;
-  private String authUser;
+  private String issuer;
+  private String clientID;
+  private String responseType;
+  private String scope;
+  private String userRolesClaimPath;
+  private String userIdClaim;
+  private String nameClaim;
+  private String givenNameClaim;
+  private String familyNameClaim;
+  private String emailClaim;
+  private String adminRoleName;
   private String env;
   private List<ServiceConfig> personSearchServiceConfigs;
   private boolean fitsServiceAvailable;
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
   private String appTitle;
-
-  public void setAppTitle(String appTitle) {
-    this.appTitle = appTitle;
-  }
-
-  public String getAppTitle() {
-    return appTitle;
-  }
 }

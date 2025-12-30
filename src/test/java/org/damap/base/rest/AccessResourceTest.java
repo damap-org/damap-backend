@@ -1,6 +1,7 @@
 package org.damap.base.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.damap.base.TestProfiles.DefaultProfile.ADMIN_ROLE;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -36,7 +37,7 @@ class AccessResourceTest extends TestSetup {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testGetAccessListAdmin_Valid() {
     Mockito.when(securityService.isAdmin()).thenReturn(true);
 
@@ -69,7 +70,7 @@ class AccessResourceTest extends TestSetup {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateAccessAdmin_Valid() {
     Mockito.when(securityService.isAdmin()).thenReturn(true);
     AccessDO accessDO = this.createAccessDO();
@@ -122,7 +123,7 @@ class AccessResourceTest extends TestSetup {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = "Damap Admin")
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testDeleteAccessAdmin_Valid() {
     Mockito.when(securityService.isAdmin()).thenReturn(true);
     AccessDO accessDO = this.accessService.create(this.createAccessDO());
