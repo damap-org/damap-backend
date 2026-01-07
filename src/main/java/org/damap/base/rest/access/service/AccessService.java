@@ -1,7 +1,5 @@
 package org.damap.base.rest.access.service;
 
-import static org.damap.base.utils.EqualityUtils.nullExclusiveEquals;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -11,14 +9,13 @@ import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Access;
 import org.damap.base.domain.Dmp;
-import org.damap.base.integration.PersonService;
+import org.damap.base.domain.User;
 import org.damap.base.repo.AccessRepo;
+import org.damap.base.repo.DamapUserRepo;
 import org.damap.base.repo.DmpRepo;
-import org.damap.base.rest.PersonServiceBroker;
 import org.damap.base.rest.access.domain.AccessDO;
+import org.damap.base.rest.access.domain.UserDO;
 import org.damap.base.rest.access.mapper.AccessMapper;
-import org.damap.base.rest.dmp.domain.ContributorDO;
-import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
 import org.damap.base.rest.dmp.mapper.MapperService;
 
 /** AccessService class. */
@@ -26,66 +23,33 @@ import org.damap.base.rest.dmp.mapper.MapperService;
 @JBossLog
 public class AccessService {
 
-  // defines which personService is to be used for access management
-  private final String ENABLED_PERSON_SERVICE = "UNIVERSITY";
-
   @Inject AccessRepo accessRepo;
 
   @Inject DmpRepo dmpRepo;
 
   @Inject MapperService mapperService;
 
-  @Inject PersonServiceBroker personServiceBroker;
+  @Inject DamapUserRepo damapUserRepo;
 
   /**
-   * getByDmpId.
+   * getByDmpId. Returns all users that have access to the DMP.
    *
    * @param dmpId a long
    * @return a {@link java.util.List} object
    */
-  public List<ContributorDO> getByDmpId(long dmpId) {
-    PersonService personService =
-        personServiceBroker.getServiceForQueryParam(ENABLED_PERSON_SERVICE);
-
+  public List<AccessDO> getByDmpId(long dmpId) {
     Dmp dmp = dmpRepo.findById(dmpId);
-    // Get access list (owner, editors)
-    List<ContributorDO> accessDOList = new ArrayList<>();
+    List<AccessDO> accessDOList = new ArrayList<>();
+
     accessRepo
         .getAccessByDmp(dmp)
         .forEach(
             access -> {
-              AccessDO accessDO = AccessMapper.mapEntityToDO(access, new AccessDO());
-              // Set owner/editor data. If they're not listed as a contributor, fields will be
-              // empty.
-              if (accessDO.getMbox() == null) {
-                // TODO: Handle case when owner is no longer at university
-                ContributorDO owner = personService.read(access.getUniversityId());
-                accessDO.setFirstName(owner.getFirstName());
-                accessDO.setLastName(owner.getLastName());
-                accessDO.setMbox(owner.getMbox());
-              }
+              User user = damapUserRepo.findUserByIdentifier(access.getUniversityId());
+              AccessDO accessDO = AccessMapper.mapEntityToDO(access, user, new AccessDO());
               accessDOList.add(accessDO);
             });
 
-    // Get dmp contributors (viewers)
-    dmp.getContributorList()
-        .forEach(
-            contributor -> {
-              // Only university members can be editors for now
-              if (contributor.getUniversityId() != null
-                  && !contributor.getUniversityId().isEmpty()
-                  && accessDOList.stream()
-                      .noneMatch(
-                          a ->
-                              nullExclusiveEquals(
-                                  a.getUniversityId(), contributor.getUniversityId()))) {
-                ContributorDO contributorDO = new ContributorDO();
-                ContributorDOMapper.mapEntityToDO(contributor, contributorDO);
-                // Set id null, so it's not confused with access id
-                contributorDO.setId(null);
-                accessDOList.add(contributorDO);
-              }
-            });
     return accessDOList;
   }
 
@@ -110,7 +74,10 @@ public class AccessService {
     }
     access.setStart(new Date());
     access.persist();
-    return AccessMapper.mapEntityToDO(access, new AccessDO());
+
+    User user = damapUserRepo.findUserByIdentifier(access.getUniversityId());
+
+    return AccessMapper.mapEntityToDO(access, user, new AccessDO());
   }
 
   /**
@@ -121,5 +88,22 @@ public class AccessService {
   @Transactional
   public void delete(long id) {
     accessRepo.deleteById(id);
+  }
+
+  public List<UserDO> searchUserDO(String match) {
+    List<UserDO> result = new ArrayList<>();
+    damapUserRepo
+        .findUsersByNameOrEmailMatch(match)
+        .forEach(
+            user -> {
+              UserDO userDO = new UserDO();
+              userDO.setIdentifier(user.getIdentifier());
+              userDO.setName(user.getName());
+              userDO.setFirstName(user.getFirstName());
+              userDO.setLastName(user.getLastName());
+              userDO.setEmail(user.getEmail());
+              result.add(userDO);
+            });
+    return result;
   }
 }

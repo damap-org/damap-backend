@@ -1,14 +1,10 @@
 package org.damap.base.rest.access.mapper;
 
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.damap.base.domain.Access;
-import org.damap.base.domain.Contributor;
 import org.damap.base.domain.Dmp;
-import org.damap.base.domain.Identifier;
+import org.damap.base.domain.User;
 import org.damap.base.rest.access.domain.AccessDO;
-import org.damap.base.rest.dmp.domain.IdentifierDO;
-import org.damap.base.rest.dmp.mapper.IdentifierDOMapper;
 import org.damap.base.rest.dmp.mapper.MapperService;
 
 /** AccessMapper class. */
@@ -22,30 +18,18 @@ public class AccessMapper {
    * @param accessDO a {@link org.damap.base.rest.access.domain.AccessDO} object
    * @return a {@link org.damap.base.rest.access.domain.AccessDO} object
    */
-  public AccessDO mapEntityToDO(Access access, AccessDO accessDO) {
+  public AccessDO mapEntityToDO(Access access, User user, AccessDO accessDO) {
     accessDO.setId(access.id);
     accessDO.setDmpId(access.getDmp().id);
-    accessDO.setUniversityId(access.getUniversityId());
-    // Get name and mail for accesses from contributor list
-    Optional<Contributor> contributor =
-        access.getDmp().getContributorList().stream()
-            .filter(
-                c ->
-                    c.getUniversityId() != null
-                        && c.getUniversityId().equals(access.getUniversityId()))
-            .findFirst();
-    if (contributor.isPresent()) {
-      Contributor c = contributor.get();
-      accessDO.setFirstName(c.getFirstName());
-      accessDO.setLastName(c.getLastName());
-      accessDO.setMbox(c.getMbox());
+    accessDO.setIdentifier(access.getUniversityId());
+
+    if (user != null) {
+      accessDO.setMbox(user.getEmail());
+      accessDO.setFirstName(user.getFirstName());
+      accessDO.setLastName(user.getLastName());
     }
-    if (access.getPersonIdentifier() != null) {
-      IdentifierDO identifierDO = new IdentifierDO();
-      IdentifierDOMapper.mapEntityToDO(access.getPersonIdentifier(), identifierDO);
-      accessDO.setPersonId(identifierDO);
-    }
-    accessDO.setAccess(access.getRole());
+
+    accessDO.setRole(access.getRole());
     accessDO.setStart(access.getStart());
     accessDO.setUntil(access.getUntil());
     return accessDO;
@@ -62,12 +46,9 @@ public class AccessMapper {
   public Access mapDOtoEntity(AccessDO accessDO, Access access, MapperService mapperService) {
     Dmp dmp = mapperService.getDmpById(accessDO.getDmpId());
     access.setDmp(dmp);
-    access.setRole(accessDO.getAccess());
-    access.setUniversityId(accessDO.getUniversityId());
-    if (accessDO.getPersonId() != null) {
-      access.setPersonIdentifier(
-          IdentifierDOMapper.mapDOtoEntity(accessDO.getPersonId(), new Identifier()));
-    }
+    access.setRole(accessDO.getRole());
+    access.setUniversityId(accessDO.getIdentifier());
+
     access.setStart(accessDO.getStart());
     access.setUntil(accessDO.getUntil());
     return access;

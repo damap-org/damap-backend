@@ -115,6 +115,10 @@ quarkus:
         expire-after-write: P1D
       "repository":
         expire-after-write: P1D
+      "user-sync-cache":
+        initial-capacity: 100
+        maximum-size: 1000
+        expire-after-write: 12H
 
   liquibase:
     migrate-at-start: true

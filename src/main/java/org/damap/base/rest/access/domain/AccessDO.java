@@ -6,23 +6,30 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.Date;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.damap.base.enums.EFunctionRole;
-import org.damap.base.rest.dmp.domain.ContributorDO;
 
 /** AccessDO class. */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AccessDO extends ContributorDO {
+public class AccessDO {
+
+  private Long id;
 
   @NotNull @Positive private long dmpId;
 
-  @NotNull private EFunctionRole access;
+  @NotNull private EFunctionRole role;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private Date start;
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   private Date until;
+
+  private String identifier;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String mbox;
 }

@@ -15,7 +15,6 @@ import org.damap.base.TestSetup;
 import org.damap.base.enums.EFunctionRole;
 import org.damap.base.rest.access.domain.AccessDO;
 import org.damap.base.rest.access.service.AccessService;
-import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -86,21 +85,6 @@ class AccessResourceTest extends TestSetup {
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
-  void testCreateAccessNoContributor_InValid() {
-    AccessDO accessDO = this.createAccessDO();
-    accessDO.setUniversityId("234567");
-
-    given()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(accessDO)
-        .when()
-        .post("/")
-        .then()
-        .statusCode(403);
-  }
-
-  @Test
-  @TestSecurity(user = "userJwt", roles = "user")
   void testCreateAccessNoPermission_Invalid() {
     Mockito.when(securityService.getUserId()).thenReturn("234567");
     AccessDO accessDO = this.createAccessDO();
@@ -135,15 +119,15 @@ class AccessResourceTest extends TestSetup {
   @TestSecurity(user = "userJwt", roles = "user")
   void testDeleteAccess_Invalid() {
     Mockito.when(securityService.getUserId()).thenReturn("234567");
-    ContributorDO accessDO = this.accessService.getByDmpId(dmpDO.getId()).get(0);
+    AccessDO accessDO = this.accessService.getByDmpId(dmpDO.getId()).get(0);
     given().when().delete("/" + accessDO.getId()).then().statusCode(403);
   }
 
   private AccessDO createAccessDO() {
     AccessDO accessDO = new AccessDO();
     accessDO.setDmpId(dmpDO.getId());
-    accessDO.setUniversityId(dmpDO.getContributors().get(0).getUniversityId());
-    accessDO.setAccess(EFunctionRole.EDITOR);
+    accessDO.setIdentifier(dmpDO.getContributors().get(0).getUniversityId());
+    accessDO.setRole(EFunctionRole.EDITOR);
     return accessDO;
   }
 }
