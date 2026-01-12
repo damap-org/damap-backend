@@ -1,90 +1,27 @@
-{{- if .Values.openshift }}
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: damap-backend-openapi
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-spec:
-  host: "{{ .Values.damap.hostname }}"
-  path: /q/openapi
-  to:
-    name: damap-backend
-    weight: 100
-    kind: Service
-  wildcardPolicy: None
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: damap-backend-swagger-ui
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-spec:
-  host: "{{ .Values.damap.hostname }}"
-  path: /q/swagger-ui
-  to:
-    name: damap-backend
-    weight: 100
-    kind: Service
-  wildcardPolicy: None
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: damap-backend-api
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-spec:
-  host: "{{ .Values.damap.hostname }}"
-  path: /api
-  to:
-    name: damap-backend
-    weight: 100
-    kind: Service
-  wildcardPolicy: None
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: damap-frontend
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-spec:
-  host: "{{ .Values.damap.hostname }}"
-  path: /
-  to:
-    name: damap-frontend
-    weight: 100
-    kind: Service
-  wildcardPolicy: None
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
-{{- else }}
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: damap
-  namespace: "{{ .Release.Namespace }}"
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tls_issuer) }}
+    cert-manager.io/cluster-issuer: {{ .Values.damap.tls_issuer | quote }}
+    {{- end }}
+    {{- if .Values.openshift }}
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+    {{- end }}
 spec:
+  {{- if .Values.ingress_class }}
+  ingressClassName: {{ .Values.ingress_class }}
+  {{- end }}
+  {{- if eq .Values.damap.protocol "https" }}
+  tls:
+    - hosts:
+        - {{ .Values.damap.hostname | quote }}
+      secretName: damap-tls
+  {{- end }}
   rules:
-    - host: "{{ .Values.damap.hostname }}"
+    - host: {{ .Values.damap.hostname | quote }}
       http:
         paths:
           - path: /api
@@ -115,4 +52,3 @@ spec:
                 name: damap-frontend
                 port:
                   number: 8080
-{{- end }}
