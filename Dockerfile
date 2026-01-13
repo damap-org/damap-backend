@@ -26,8 +26,13 @@ RUN mkdir -p "${BUILD_HOME}/.m2/repository" && chown -R 1000:0 "${BUILD_HOME}"
 WORKDIR "${BUILD_HOME}"
 USER 1000
 
-COPY src ./src
 COPY ./pom.xml .
+
+RUN mvn \
+    -Duser.home="${BUILD_HOME}" \
+    -B dependency:go-offline
+
+COPY src ./src
 
 RUN mvn \
     -Duser.home="${BUILD_HOME}" \
