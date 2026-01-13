@@ -1,39 +1,28 @@
 {{- if .Values.keycloak.deploy }}
-{{- if .Values.openshift }}
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: keycloak
-  namespace: {{ .Release.Namespace }}
-  {{- if eq .Values.keycloak.protocol "https" }}
-  annotations:
-    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
-  {{- end }}
-spec:
-  host: "{{ .Values.keycloak.hostname }}"
-  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms{{ else }}/{{ end }}"
-  to:
-    name: keycloak
-    weight: 100
-    kind: Service
-  wildcardPolicy: None
-  {{- if eq .Values.keycloak.protocol "https" }}
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
-  {{- end }}
-
-{{- else }}
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: keycloak
   namespace: "{{ .Release.Namespace }}"
+  annotations:
+    {{- if and (eq .Values.keycloak.protocol "https") (.Values.keycloak.tls_issuer) }}
+    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tls_issuer | quote }}
+    {{- end }}
+    {{- if .Values.openshift }}
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+    {{- end }}
 spec:
+  {{- if .Values.keycloak.ingress_class }}
+  ingressClassName: {{ .Values.keycloak.ingress_class }}
+  {{- end }}
+  {{- if eq .Values.keycloak.protocol "https" }}
+  tls:
+    - hosts:
+        - {{ .Values.keycloak.hostname | quote }}
+      secretName: keycloak-tls
+  {{- end }}
   rules:
-    - host: "{{ .Values.keycloak.hostname }}"
+    - host: {{ .Values.keycloak.hostname | quote }}
       http:
         paths:
           - path: "{{ if eq .Values.keycloak.hostname "localhost" }}/realms{{ else }}/{{ end }}"
@@ -59,5 +48,4 @@ spec:
                 port:
                   number: 8080
           {{- end }}
-{{- end }}
 {{- end }}
