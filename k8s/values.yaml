@@ -12,6 +12,7 @@ damap:
   # This mismatch can cause DB/service failures. Use a fixed password or pre-created Secret to ensure stability.
   db_password: "damap_pass" # Empty defaults to auto-generate.
   hostname: localhost
+  custom_domain: false
   protocol: http
   ingress_class: ""
   tls_issuer: ""
@@ -66,6 +67,7 @@ keycloak:
   db_user: keycloak
   db_password: "keycloak123" # Empty defaults to auto-generate
   hostname: localhost
+  custom_domain: false
   protocol: http
   ingress_class: ""
   tls_issuer: ""
