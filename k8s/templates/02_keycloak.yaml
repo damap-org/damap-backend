@@ -64,6 +64,9 @@ spec:
         - name: keycloak
           secret:
             secretName: keycloak
+        - name: keycloak-realm
+          secret:
+          secretName: keycloak-realm
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.3
@@ -119,8 +122,8 @@ spec:
             - containerPort: 8080
           volumeMounts:
             - mountPath: /opt/keycloak/data/import/damap-realm-import.json
-              name: keycloak
-              subPath: damap-realm-import
+              name: keycloak-realm
+              subPath: damap-realm-import.json
               readOnly: true
           securityContext:
             allowPrivilegeEscalation: false
