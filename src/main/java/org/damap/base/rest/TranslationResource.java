@@ -1,76 +1,68 @@
 package org.damap.base.rest;
 
-import io.quarkus.security.Authenticated;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
 import org.damap.base.rest.translation.service.TranslationService;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 /** TranslationResource class. */
-@Path("/api/translations")
-@Authenticated
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Path("/api/languages")
 @JBossLog
 public class TranslationResource {
 
   @Inject TranslationService translationService;
 
-  /**
-   * getTranslations.
-   *
-   * @param language a {@link java.lang.String} object
-   * @return a {@link java.util.List} of Translation objects
-   */
+  @POST
+  public List<Translation> createLanguage(@RequestBody @Valid CreateLanguageRequest request) {
+    return translationService.createLanguage(request.language());
+  }
+
+  @GET
+  public List<String> getAllLanguages() {
+    return translationService.getAllLanguages();
+  }
+
   @GET
   @Path("/{language}")
-  public List<Translation> getTranslations(@PathParam("language") String language) {
-    log.infov("GET /api/translations/{0}", language);
-    return translationService.getActiveTranslations(language);
+  public List<Translation> getTranslationsForLanguage(
+      @PathParam("language") @Valid @NotNull @Size(min = 2, max = 2) String language) {
+    return translationService.getTranslationsForLanguage(language);
   }
 
-  /**
-   * createLanguage.
-   *
-   * @param newLanguage a {@link java.lang.String} object
-   */
-  @POST
-  @Path("/language/{newLanguage}")
-  @RolesAllowed("Damap Admin")
-  public void createLanguage(@PathParam("newLanguage") String newLanguage) {
-    log.infov("POST /api/translations/language/{0}", newLanguage);
-    translationService.createLanguage(newLanguage);
-  }
-
-  /**
-   * updateTranslation.
-   *
-   * @param translation a {@link org.damap.base.domain.Translation} object
-   * @return the updated Translation object
-   */
   @PATCH
-  @RolesAllowed("Damap Admin")
-  public Translation updateTranslation(@Valid Translation translation) {
-    log.info("PATCH /api/translations");
-    log.info(translation);
-    return translationService.updateTranslation(translation);
+  @Path("/{language}")
+  public List<Translation> activateLanguage(
+      @PathParam("language") @Valid @NotNull @Size(min = 2, max = 2) String language,
+      @RequestBody @Valid ActivateLanguageRequest request) {
+    return translationService.activateLanguage(language, request.active());
   }
 
-  /**
-   * deleteLanguage.
-   *
-   * @param language a {@link java.lang.String} object
-   */
+  @PATCH
+  @Path("/{language}/translations/{key}")
+  public Translation patchTranslationForLanguage(
+      @PathParam("language") @Valid @NotNull @Size(min = 2, max = 2) String language,
+      @PathParam("key") @Valid @NotNull @NotEmpty @Size(min = 1, max = 255) String key,
+      @RequestBody @Valid PatchTranslationRequest request) {
+    return translationService.patchTranslationForLanguage(language, key, request);
+  }
+
   @DELETE
-  @Path("/language/{language}")
-  @RolesAllowed("Damap Admin")
-  public void deleteLanguage(@PathParam("language") String language) {
-    log.infov("DELETE /api/translations/language/{0}", language);
+  @Path("/{language}")
+  public void deleteLanguage(
+      @PathParam("language") @Valid @NotNull @Size(min = 2, max = 2) String language) {
     translationService.deleteLanguage(language);
   }
+
+  private record CreateLanguageRequest(@NotNull @Size(min = 2, max = 2) String language) {}
+
+  private record ActivateLanguageRequest(@NotNull Boolean active) {}
+
+  public record PatchTranslationRequest(@NotNull String value, @NotNull Boolean active) {}
 }

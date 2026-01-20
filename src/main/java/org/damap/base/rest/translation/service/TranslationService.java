@@ -3,112 +3,143 @@ package org.damap.base.rest.translation.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
 import org.damap.base.repo.TranslationRepo;
+import org.damap.base.rest.TranslationResource.PatchTranslationRequest;
 
 /** TranslationService class. */
 @ApplicationScoped
+@RequiredArgsConstructor
 @JBossLog
 public class TranslationService {
 
   private final TranslationRepo translationRepo;
 
-  public TranslationService(TranslationRepo translationRepo) {
-    this.translationRepo = translationRepo;
-  }
-
-  /**
-   * getActiveTranslations.
-   *
-   * @param language a {@link java.lang.String} object
-   * @return a {@link java.util.List} of Translation objects
-   */
-  public List<Translation> getActiveTranslations(String language) {
-    log.infov("Getting active translations for language: {0}", language);
-    return translationRepo.findByLanguageAndActive(language, true);
-  }
-
   /**
    * createLanguage.
    *
-   * @param newLanguage a {@link java.lang.String} object
+   * <p>This method is idempotent. If the language already exists, it will return the existing
+   * translations.
+   *
+   * @param newLanguage a {@link java.lang.String} language code
+   * @return a {@link java.util.List} of Translation objects related to the new language code
    */
   @Transactional
-  public void createLanguage(String newLanguage) {
+  public List<Translation> createLanguage(String newLanguage) {
+    List<Translation> existing = translationRepo.findByLanguage(newLanguage);
+    if (!existing.isEmpty()) {
+      return existing;
+    }
+
     log.infov("Creating new language: {0}", newLanguage);
 
-    List<Translation> existing = translationRepo.findByLanguageAndActive(newLanguage, true);
-    if (!existing.isEmpty()) {
-      throw new BadRequestException("Language already exists: " + newLanguage);
-    }
-
-    List<Translation> englishTranslations = translationRepo.findByLanguageAndActive("en", true);
-
-    if (englishTranslations.isEmpty()) {
-      throw new IllegalStateException("No English translations found to copy from");
-    }
+    List<Translation> englishTranslations = translationRepo.findByLanguage("en");
 
     for (Translation englishTranslation : englishTranslations) {
-      Translation newTranslation = new Translation();
-      newTranslation.setKey(englishTranslation.getKey());
-      newTranslation.setLanguage(newLanguage);
-      newTranslation.setDefaultValue(englishTranslation.getDefaultValue());
-      newTranslation.setValue(null);
-      newTranslation.setActive(true);
+      Translation newTranslation =
+          Translation.builder()
+              .key(englishTranslation.getKey())
+              .language(newLanguage)
+              .defaultValue(englishTranslation.getDefaultValue())
+              .value(null)
+              .active(false)
+              .build();
 
       translationRepo.persist(newTranslation);
     }
-
-    log.infov("Created {0} translations for language {1}", englishTranslations.size(), newLanguage);
+    return translationRepo.findByLanguage(newLanguage);
   }
 
   /**
-   * updateTranslation.
+   * getAllLanguages.
    *
-   * @param translation a {@link org.damap.base.domain.Translation} object
+   * @return a {@link java.util.List} of language codes
+   */
+  public List<String> getAllLanguages() {
+    log.infov("Getting all languages");
+    return translationRepo.findAll().stream().map(Translation::getLanguage).distinct().toList();
+  }
+
+  /**
+   * activateLanguage.
+   *
+   * @param language a {@link java.lang.String} language code
+   * @param active a {@link java.lang.Boolean} activation flag
+   * @return a {@link java.util.List} of Translation objects related to the language code
    */
   @Transactional
-  public Translation updateTranslation(Translation translation) {
-    log.infov(
-        "Updating translation: id={0}, key={1}, language={2}",
-        translation.id, translation.getKey(), translation.getLanguage());
-
-    Optional<Translation> optionalTranslation = translationRepo.findByIdOptional(translation.id);
-
-    if (optionalTranslation.isEmpty()) {
-      throw new BadRequestException("Translation not found with id: " + translation.id);
+  public List<Translation> activateLanguage(String language, Boolean active) {
+    List<Translation> translations = translationRepo.findByLanguage(language);
+    if (translations.isEmpty()) {
+      throw new NotFoundException("No translations found for language: " + language);
     }
 
-    Translation existing = optionalTranslation.get();
+    log.infov("Setting language active state: {0} -> {1}", language, active);
 
-    if (translation.getValue() != null) {
-      existing.setValue(translation.getValue());
+    for (Translation translation : translations) {
+      translation.setActive(active);
     }
 
-    if (translation.getActive() != null) {
-      existing.setActive(translation.getActive());
-    }
+    return translations;
+  }
 
-    translationRepo.persist(existing);
+  /**
+   * getTranslationsForLanguage.
+   *
+   * @param language a {@link java.lang.String} language code
+   * @return a {@link java.util.List} of Translation objects related to the language code
+   */
+  public List<Translation> getTranslationsForLanguage(String language) {
+    log.infov("Getting translations for language: {0}", language);
+    return translationRepo.findByLanguage(language);
+  }
+
+  /**
+   * patchTranslationForLanguage.
+   *
+   * @param language a {@link java.lang.String} language code
+   * @param key a {@link java.lang.String} key
+   * @param request a {@link org.damap.base.rest.TranslationResource.PatchTranslationRequest} object
+   *     containing the new value and active flag
+   * @return the updated Translation object
+   */
+  @Transactional
+  public Translation patchTranslationForLanguage(
+      String language, String key, PatchTranslationRequest request) {
+    Translation existing =
+        translationRepo
+            .findByKeyAndLanguage(key, language)
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Translation not found for language: " + language + " and key: " + key));
+
+    log.infov("Updating translation {0} for language {1}", key, language);
+
+    existing.setValue(request.value());
+    existing.setActive(request.active());
+
     return existing;
   }
 
   /**
    * deleteLanguage.
    *
-   * @param language a {@link java.lang.String} object
+   * @param language a {@link java.lang.String} language code
    */
   @Transactional
   public void deleteLanguage(String language) {
     // Prevent English language from deletion
     if ("en".equals(language)) {
-      throw new BadRequestException("Cannot delete English language");
+      throw new BadRequestException("Cannot delete the English language");
     }
 
-    long deletedCount = translationRepo.deleteByLanguage(language);
-    log.infov("Deleted {0} translations for language {1}", deletedCount, language);
+    if (translationRepo.deleteByLanguage(language) == 0) {
+      throw new NotFoundException("No translations found for language: " + language);
+    }
   }
 }

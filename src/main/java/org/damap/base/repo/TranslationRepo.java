@@ -24,6 +24,16 @@ public class TranslationRepo implements PanacheRepository<Translation> {
   }
 
   /**
+   * findByLanguage.
+   *
+   * @param language a {@link java.lang.String} object
+   * @return a {@link java.util.List} object
+   */
+  public List<Translation> findByLanguage(String language) {
+    return list("language = ?1", Sort.by("key"), language);
+  }
+
+  /**
    * findByKeyAndLanguage.
    *
    * @param key a {@link java.lang.String} object

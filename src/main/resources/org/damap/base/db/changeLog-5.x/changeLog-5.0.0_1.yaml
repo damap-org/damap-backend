@@ -26,12 +26,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: default_value
-                  type: TEXT
+                  type: CLOB
                   constraints:
                     nullable: false
               - column:
                   name: value
-                  type: TEXT
+                  type: CLOB
               - column:
                   name: active
                   type: BOOLEAN
@@ -56,13 +56,6 @@ databaseChangeLog:
                   name: language
               - column:
                   name: active
-
-        - createSequence:
-            sequenceName: translation_seq
-            incrementBy: 50
-            startValue: 1
-            minValue: 1
-
         - createTable:
             tableName: translation_aud
             columns:
@@ -78,7 +71,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: revtype
-                  type: TINYINT
+                  type: SMALLINT
               - column:
                   name: key
                   type: VARCHAR(255)
@@ -87,10 +80,10 @@ databaseChangeLog:
                   type: VARCHAR(2)
               - column:
                   name: default_value
-                  type: TEXT
+                  type: CLOB
               - column:
                   name: value
-                  type: TEXT
+                  type: CLOB
               - column:
                   name: active
                   type: BOOLEAN
@@ -107,12 +100,8 @@ databaseChangeLog:
             constraintName: fk_translation_aud_revinfo
             referencedTableName: revinfo
             referencedColumnNames: id
-
       rollback:
-        - dropSequence:
-            sequenceName: translation_seq
         - dropTable:
             tableName: translation_aud
         - dropTable:
             tableName: translation
-
