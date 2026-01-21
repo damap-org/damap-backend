@@ -504,10 +504,16 @@ public abstract class AbstractTemplateExportFunctions {
     hyperlink.setStyle("Hyperlink");
     hyperlink.setFontSize(run.getFontSize());
     hyperlink.setFontFamily(run.getFontFamily());
-    hyperlink.setText(run.getText(0));
-
-    paragraph.removeRun(runPos);
-
+    // For multiple reused datasets, the run at index runPos is already an XWPFHyperlink run
+    // (bug, should be fixed in the future) causing removeRun from the XPWFParagraph class
+    // to throw an exception. For this reason, we don't need to set the text nor delete the run if
+    // we are in this situation.
+    if (!(paragraph.getRuns().get(runPos) instanceof XWPFHyperlinkRun)) {
+      hyperlink.setText(run.getText(0));
+    }
+    if (!(paragraph.getRuns().get(runPos) instanceof XWPFHyperlinkRun)) {
+      paragraph.removeRun(runPos);
+    }
     for (int i = 0; i < runsAfterHyperlinkRun; i++) {
       XWPFRun runToRemove = paragraph.getRuns().get(runPos);
 
