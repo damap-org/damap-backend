@@ -7,8 +7,7 @@ damap:
   auth:
     backend:
       # Configures the OIDC realm the DAMAP backend should query to verify authentication:
-      url: http://keycloak:8080/realms/damap
-      # Client ID as configured in the OIDC Server:
+      url: http://keycloak:8080/realms/damap      # Client ID as configured in the OIDC Server:
       client: 'damap-be'
     frontend:
       # Configures the OIDC URL the frontend should send users to in order to log in. This is typically the same
@@ -185,3 +184,31 @@ rest:
       enabled: false
   rest:
     elsevier-pure/mp-rest/url: "http://localhost:9999/fake-pure-api"
+
+"%multitenant":
+  quarkus:
+    datasource:
+      active: false # deactivate unnamed default datasource
+      bootstrap: # the same as deactivated default datasource, but with a name, needed for CustomTenantResolver
+        jdbc:
+          url: ${damap.datasource.url}
+          driver: ${damap.datasource.driver}
+        db-kind: ${damap.datasource.db-kind}
+        username: ${damap.datasource.username}
+        password: ${damap.datasource.password}
+
+    liquibase:
+      bootstrap:
+        migrate-at-start: true
+        change-log: org/damap/base/db/changeLog-root.yaml
+
+    hibernate-orm:
+      datasource: bootstrap # hibernate needs a bootstrap db to build the persistence unit - its later unused
+      sql-load-script: no-file
+      schema-management:
+        strategy: none
+      multitenant: DATABASE
+
+    config:
+      # should point to a (out of classpath) config file like this /path/to/config/file.yaml
+      locations: /opt/damap/tenants.yaml
