@@ -263,14 +263,12 @@ tenants: ['tenant_1', 'tenant_2']
         change-log: org/damap/base/db/changeLog-root.yaml
 ```
 
-To load the config file, set the `DAMAP_MULTITENANT_CONFIG` variable to point to the file path of the tenant
-config. Use this way of specifying the file path : `file:///path/to/config/file.yaml`.
 In a local deployment, you can also go into the `application.yaml` under profile `"%multitenant"` and set the config
 path value there.
 
 ```yaml
 config:
-  locations: ${DAMAP_MULTITENANT_CONFIG:file:///path/to/config/file.yaml}"
+  locations: file:///path/to/config/file.yaml
 ```
 
 And now you are done - DAMAP automatically runs the [reaugmentation](https://quarkus.io/guides/reaugmentation) process when the container or pod starts up, 
