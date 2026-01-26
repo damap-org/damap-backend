@@ -90,8 +90,8 @@ metadata:
   name: damap
   namespace: {{ .Release.Namespace }}
   annotations:
-    {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tls_issuer) }}
-    cert-manager.io/cluster-issuer: {{ .Values.damap.tls_issuer | quote }}
+    {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tls_cluster_issuer) }}
+    cert-manager.io/cluster-issuer: {{ .Values.damap.tls_cluster_issuer }}
     {{- end }}
 spec:
   {{- if .Values.damap.ingress_class }}
@@ -100,11 +100,11 @@ spec:
   {{- if eq .Values.damap.protocol "https" }}
   tls:
     - hosts:
-        - {{ .Values.damap.hostname | quote }}
+        - {{ .Values.damap.hostname }}
       secretName: damap-tls
   {{- end }}
   rules:
-    - host: {{ .Values.damap.hostname | quote }}
+    - host: {{ .Values.damap.hostname }}
       http:
         paths:
           - path: /api

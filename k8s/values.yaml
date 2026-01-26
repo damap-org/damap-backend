@@ -15,7 +15,7 @@ damap:
   custom_domain: false
   protocol: http
   ingress_class: ""
-  tls_issuer: ""
+  tls_cluster_issuer: ""
   storage_class_name: ""
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true
@@ -70,7 +70,7 @@ keycloak:
   custom_domain: false
   protocol: http
   ingress_class: ""
-  tls_issuer: ""
+  tls_cluster_issuer: ""
   storage_class_name: ""
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true

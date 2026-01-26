@@ -36,8 +36,8 @@ metadata:
   name: keycloak
   namespace: "{{ .Release.Namespace }}"
   annotations:
-    {{- if and (eq .Values.keycloak.protocol "https") (.Values.keycloak.tls_issuer) }}
-    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tls_issuer | quote }}
+    {{- if and (eq .Values.keycloak.protocol "https") (.Values.keycloak.tls_cluster_issuer) }}
+    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tls_cluster_issuer }}
     {{- end }}
 spec:
   {{- if .Values.keycloak.ingress_class }}
@@ -46,11 +46,11 @@ spec:
   {{- if eq .Values.keycloak.protocol "https" }}
   tls:
     - hosts:
-        - {{ .Values.keycloak.hostname | quote }}
+        - {{ .Values.keycloak.hostname }}
       secretName: keycloak-tls
   {{- end }}
   rules:
-    - host: {{ .Values.keycloak.hostname | quote }}
+    - host: {{ .Values.keycloak.hostname }}
       http:
         paths:
           - path: /
