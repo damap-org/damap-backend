@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 @TestProfile(TestProfiles.DefaultProfile.class)
 class ConfigResourceTest {
 
-  @ConfigProperty(name = "damap.auth.server-url")
+  @ConfigProperty(name = "quarkus.oidc.auth-server-url")
   String serverUrl;
 
   @Test

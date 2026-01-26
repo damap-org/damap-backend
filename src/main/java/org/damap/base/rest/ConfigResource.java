@@ -18,10 +18,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @PermitAll
 @JBossLog
 public class ConfigResource {
-  @ConfigProperty(name = "damap.auth.server-url")
+  @ConfigProperty(name = "quarkus.oidc.token.issuer")
   String issuer;
 
-  @ConfigProperty(name = "damap.auth.clientID")
+  @ConfigProperty(name = "quarkus.oidc.client-id")
   String clientID;
 
   @ConfigProperty(name = "damap.auth.scope")
@@ -54,10 +54,10 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.person-services")
   PersonServiceConfigurations personServiceConfigurations;
 
-  @ConfigProperty(name = "damap.fits-url")
+  @ConfigProperty(name = "quarkus.rest.fits/mp-rest/url")
   Optional<URL> fitsUrl;
 
-  @ConfigProperty(name = "damap.gotenberg-url")
+  @ConfigProperty(name = "quarkus.rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
 
   @ConfigProperty(name = "damap.fields.ethical-report-enabled")

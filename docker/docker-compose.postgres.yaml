@@ -10,13 +10,11 @@ services:
       context: ../
     restart: unless-stopped
     environment:
-      DAMAP_TITLE: "DAMAP Tool"
-      DAMAP_DATASOURCE_URL: "jdbc:postgresql://damap-db:5432/damap"
-      DAMAP_DATASOURCE_DB_KIND: "postgresql"
-      DAMAP_DATASOURCE_USERNAME: "damap"
-      DAMAP_DATASOURCE_PASSWORD: "pw4damap"
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
-      DAMAP_MULTITENANT_CONFIG: /opt/damap/tenants.yaml
+      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://damap-db:5432/damap"
+      QUARKUS_DATASOURCE_DB_KIND: "postgresql"
+      QUARKUS_DATASOURCE_USERNAME: "damap"
+      QUARKUS_DATASOURCE_PASSWORD: "pw4damap"
     volumes:
       - ./tenants.yaml://opt/damap/tenants.yaml:ro
     depends_on:
