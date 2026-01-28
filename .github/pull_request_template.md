@@ -1,5 +1,5 @@
 <!-- Please make sure you have read the submission guidelines before posting an PR -->
-<!-- https://github.com/tuwien-csd/damap-backend/blob/next/CONTRIBUTING.md#pullrequests -->
+<!-- https://github.com/damap-org/damap-backend/blob/next/CONTRIBUTING.md#pullrequests -->
 
 ## Description
 <!-- Please select a type that best describes your PR -->

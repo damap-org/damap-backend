@@ -1,6 +1,6 @@
 # Contributing to DAMAP project
 
-The code for the OpenSource project DAMAP is hosted at [GitHub](https://github.com/tuwien-csd/damap-backend),
+The code for the OpenSource project DAMAP is hosted at [GitHub](https://github.com/damap-org/damap-backend),
 which allows contributing issues which will be picked up by the lead developers and directly contributing code
 as Pull Requests.
 
@@ -68,7 +68,7 @@ This allows to discover code defects earlier and ensures the application behaves
 Before creating a pull request, the changes should be tested locally as described in the [Testing](#testing) section.
 
 To request the lead developers to pull in code change proposals, fork the repository, create a branch and push the code
-to your own fork. Create a Pull Request with `tuwien-csd/damap-backend` as base and write a meaningful description
+to your own fork. Create a Pull Request with `damap-org/damap-backend` as base and write a meaningful description
 of your changes. 
 
 If you are working with the main repository, the naming convention for branches is `<contributor initials>/<short-description-separated-with-hyphens>` e.g.:

@@ -5,7 +5,7 @@ services:
   damap-be:
     # Since DAMAP containers are publicly available on GitHub packages one can
     # just pull the latest container image.
-    image: ghcr.io/tuwien-csd/damap-backend:next
+    image: ghcr.io/damap-org/damap-backend:next
     build:
       context: ../
     restart: unless-stopped

@@ -2,7 +2,7 @@
 
 ## Quickstart guide for development
 
-DAMAP is made up of two parts: a backend (this repository) and a [frontend](https://github.com/tuwien-csd/damap-frontend).
+DAMAP is made up of two parts: a backend (this repository) and a [frontend](https://github.com/damap-org/damap-frontend).
 You will probably need to set up both of these for development. DAMAP also requires extra services, which are provided via
 docker containers.
 

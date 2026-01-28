@@ -20,8 +20,8 @@ For a showcase of some of the tools functions see the [demo video](https://youtu
 DAMAP is a typical Three-Tier-Architecture project composed out of the database tier and the following two projects 
 residing in separate source code repositories.
 
-1. **[damap-backend](https://github.com/tuwien-csd/damap-backend):** maDMPs backend project
-2. **[damap-frontend](https://github.com/tuwien-csd/damap-frontend):** maDMPs frontend project
+1. **[damap-backend](https://github.com/damap-org/damap-backend):** maDMPs backend project
+2. **[damap-frontend](https://github.com/damap-org/damap-frontend):** maDMPs frontend project
 
 Also there are some components that you should already have at your institution that you can integrate with damap,
 in order to make this tool your own:
