@@ -15,10 +15,10 @@ services:
       QUARKUS_HIBERNATE_ORM_DIALECT: "org.hibernate.dialect.OracleDialect"
       QUARKUS_DATASOURCE_JDBC_DRIVER: "oracle.jdbc.driver.OracleDriver"
       QUARKUS_DATASOURCE_DB_KIND: "oracle"
-      QUARKUS_DATASOURCE_USERNAME: "damap"
-      QUARKUS_DATASOURCE_PASSWORD: "pw4damap"
+      QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
+      QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
-      - ./tenants.yaml://opt/damap/tenants.yaml:ro
+      - ./tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
       - damap-db
       - keycloak

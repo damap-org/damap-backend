@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 @TestProfile(TestProfiles.DefaultProfile.class)
 class ConfigResourceTest {
 
-  @ConfigProperty(name = "quarkus.oidc.auth-server-url")
-  String serverUrl;
+  @ConfigProperty(name = "quarkus.oidc.issuer")
+  String issuer;
 
   @Test
   void testGetConfigEndpoint() {
-    given().when().get().then().statusCode(200).body("issuer", is(serverUrl));
+    given().when().get().then().statusCode(200).body("issuer", is(issuer));
   }
 }

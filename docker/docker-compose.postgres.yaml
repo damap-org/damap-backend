@@ -13,10 +13,10 @@ services:
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
       QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://damap-db:5432/damap"
       QUARKUS_DATASOURCE_DB_KIND: "postgresql"
-      QUARKUS_DATASOURCE_USERNAME: "damap"
-      QUARKUS_DATASOURCE_PASSWORD: "pw4damap"
+      QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
+      QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
-      - ./tenants.yaml://opt/damap/tenants.yaml:ro
+      - ./tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
       - damap-db
       - keycloak

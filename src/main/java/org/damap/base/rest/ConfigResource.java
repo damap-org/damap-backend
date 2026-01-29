@@ -54,10 +54,10 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.person-services")
   PersonServiceConfigurations personServiceConfigurations;
 
-  @ConfigProperty(name = "quarkus.rest.fits/mp-rest/url")
+  @ConfigProperty(name = "rest.fits/mp-rest/url")
   Optional<URL> fitsUrl;
 
-  @ConfigProperty(name = "quarkus.rest.gotenberg/mp-rest/url")
+  @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
 
   @ConfigProperty(name = "damap.fields.ethical-report-enabled")
