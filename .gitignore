@@ -37,3 +37,6 @@ release.properties
 
 # Quarkus
 .quarkus
+
+# Environment files
+.env
