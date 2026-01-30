@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 @TestProfile(TestProfiles.DefaultProfile.class)
 class ConfigResourceTest {
 
-  @ConfigProperty(name = "quarkus.oidc.issuer")
+  @ConfigProperty(name = "quarkus.oidc.token.issuer")
   String issuer;
 
   @Test
