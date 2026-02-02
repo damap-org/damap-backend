@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 @TestProfile(TestProfiles.DefaultProfile.class)
 class InternalStorageTranslationResourceTest {
 
-  final String test = "damap-super-admin";
-
   @Inject TestDOFactory testDOFactory;
 
   // Authorization tests
@@ -157,7 +155,7 @@ class InternalStorageTranslationResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "adminJwt", roles = test)
+  @TestSecurity(user = "adminJwt", roles = ADMIN_ROLE)
   void testCreateEndpointValidData_Created() {
     Long id = testDOFactory.prepareInternalStorageOption();
 

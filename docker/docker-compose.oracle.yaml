@@ -10,17 +10,15 @@ services:
       context: ../
     restart: unless-stopped
     environment:
-      DAMAP_TITLE: "DAMAP Tool"
-      DAMAP_DATASOURCE_URL: "jdbc:oracle:thin:@damap-db:1521/FREEPDB1"
-      DAMAP_DATASOURCE_DIALECT: "org.hibernate.dialect.OracleDialect"
-      DAMAP_DATASOURCE_DRIVER: "oracle.jdbc.driver.OracleDriver"
-      DAMAP_DATASOURCE_DB_KIND: "oracle"
-      DAMAP_DATASOURCE_USERNAME: "damap"
-      DAMAP_DATASOURCE_PASSWORD: "pw4damap"
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
-      DAMAP_MULTITENANT_CONFIG: /opt/damap/tenants.yaml
+      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:oracle:thin:@damap-db:1521/FREEPDB1"
+      QUARKUS_HIBERNATE_ORM_DIALECT: "org.hibernate.dialect.OracleDialect"
+      QUARKUS_DATASOURCE_JDBC_DRIVER: "oracle.jdbc.driver.OracleDriver"
+      QUARKUS_DATASOURCE_DB_KIND: "oracle"
+      QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
+      QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
-      - ./tenants.yaml://opt/damap/tenants.yaml:ro
+      - ./tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
       - damap-db
       - keycloak
