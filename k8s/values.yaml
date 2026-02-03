@@ -34,18 +34,14 @@ oidc:
   # The endpoint the DAMAP frontend should use from the browser. This should be
   # accessible from the user's computer. This setting will be ignored if
   # keycloak.deploy is true.
-  frontend_endpoint: https://...
+  issuer: https://...
   # The endpoint the DAMAP backend should use. Typically, this is the same as
   # the frontend, but sometimes you may want to route the backend requests
   # over a different network. This setting will be ignored if keycloak.deploy
   # is true.
-  backend_endpoint: https://...
-  # OIDC client ID the backend should use.
-  # Note: you will have to configure these in your OIDC server!
-  backend_client_id: damap
-  # OIDC client ID the frontend should use.
-  # Note: you will have to configure these in your OIDC server!
-  frontend_client_id: damap
+  serverUrl: https://...
+  # The OIDC client ID
+  clientId: damap
   # OIDC scopes
   scope:
     - openid
@@ -55,8 +51,23 @@ oidc:
     - microprofile-jwt
     - roles
     - personID
-  # Claim for the person ID:
-  person_id_claim: personID
+  # Claim for the user roles
+  userRolesClaimPath: realm_access/roles
+  # Claim for the user ID
+  userIdClaim: personID
+  # User claim that holds the full name
+  nameClaim: name
+  # User claim that holds the given name
+  givenNameClaim: given_name
+  # User claim that holds the family name
+  familyNameClaim: family_name
+  # User claim that holds the email
+  emailClaim: email
+  # User claim that holds affiliations
+  affiliationsClaim: affiliation
+  # Role name used to identify DAMAP super admins
+  adminRoleName: DAMAP ADMIN
+
 keycloak:
   use_existing_secret: false
   # Set this to false in order to use your own OIDC server:

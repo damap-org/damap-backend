@@ -96,20 +96,20 @@
       "description": "OIDC authentication configuration.",
       "type": "object",
       "required": [
-        "frontend_endpoint",
-        "backend_endpoint"
+        "issuer",
+        "serverUrl"
       ],
       "properties": {
-        "frontend_endpoint": {
-          "title": "Frontend OIDC endpoint",
+        "issuer": {
+          "title": "OIDC issuer",
           "description": "The endpoint the DAMAP frontend should use from the browser. This should be accessible from the user's computer. This setting will be ignored if keycloak.deploy is true.",
           "type": "string",
           "format": "url",
           "minLength": 1
         },
-        "backend_endpoint": {
+        "serverUrl": {
           "title": "Backend OIDC endpoint",
-          "description": "The endpoint the DAMAP backend should use. Typically, this is the same as the frontend, but sometimes you may want to route the backend requests over a different network. This setting will be ignored if keycloak.deploy is true.",
+          "description": "The endpoint the DAMAP backend should use. Typically, this is the same as the issuer, but sometimes you may want to route the backend requests over a different network. This setting will be ignored if keycloak.deploy is true.",
           "type": "string",
           "format": "url",
           "minLength": 1
