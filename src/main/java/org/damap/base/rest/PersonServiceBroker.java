@@ -37,6 +37,10 @@ public class PersonServiceBroker {
                   service.getClass().getCanonicalName().split("_ClientProxy")[0];
 
               if (configClassName.equals(serviceClassName)) {
+                log.info(
+                    String.format(
+                        "PersonService registered: queryValue='%s', className='%s', instance='%s'",
+                        serviceConfig.getQueryValue(), configClassName, serviceClassName));
                 personServices.put(serviceConfig.getQueryValue(), service);
                 found = true;
                 break;
@@ -74,6 +78,15 @@ public class PersonServiceBroker {
     PersonService searchService = personServices.get(searchServiceType);
     if (searchService == null && !personServices.isEmpty()) {
       searchService = personServices.entrySet().iterator().next().getValue();
+      log.warn(
+          String.format(
+              "PersonService '%s' not found, using fallback: %s",
+              searchServiceType, searchService.getClass().getCanonicalName()));
+    } else if (searchService != null) {
+      log.info(
+          String.format(
+              "PersonService selected: queryParam='%s', service=%s",
+              searchServiceType, searchService.getClass().getCanonicalName()));
     }
 
     return searchService;

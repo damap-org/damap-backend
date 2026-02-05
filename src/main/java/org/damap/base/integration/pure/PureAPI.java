@@ -44,6 +44,16 @@ interface PureAPI {
   PureAPIPerson getPerson(String uuid);
 
   /**
+   * Search projects using pagination.
+   *
+   * @param q query string, passed to Pure API {@code q} parameter
+   * @param size the size of the page.
+   * @param offset the offset to start at.
+   * @return the response containing the projects on that page.
+   */
+  PureAPIPaginatedProjectsResponse searchProjects(String q, Long size, Long offset);
+
+  /**
    * Retrieve all projects, sending multiple queries to the Pure API.
    *
    * @return a list of all projects in the Pure database.
@@ -51,10 +61,38 @@ interface PureAPI {
   default List<PureAPIProject> listAllProjects() {
     List<PureAPIProject> items = new ArrayList<>();
     long offset = 0;
-    long pageSize = 10;
+    long pageSize = 100;
     boolean finished = false;
     while (!finished) {
       PureAPIPaginatedProjectsResponse projects = listAllProjects(pageSize, offset);
+      if (projects == null || projects.items == null || projects.pageInformation == null) {
+        break;
+      }
+      items.addAll(projects.items);
+      offset = projects.pageInformation.offset + projects.pageInformation.size;
+      if (projects.count <= offset) {
+        finished = true;
+      }
+    }
+    return items;
+  }
+
+  /**
+   * Search projects, sending multiple queries to the Pure API.
+   *
+   * @param q query string, passed to Pure API {@code q} parameter
+   * @return a list of matching projects
+   */
+  default List<PureAPIProject> searchAllProjects(String q) {
+    List<PureAPIProject> items = new ArrayList<>();
+    long offset = 0;
+    long pageSize = 100;
+    boolean finished = false;
+    while (!finished) {
+      PureAPIPaginatedProjectsResponse projects = searchProjects(q, pageSize, offset);
+      if (projects == null || projects.items == null || projects.pageInformation == null) {
+        break;
+      }
       items.addAll(projects.items);
       offset = projects.pageInformation.offset + projects.pageInformation.size;
       if (projects.count <= offset) {
@@ -72,10 +110,13 @@ interface PureAPI {
   default List<PureAPIPerson> listAllPersons() {
     List<PureAPIPerson> items = new ArrayList<>();
     long offset = 0;
-    long pageSize = 10;
+    long pageSize = 100;
     boolean finished = false;
     while (!finished) {
       PureAPIPaginatedPersonsResponse persons = listAllPersons(pageSize, offset);
+      if (persons == null || persons.items == null || persons.pageInformation == null) {
+        break;
+      }
       items.addAll(persons.items);
       offset = persons.pageInformation.offset + persons.pageInformation.size;
       if (persons.count <= offset) {

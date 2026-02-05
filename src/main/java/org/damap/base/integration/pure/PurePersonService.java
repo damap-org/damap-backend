@@ -1,5 +1,6 @@
 package org.damap.base.integration.pure;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class PurePersonService implements PersonService {
 
   /** {@inheritDoc} */
   @Override
+  @CacheResult(cacheName = "pure-read-person", keyGenerator = PureCacheKeyGenerator.class)
   public ContributorDO read(String id) {
     PureAPIPerson person = pureAPI.getPerson(id);
     if (person == null) {
@@ -34,6 +36,7 @@ public class PurePersonService implements PersonService {
 
   /** {@inheritDoc} */
   @Override
+  @CacheResult(cacheName = "pure-search-persons", keyGenerator = PureCacheKeyGenerator.class)
   public ResultList<ContributorDO> search(Search search) {
     ResultList<ContributorDO> result = new ResultList<>();
     result.setSearch(search);

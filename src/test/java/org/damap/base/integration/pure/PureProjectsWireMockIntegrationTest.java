@@ -164,6 +164,32 @@ public class PureProjectsWireMockIntegrationTest {
   }
 
   @Test
+  public void testHTTPSearchProjectsEndpoint() {
+    wireMockServer.stubFor(
+        post(urlPathEqualTo("/projects/search"))
+            .withHeader("api-key", equalTo("test-api-key"))
+            .withHeader("Content-Type", containing("application/json"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(createMockProjectsResponse())));
+
+    PureAPIPaginatedProjectsResponse response = pureAPI.searchProjects("Test", 10L, 0L);
+
+    assertNotNull(response, "Response should not be null");
+    assertNotNull(response.getItems(), "Items should not be null");
+    assertEquals(2, response.getItems().size(), "Should have 2 projects from search results");
+
+    wireMockServer.verify(
+        postRequestedFor(urlPathEqualTo("/projects/search"))
+            .withHeader("api-key", equalTo("test-api-key"))
+            .withRequestBody(matchingJsonPath("$.searchString", equalTo("Test")))
+            .withRequestBody(matchingJsonPath("$.size", equalTo("10")))
+            .withRequestBody(matchingJsonPath("$.offset", equalTo("0"))));
+  }
+
+  @Test
   public void testProjectsAPIKeyAuthenticationFailure() {
     wireMockServer.stubFor(
         get(urlPathEqualTo("/projects"))

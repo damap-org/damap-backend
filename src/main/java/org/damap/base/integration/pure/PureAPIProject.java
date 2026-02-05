@@ -51,9 +51,6 @@ class PureAPIProject {
 
   ProjectDO toProjectDO(String descriptionClassificationURI) {
     ProjectDO result = new ProjectDO();
-    if (pureId != null) {
-      result.setId(pureId);
-    }
     if (uuid != null) {
       result.setUniversityId(uuid);
     }
