@@ -72,11 +72,11 @@ spec:
           image: quay.io/keycloak/keycloak:26.3
           resources:
             requests:
-              cpu: 10m
+              cpu: 0.75
               memory: 512Mi
             limits:
               memory: 2G
-              cpu: "0.5"
+              cpu: 1
           args:
             - start
             - --http-enabled=true

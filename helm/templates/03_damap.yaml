@@ -76,11 +76,11 @@ spec:
           {{- end }}
           resources:
             requests:
-              cpu: 10m
+              cpu: 0.75
               memory: 2G
             limits:
               memory: 2G
-              cpu: "0.25"
+              cpu: "1"
           ports:
             - containerPort: 9000
           env:
