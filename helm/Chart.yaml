@@ -3,4 +3,4 @@ name: damap
 description: A tool to create machine-actionable data management plans.
 type: application
 version: 0.1.0
-appVersion: "4.5.2"
+appVersion: "4.7.0"
