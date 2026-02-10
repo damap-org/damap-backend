@@ -70,17 +70,14 @@ spec:
         {{- end }}
       containers:
         - name: damap-backend
-          image: "{{ .Values.damap.backend_image }}"
-          {{- if or (hasSuffix ":latest" .Values.damap.backend_image) (hasSuffix ":next" .Values.damap.backend_image) }}
-          imagePullPolicy: Always
-          {{- end }}
+          image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backend_version }}"
           resources:
             requests:
-              cpu: 0.75
+              cpu: 10m
               memory: 2G
             limits:
+              cpu: "0.25"
               memory: 2G
-              cpu: "1"
           ports:
             - containerPort: 9000
           env:
@@ -306,10 +303,7 @@ spec:
       {{- end }}
       containers:
         - name: damap-frontend
-          image: "{{ .Values.damap.frontend_image }}"
-          {{- if or (hasSuffix ":latest" .Values.damap.backend_image) (hasSuffix ":next" .Values.damap.backend_image) }}
-          imagePullPolicy: Always
-          {{- end }}
+          image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontend_version }}"
           {{- if .Values.frontend.customize }}
           volumeMounts:
             - mountPath: /usr/share/nginx/html/assets/logo-cropped.svg
