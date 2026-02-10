@@ -86,12 +86,19 @@ keycloak:
   # Host folder for demo / small scale deployments. Do not use for production!
   create_pv: true
   host_folder: /tmp/keycloak
-# Create a custom backend build using the OpenShift CI pipeline.
+
+# Create a custom backend/frontend build using the OpenShift CI pipeline.
 # Sadly, this doesn't work in vanilla Kubernetes.
 custom_build:
-  name: ""
-  repo: https://github.com/damap-org/damap-backend
-  ref: "next"
+  backend:
+    name: ""
+    repo: https://github.com/damap-org/damap-backend
+    ref: next
+  frontend:
+    name: ""
+    repo: https://github.com/damap-org/damap-frontend
+    ref: next
+
 pure:
   # Enable the Elsevier Pure integration.
   enabled: true

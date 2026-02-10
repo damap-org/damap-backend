@@ -1,35 +1,77 @@
-{{ if and .Values.openshift (ne .Values.custom_build.name "") }}
+{{- if .Values.openshift }}
+
+{{- if ne .Values.custom_build.backend.name "" }}
+---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-  name: {{ .Values.custom_build.name }}
+  name: {{ .Values.custom_build.backend.name }}
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ .Values.custom_build.name }}
+  name: {{ .Values.custom_build.backend.name }}
 spec:
   source:
     type: Git
     git:
-      uri: "{{ .Values.custom_build.repo }}"
-      ref: "{{ .Values.custom_build.ref }}"
+      uri: "{{ .Values.custom_build.backend.repo }}"
+      ref: "{{ .Values.custom_build.backend.ref }}"
     contextDir: /
-  resources:
-    limits:
-      memory: 2G
-    requests:
-      cpu: 10m
-      memory: 512Mi
   strategy:
     type: docker
     dockerStrategy: {}
   output:
     to:
       kind: ImageStreamTag
-      name: {{ .Values.custom_build.name }}:latest
+      name: "{{ .Values.custom_build.backend.name }}:{{ .Values.custom_build.backend.ref }}"
+  resources:
+    limits:
+      memory: 2G
+    requests:
+      cpu: 10m
+      memory: 512Mi
   triggers:
     - type: ConfigChange
-{{ end }}
+{{- end }}
+
+{{- if ne .Values.custom_build.frontend.name "" }}
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: {{ .Values.custom_build.frontend.name }}
+  namespace: {{ .Release.Namespace }}
+
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: {{ .Values.custom_build.frontend.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  source:
+    type: Git
+    git:
+      uri: "{{ .Values.custom_build.frontend.repo }}"
+      ref: "{{ .Values.custom_build.frontend.ref }}"
+  strategy:
+    type: Docker
+    dockerStrategy: {}
+  output:
+    to:
+      kind: ImageStreamTag
+      name: "{{ .Values.custom_build.frontend.name }}:{{ .Values.custom_build.frontend.ref }}"
+  resources:
+    limits:
+      memory: 2G
+    requests:
+      cpu: 10m
+      memory: 512Mi
+  triggers:
+    - type: ConfigChange
+{{- end }}
+
+{{- end }}

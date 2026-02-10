@@ -70,7 +70,13 @@ spec:
         {{- end }}
       containers:
         - name: damap-backend
+
+          {{- if and .Values.openshift (ne .Values.custom_build.backend.name "") }}
+          image: "{{ .Values.custom_build.backend.name }}:{{ .Values.custom_build.backend.ref }}"
+          {{- else }}
           image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backend_version }}"
+          {{- end }}
+
           resources:
             requests:
               cpu: 10m
@@ -303,7 +309,12 @@ spec:
       {{- end }}
       containers:
         - name: damap-frontend
+          {{- if and .Values.openshift (ne .Values.custom_build.frontend.name "") }}
+          image: "{{ .Values.custom_build.frontend.name }}:{{ .Values.custom_build.frontend.ref }}"
+          {{- else }}
           image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontend_version }}"
+          {{- end }}
+
           {{- if .Values.frontend.customize }}
           volumeMounts:
             - mountPath: /usr/share/nginx/html/assets/logo-cropped.svg
