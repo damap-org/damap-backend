@@ -125,7 +125,7 @@ public class SecurityService {
                         throw new UnauthorizedException(
                             "Affiliation is expected to include an @: " + aff);
                       }
-                      return aff.split("@")[1];
+                      return aff.split("@")[1].replace(".", "_");
                     })
                 .distinct()
                 .toList();
