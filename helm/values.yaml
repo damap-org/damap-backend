@@ -1,5 +1,6 @@
 openshift: false
 debug: true
+
 damap:
   backend_version: 4.7.0
   frontend_version: 4.7.0
@@ -30,6 +31,12 @@ damap:
       query-value: "ORCID"
       class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
   projects_service: elsevier-pure
+  multitenancy:
+    enabled: false
+    tenants:
+      - tenant_1
+      - tenant_2
+
 oidc:
   # The endpoint the DAMAP frontend should use from the browser. This should be
   # accessible from the user's computer. This setting will be ignored if

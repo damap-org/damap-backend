@@ -63,6 +63,11 @@ spec:
         - name: damap
           secret:
             secretName: damap
+        {{- if .Values.damap.multitenancy.enabled }}
+        - name: damap-tenants
+          secret:
+            secretName: damap-tenants
+        {{- end }}
         {{- if .Values.pure.enabled }}
         - name: pure
           secret:
@@ -125,6 +130,13 @@ spec:
                   name: damap
                   key: db_password
 
+            {{- /*
+            Quarkus Profile for multitenancy
+            */}}
+            {{- if .Values.damap.multitenancy.enabled }}
+            - name: QUARKUS_PROFILE
+              value: multitenant
+            {{- end }}
             {{- /*
             Authentication configuration.
             */}}
@@ -217,6 +229,12 @@ spec:
               value: {{ .Values.pure.role_classifications | toJson | quote }}
             {{- end }}
           volumeMounts:
+            {{- if .Values.damap.multitenancy.enabled }}
+            - name: damap-tenants
+              mountPath: /opt/damap/tenants.yaml
+              subPath: tenants.yaml
+              readonly: true
+            {{- end }}
             {{- if .Values.pure.enabled }}
             - mountPath: /data/persons.json
               name: pure
