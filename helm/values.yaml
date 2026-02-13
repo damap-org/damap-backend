@@ -33,6 +33,7 @@ damap:
   projects_service: elsevier-pure
   multitenancy:
     enabled: false
+    autoCreateDatabases: false
     tenants:
       - tenant_1
       - tenant_2
