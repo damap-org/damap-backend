@@ -23,8 +23,8 @@
       "description": "DAMAP configuration",
       "type": "object",
       "required": [
-        "frontend_image",
-        "backend_image",
+        "backend_version",
+        "frontend_version",
         "db_name",
         "db_user",
         "db_password",
@@ -35,17 +35,17 @@
         "host_folder"
       ],
       "properties": {
-        "frontend_image": {
+        "backend_version": {
           "title": "Frontend image",
           "description": "Container image for the frontend",
           "type": "string",
-          "example": "ghcr.io/damap-org/damap-frontend:next"
+          "example": "4.5.0"
         },
-        "backend_image": {
+        "frontend_version": {
           "title": "Backend image",
           "description": "Container image for the backend",
           "type": "string",
-          "example": "ghcr.io/damap-org/damap-backend:next"
+          "example": "4.5.0"
         },
         "db_user": {
           "title": "Database username",
