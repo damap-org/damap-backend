@@ -1,5 +1,6 @@
 # Helm chart publishing workflow
 # - Publishes OCI Helm charts from the `next` branch
+# - Triggered only when `helm/Chart.yaml` changes
 # - Chart versions must be bumped manually in Chart.yaml
 
 name: release helm
@@ -12,7 +13,7 @@ on:
     branches:
       - next
     paths:
-      - "helm/**"
+      - "helm/Chart.yaml"
   workflow_dispatch:
 
 permissions:
