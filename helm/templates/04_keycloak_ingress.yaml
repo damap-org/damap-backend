@@ -1,5 +1,5 @@
 {{- if .Values.keycloak.deploy }}
-{{- if and .Values.openshift (not .Values.keycloak.custom_domain) }}
+{{- if and .Values.openshift (not .Values.keycloak.customDomain) }}
 {{- /*
 OpenShift default domain (Route)
 */}}
@@ -37,11 +37,11 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   {{- if and (eq .Values.keycloak.protocol "https") (.Values.keycloak.tls_cluster_issuer) }}
   annotations:
-    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tls_cluster_issuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tlsClusterIssuer }}
   {{- end }}
 spec:
   {{- if .Values.keycloak.ingress_class }}
-  ingressClassName: {{ .Values.keycloak.ingress_class }}
+  ingressClassName: {{ .Values.keycloak.ingressClass }}
   {{- end }}
   {{- if eq .Values.keycloak.protocol "https" }}
   tls:

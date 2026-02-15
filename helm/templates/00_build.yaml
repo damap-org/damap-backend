@@ -1,24 +1,24 @@
 {{- if .Values.openshift }}
 
-{{- if ne .Values.custom_build.backend.name "" }}
+{{- if ne .Values.customBuild.backend.name "" }}
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-  name: {{ .Values.custom_build.backend.name }}
+  name: {{ .Values.customBuild.backend.name }}
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ .Values.custom_build.backend.name }}
+  name: {{ .Values.customBuild.backend.name }}
 spec:
   source:
     type: Git
     git:
-      uri: "{{ .Values.custom_build.backend.repo }}"
-      ref: "{{ .Values.custom_build.backend.ref }}"
+      uri: "{{ .Values.customBuild.backend.repo }}"
+      ref: "{{ .Values.customBuild.backend.ref }}"
     contextDir: /
   strategy:
     type: docker
@@ -26,7 +26,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: "{{ .Values.custom_build.backend.name }}:{{ .Values.custom_build.backend.ref }}"
+      name: "{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref }}"
   resources:
     limits:
       memory: 2G
@@ -37,33 +37,33 @@ spec:
     - type: ConfigChange
 {{- end }}
 
-{{- if ne .Values.custom_build.frontend.name "" }}
+{{- if ne .Values.customBuild.frontend.name "" }}
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-  name: {{ .Values.custom_build.frontend.name }}
+  name: {{ .Values.customBuild.frontend.name }}
   namespace: {{ .Release.Namespace }}
 
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
-  name: {{ .Values.custom_build.frontend.name }}
+  name: {{ .Values.customBuild.frontend.name }}
   namespace: {{ .Release.Namespace }}
 spec:
   source:
     type: Git
     git:
-      uri: "{{ .Values.custom_build.frontend.repo }}"
-      ref: "{{ .Values.custom_build.frontend.ref }}"
+      uri: "{{ .Values.customBuild.frontend.repo }}"
+      ref: "{{ .Values.customBuild.frontend.ref }}"
   strategy:
     type: Docker
     dockerStrategy: {}
   output:
     to:
       kind: ImageStreamTag
-      name: "{{ .Values.custom_build.frontend.name }}:{{ .Values.custom_build.frontend.ref }}"
+      name: "{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref }}"
   resources:
     limits:
       memory: 2G

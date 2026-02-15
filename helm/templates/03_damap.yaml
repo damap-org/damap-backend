@@ -1,4 +1,4 @@
-{{- if .Values.damap.create_pv }}
+{{- if .Values.damap.persistData }}
 {{- if not .Values.openshift }}
 ---
 apiVersion: v1
@@ -7,7 +7,7 @@ metadata:
   name: damap-db
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: "{{ .Values.damap.storage_class_name }}"
+  storageClassName: "{{ .Values.damap.storageClassName }}"
   claimRef:
     namespace: "{{ .Release.Namespace }}"
     name: damap-db
@@ -17,7 +17,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: "{{ .Values.damap.host_folder }}"
+    path: "{{ .Values.damap.hostFolder }}"
 {{- end }}
 ---
 apiVersion: v1
@@ -31,7 +31,7 @@ spec:
   resources:
     requests:
       storage: 5G
-  storageClassName: "{{ .Values.damap.storage_class_name }}"
+  storageClassName: "{{ .Values.damap.storageClassName }}"
   volumeMode: Filesystem
 {{- end }}
 ---
@@ -76,10 +76,10 @@ spec:
       containers:
         - name: damap-backend
 
-          {{- if and .Values.openshift (ne .Values.custom_build.backend.name "") }}
-          image: "{{ .Values.custom_build.backend.name }}:{{ .Values.custom_build.backend.ref }}"
+          {{- if and .Values.openshift (ne .Values.customBuild.backend.name "") }}
+          image: "{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref }}"
           {{- else }}
-          image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backend_version }}"
+          image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backendVersion }}"
           {{- end }}
 
           resources:
@@ -118,7 +118,7 @@ spec:
             Database configuration
             */}}
             - name: QUARKUS_DATASOURCE_JDBC_URL
-              value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.db_name }}"
+              value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.dbName }}"
             - name: QUARKUS_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -203,9 +203,9 @@ spec:
             Additional integrations configuration
             */}}
             - name: DAMAP_PERSON_SERVICES
-              value: {{ .Values.damap.person_services | toJson | quote }}
+              value: {{ .Values.damap.personServices | toJson | quote }}
             - name: DAMAP_PROJECTS_SERVICE
-              value: {{ .Values.damap.projects_service }}
+              value: {{ .Values.damap.projectsService }}
 
             {{- /*
             Elsevier Pure integration
@@ -220,13 +220,13 @@ spec:
             - name: DAMAP_ELSEVIER_PURE_ENDPOINT_URL
               value: "{{ .Values.pure.endpoint }}"
             - name: DAMAP_ELSEVIER_PURE_API_KEY
-              value: "{{ .Values.pure.api_key }}"
+              value: "{{ .Values.pure.apiKey }}"
             - name: DAMAP_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
-              value: {{ .Values.pure.description_classification | quote }}
+              value: {{ .Values.pure.descriptionClassification | quote }}
             - name: DAMAP_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
-              value: {{ .Values.pure.project_lead_classification | quote }}
+              value: {{ .Values.pure.projectLeadClassification | quote }}
             - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
-              value: {{ .Values.pure.role_classifications | toJson | quote }}
+              value: {{ .Values.pure.roleClassifications | toJson | quote }}
             {{- end }}
           volumeMounts:
             {{- if .Values.damap.multitenancy.enabled }}
@@ -327,10 +327,10 @@ spec:
       {{- end }}
       containers:
         - name: damap-frontend
-          {{- if and .Values.openshift (ne .Values.custom_build.frontend.name "") }}
-          image: "{{ .Values.custom_build.frontend.name }}:{{ .Values.custom_build.frontend.ref }}"
+          {{- if and .Values.openshift (ne .Values.customBuild.frontend.name "") }}
+          image: "{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref }}"
           {{- else }}
-          image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontend_version }}"
+          image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontendVersion }}"
           {{- end }}
 
           {{- if .Values.frontend.customize }}
@@ -409,7 +409,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
-      {{- if .Values.damap.create_pv }}
+      {{- if .Values.damap.persistData }}
       volumes:
         - name: damap-db
           persistentVolumeClaim:
@@ -425,7 +425,7 @@ spec:
             limits:
               memory: 2G
               cpu: "0.25"
-          {{- if .Values.damap.create_pv }}
+          {{- if .Values.damap.persistData }}
           volumeMounts:
             - name: damap-db
               mountPath: /var/lib/postgresql/data

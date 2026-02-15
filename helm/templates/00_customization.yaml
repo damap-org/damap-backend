@@ -9,5 +9,5 @@ metadata:
     app: damap-customization
 stringData:
   logo.svg: {{ .Values.frontend.logo | quote }}
-  logo-cropped.svg: {{ .Values.frontend.logo_cropped | quote }}
-{{ end -}}
+  logo-cropped.svg: {{ .Values.frontend.logoCropped | quote }}
+{{- end }}

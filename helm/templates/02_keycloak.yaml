@@ -1,5 +1,5 @@
 {{- if .Values.keycloak.deploy }}
-{{- if .Values.keycloak.create_pv }}
+{{- if .Values.keycloak.persistData }}
 {{- if not .Values.openshift }}
 ---
 apiVersion: v1
@@ -8,7 +8,7 @@ metadata:
   name: keycloak-db
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: "{{ .Values.keycloak.storage_class_name }}"
+  storageClassName: "{{ .Values.keycloak.storageClassName }}"
   claimRef:
     namespace: "{{ .Release.Namespace }}"
     name: keycloak-db
@@ -18,7 +18,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: {{ .Values.keycloak.host_folder }}
+    path: {{ .Values.keycloak.hostFolder }}
 {{- end }}
 ---
 apiVersion: v1
@@ -32,7 +32,7 @@ spec:
   resources:
     requests:
       storage: 5G
-  storageClassName: "{{ .Values.keycloak.storage_class_name }}"
+  storageClassName: "{{ .Values.keycloak.storageClassName }}"
   volumeMode: Filesystem
 {{- end }}
 ---
@@ -107,7 +107,7 @@ spec:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
-              value: "jdbc:postgresql://keycloak-db:5432/{{ .Values.keycloak.db_name }}"
+              value: "jdbc:postgresql://keycloak-db:5432/{{ .Values.keycloak.dbName }}"
             - name: KC_DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -190,7 +190,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       automountServiceAccountToken: false
-      {{- if .Values.keycloak.create_pv }}
+      {{- if .Values.keycloak.persistData }}
       volumes:
       - name: keycloak-db
         persistentVolumeClaim:
@@ -206,7 +206,7 @@ spec:
             limits:
               memory: 2G
               cpu: "0.25"
-          {{- if .Values.keycloak.create_pv }}
+          {{- if .Values.keycloak.persistData }}
           volumeMounts:
             - name: keycloak-db
               mountPath: /var/lib/postgresql/data

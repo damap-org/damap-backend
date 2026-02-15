@@ -19,8 +19,8 @@ stringData:
               url: jdbc:postgresql://damap-db:5432/{{ $tenant }}
               driver: org.postgresql.Driver
             db-kind: postgresql
-            username: {{ $.Values.damap.db_user }}
-            password: {{ $.Values.damap.db_password }}
+            username: {{ $.Values.damap.dbUser }}
+            password: {{ $.Values.damap.dbPassword }}
           {{- end }}
         liquibase:
           {{- range $tenant := .Values.damap.multitenancy.tenants }}

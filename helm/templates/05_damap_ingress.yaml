@@ -89,13 +89,13 @@ kind: Ingress
 metadata:
   name: damap
   namespace: {{ .Release.Namespace }}
-  {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tls_cluster_issuer) }}
+  {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tlsClusterIssuer) }}
   annotations:
-    cert-manager.io/cluster-issuer: {{ .Values.damap.tls_cluster_issuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.damap.tlsClusterIssuer }}
   {{- end }}
 spec:
-  {{- if .Values.damap.ingress_class }}
-  ingressClassName: {{ .Values.damap.ingress_class }}
+  {{- if .Values.damap.ingressClass }}
+  ingressClassName: {{ .Values.damap.ingressClass }}
   {{- end }}
   {{- if eq .Values.damap.protocol "https" }}
   tls:
