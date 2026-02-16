@@ -34,5 +34,3 @@ annotations:
   artifacthub.io/changes: |
     - kind: added
       description: Initial release of DAMAP Helm chart
-    - kind: note
-      description: This chart version is intended for testing and is not recommended for production use
