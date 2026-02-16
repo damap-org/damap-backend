@@ -27,7 +27,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_password
+                  key: dbPassword
           resources:
             requests:
               cpu: 25m
