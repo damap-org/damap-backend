@@ -12,8 +12,8 @@ on:
   push:
     branches:
       - next
-    tags:
-      - "chart-v*"
+    paths:
+      - "helm/Chart.yaml"
   workflow_dispatch:
 
 permissions:
