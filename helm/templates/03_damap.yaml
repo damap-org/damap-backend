@@ -136,7 +136,7 @@ spec:
             {{- if .Values.damap.multitenancy.enabled }}
             - name: QUARKUS_DATASOURCE_BOOTSTRAP_DB_KIND
               value: postgresql
-            - name: QUARKUS_DATASOURCE_BOOTSTRAP_DRIVER
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_JDBC_DRIVER
               value: org.postgresql.Driver
             - name: QUARKUS_DATASOURCE_BOOTSTRAP_JDBC_URL
               value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.dbName }}"
