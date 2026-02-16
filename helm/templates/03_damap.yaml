@@ -123,12 +123,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_username
+                  key: dbUsername
             - name: QUARKUS_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_password
+                  key: dbPassword
 
             {{- /*
             Quarkus Profile for multitenancy
@@ -439,17 +439,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_username
+                  key: dbUsername
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_password
+                  key: dbPassword
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: damap
-                  key: db_database
+                  key: dbDatabase
           livenessProbe:
             exec:
               command:

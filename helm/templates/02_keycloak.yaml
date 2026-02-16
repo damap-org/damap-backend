@@ -98,12 +98,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: admin_user
+                  key: adminUser
             - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: admin_password
+                  key: adminPassword
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL
@@ -112,12 +112,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: db_username
+                  key: dbUsername
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: db_password
+                  key: dbPassword
           ports:
             - containerPort: 8080
           volumeMounts:
@@ -218,17 +218,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: db_username
+                  key: dbUsername
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: db_password
+                  key: dbPassword
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: keycloak
-                  key: db_database
+                  key: dbDatabase
           ports:
             - containerPort: 5432
           livenessProbe:
