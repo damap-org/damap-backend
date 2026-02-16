@@ -131,12 +131,29 @@ spec:
                   key: dbPassword
 
             {{- /*
-            Quarkus Profile for multitenancy
+            Quarkus config for multitenancy
             */}}
             {{- if .Values.damap.multitenancy.enabled }}
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_DB_KIND
+              value: postgresql
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_DRIVER
+              value: org.postgresql.Driver
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_JDBC_URL
+              value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.dbName }}"
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbPassword
+            - name: QUARKUS_DATASOURCE_BOOTSTRAP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbUsername
             - name: QUARKUS_PROFILE
               value: multitenant
             {{- end }}
+
             {{- /*
             Authentication configuration.
             */}}
