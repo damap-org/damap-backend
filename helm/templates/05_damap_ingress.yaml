@@ -1,0 +1,138 @@
+{{- if and .Values.openshift (not .Values.damap.custom_domain) }}
+{{- /*
+OpenShift default domain (Route)
+*/}}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-openapi
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /q/openapi
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-swagger-ui
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /q/swagger-ui
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-backend-api
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /api
+  to:
+    name: damap-backend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: damap-frontend
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  host: "{{ .Values.damap.hostname }}"
+  path: /
+  to:
+    name: damap-frontend
+    weight: 100
+    kind: Service
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+
+{{- else }}
+{{- /*
+Vanilla K8s or OpenShift custom domain
+*/}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: damap
+  namespace: {{ .Release.Namespace }}
+  {{- if and (eq .Values.damap.protocol "https") (.Values.damap.tlsClusterIssuer) }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.damap.tlsClusterIssuer }}
+  {{- end }}
+spec:
+  {{- if .Values.damap.ingressClass }}
+  ingressClassName: {{ .Values.damap.ingressClass }}
+  {{- end }}
+  {{- if eq .Values.damap.protocol "https" }}
+  tls:
+    - hosts:
+        - {{ .Values.damap.hostname }}
+      secretName: damap-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.damap.hostname }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /q/swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /q/openapi
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-backend
+                port:
+                  number: 9000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: damap-frontend
+                port:
+                  number: 8080
+{{- end }}

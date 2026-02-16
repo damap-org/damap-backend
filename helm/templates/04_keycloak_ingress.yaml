@@ -1,0 +1,78 @@
+{{- if .Values.keycloak.deploy }}
+{{- if and .Values.openshift (not .Values.keycloak.customDomain) }}
+{{- /*
+OpenShift default domain (Route)
+*/}}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: keycloak
+  namespace: {{ .Release.Namespace }}
+  {{- if eq .Values.keycloak.protocol "https" }}
+  annotations:
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+  {{- end }}
+spec:
+  host: "{{ .Values.keycloak.hostname }}"
+  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms{{ else }}/{{ end }}"
+  to:
+    name: keycloak
+    weight: 100
+    kind: Service
+  {{- if eq .Values.keycloak.protocol "https" }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  {{- end }}
+
+{{- else }}
+{{- /*
+Vanilla K8s or OpenShift custom domain
+*/}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak
+  namespace: "{{ .Release.Namespace }}"
+  {{- if and (eq .Values.keycloak.protocol "https") (.Values.keycloak.tls_cluster_issuer) }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.keycloak.tlsClusterIssuer }}
+  {{- end }}
+spec:
+  {{- if .Values.keycloak.ingress_class }}
+  ingressClassName: {{ .Values.keycloak.ingressClass }}
+  {{- end }}
+  {{- if eq .Values.keycloak.protocol "https" }}
+  tls:
+    - hosts:
+        - {{ .Values.keycloak.hostname }}
+      secretName: keycloak-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.keycloak.hostname }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
+{{- end }}
+{{- end }}

@@ -1,0 +1,31 @@
+{{- if .Values.damap.multitenancy.enabled }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: damap-tenants
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap
+stringData:
+  tenants.yaml: |-
+    tenants: {{ .Values.damap.multitenancy.tenants | toJson }}
+    "%multitenant":
+      quarkus:
+        datasource:
+          {{- range $tenant := .Values.damap.multitenancy.tenants }}
+          {{ $tenant }}:
+            jdbc:
+              url: jdbc:postgresql://damap-db:5432/{{ $tenant }}
+              driver: org.postgresql.Driver
+            db-kind: postgresql
+            username: {{ $.Values.damap.dbUser }}
+            password: {{ $.Values.damap.dbPassword }}
+          {{- end }}
+        liquibase:
+          {{- range $tenant := .Values.damap.multitenancy.tenants }}
+          {{ $tenant }}:
+            migrate-at-start: true
+            change-log: org/damap/base/db/changeLog-root.yaml
+          {{- end }}
+{{- end }}
