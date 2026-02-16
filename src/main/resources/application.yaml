@@ -201,6 +201,12 @@ rest:
     datasource:
       active: false # deactivate unnamed default datasource
       bootstrap: # the same as deactivated default datasource, but with a name, needed for CustomTenantResolver
+        jdbc:
+          url: ${quarkus.datasource.jdbc.url}
+          driver: ${quarkus.datasource.jdbc.driver}
+        db-kind: ${quarkus.datasource.db-kind}
+        username: ${quarkus.datasource.username}
+        password: ${quarkus.datasource.password}
 
     liquibase:
       bootstrap:
