@@ -28,6 +28,12 @@ spec:
                 secretKeyRef:
                   name: damap
                   key: db_password
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
           command:
             - sh
             - -c
