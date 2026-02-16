@@ -1,0 +1,479 @@
+{{- if .Values.damap.persistData }}
+{{- if not .Values.openshift }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: damap-db
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: "{{ .Values.damap.storageClassName }}"
+  claimRef:
+    namespace: "{{ .Release.Namespace }}"
+    name: damap-db
+  capacity:
+    storage: 5G
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "{{ .Values.damap.hostFolder }}"
+{{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: damap-db
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5G
+  storageClassName: "{{ .Values.damap.storageClassName }}"
+  volumeMode: Filesystem
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-backend
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: damap-backend
+  template:
+    metadata:
+      labels:
+        app: damap-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      automountServiceAccountToken: false
+      volumes:
+        - name: damap
+          secret:
+            secretName: damap
+        {{- if .Values.damap.multitenancy.enabled }}
+        - name: damap-tenants
+          secret:
+            secretName: damap-tenants
+        {{- end }}
+        {{- if .Values.pure.enabled }}
+        - name: pure
+          secret:
+            secretName: damap-pure
+        {{- end }}
+      containers:
+        - name: damap-backend
+
+          {{- if and .Values.openshift (ne .Values.customBuild.backend.name "") }}
+          image: "{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref }}"
+          {{- else }}
+          image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backendVersion }}"
+          {{- end }}
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 2G
+            limits:
+              cpu: "0.25"
+              memory: 2G
+          ports:
+            - containerPort: 9000
+          env:
+            - name: QUARKUS_HTTP_PORT
+              value: "9000"
+
+            {{- /* Debug logging */}}
+            {{- if .Values.debug }}
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT_AUTH__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__IO_QUARKUS__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_ECLIPSE_MICROPROFILE__LEVEL
+              value: DEBUG
+            - name: QUARKUS_LOG_CATEGORY__ORG_JBOSS_RESTEASY_REACTIVE__LEVEL
+              value: DEBUG
+            {{- end }}
+
+            - name: DAMAP_ENV
+              value: "{{ if eq .Values.debug true }}DEV{{ else }}PROD{{ end }}"
+            - name: DAMAP_ORIGINS
+              value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
+            
+            {{- /*
+            Database configuration
+            */}}
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: "jdbc:postgresql://damap-db:5432/{{ .Values.damap.dbName }}"
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbUsername
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbPassword
+
+            {{- /*
+            Quarkus Profile for multitenancy
+            */}}
+            {{- if .Values.damap.multitenancy.enabled }}
+            - name: QUARKUS_PROFILE
+              value: multitenant
+            {{- end }}
+            {{- /*
+            Authentication configuration.
+            */}}
+            - name: DAMAP_AUTH_SCOPE
+              value: "{{ .Values.oidc.scope | join " " }}"
+            - name: DAMAP_AUTH_USER_ROLES_CLAIM_PATH
+              value: "{{ .Values.oidc.userRolesClaimPath }}"
+            - name: DAMAP_AUTH_USER_ID_CLAIM
+              value: "{{ .Values.oidc.userIdClaim }}"
+            - name: DAMAP_AUTH_NAME_CLAIM
+              value: "{{ .Values.oidc.nameClaim }}"
+            - name: DAMAP_AUTH_GIVEN_NAME_CLAIM
+              value: "{{ .Values.oidc.givenNameClaim }}"
+            - name: DAMAP_AUTH_FAMILY_NAME_CLAIM
+              value: "{{ .Values.oidc.familyNameClaim }}"
+            - name: DAMAP_AUTH_EMAIL_CLAIM
+              value: "{{ .Values.oidc.emailClaim }}"
+            - name: DAMAP_AUTH_AFFILIATIONS_CLAIM
+              value: "{{ .Values.oidc.affiliationsClaim }}"
+            - name: DAMAP_AUTH_ADMIN_ROLE_NAME
+              value: "{{ .Values.oidc.adminRoleName }}"
+
+            {{- /*
+            Compute auth server URL and issuer depending on whether Keycloak is deployed alongside DAMAP or an external OIDC provider is used.
+            */}}
+            {{- $authServerUrl := "" }}
+            {{- $issuer := "" }}
+
+            {{- if .Values.keycloak.deploy }}
+              {{- /* Case where OIDC Keycloak is deployed alongside DAMAP */}}
+
+              {{- if eq .Values.keycloak.hostname "localhost" }}
+                {{- /* Case where OIDC Keycloak is deployed locally */}}
+                {{- $authServerUrl = "http://keycloak:8080/realms/damap" }}
+                {{- $issuer = printf "%s://%s/realms/damap" .Values.keycloak.protocol .Values.keycloak.hostname }}
+              {{- else }}
+                {{- /* Case where OIDC Keycloak is deployed remotely */}}
+                {{- $authServerUrl = printf "%s://%s/realms/damap" .Values.keycloak.protocol .Values.keycloak.hostname }}
+                {{- $issuer = $authServerUrl }}
+              {{- end }}
+
+            {{- else }}
+              {{- /* Case where OIDC external provider is used (i.e. Keycloak is not deployed alongside DAMAP) */}}
+              {{- $authServerUrl = .Values.oidc.serverUrl }}
+              {{- $issuer = .Values.oidc.issuer }}
+            {{- end }}
+
+            - name: QUARKUS_OIDC_AUTH_SERVER_URL
+              value: "{{ $authServerUrl }}"
+            - name: QUARKUS_OIDC_TOKEN_ISSUER
+              value: "{{ $issuer }}"
+            - name: QUARKUS_OIDC_CLIENT_ID
+              value: "{{ .Values.oidc.clientId }}"
+
+            {{- /*
+            Auxiliary services configuration
+            */}}
+            - name: DAMAP_FITS_URL
+              value: ""
+            - name: DAMAP_GOTENBERG_URL
+              value: "http://localhost:3000"
+
+            {{- /*
+            Additional integrations configuration
+            */}}
+            - name: DAMAP_PERSON_SERVICES
+              value: {{ .Values.damap.personServices | toJson | quote }}
+            - name: DAMAP_PROJECTS_SERVICE
+              value: {{ .Values.damap.projectsService }}
+
+            {{- /*
+            Elsevier Pure integration
+            */}}
+            {{- if .Values.pure.enabled }}
+            - name: DAMAP_ELSEVIER_PURE_BACKEND
+              value: "{{ .Values.pure.backend }}"
+            - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
+              value: file:///data/projects.json
+            - name: DAMAP_ELSEVIER_PURE_PERSONS_FILE
+              value: file:///data/persons.json
+            - name: DAMAP_ELSEVIER_PURE_ENDPOINT_URL
+              value: "{{ .Values.pure.endpoint }}"
+            - name: DAMAP_ELSEVIER_PURE_API_KEY
+              value: "{{ .Values.pure.apiKey }}"
+            - name: DAMAP_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
+              value: {{ .Values.pure.descriptionClassification | quote }}
+            - name: DAMAP_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
+              value: {{ .Values.pure.projectLeadClassification | quote }}
+            - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
+              value: {{ .Values.pure.roleClassifications | toJson | quote }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.damap.multitenancy.enabled }}
+            - name: damap-tenants
+              mountPath: /opt/damap/tenants.yaml
+              subPath: tenants.yaml
+              readonly: true
+            {{- end }}
+            {{- if .Values.pure.enabled }}
+            - mountPath: /data/persons.json
+              name: pure
+              readOnly: true
+              subPath: persons.json
+            - mountPath: /data/projects.json
+              name: pure
+              readOnly: true
+              subPath: projects.json
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 9000
+            initialDelaySeconds: 600
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
+
+        - name: gotenberg
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            {{- if not .Values.openshift }}
+            runAsUser: 1001
+            runAsGroup: 1001
+            {{- end }}
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
+          image: gotenberg/gotenberg:8
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2G
+              cpu: "0.25"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-backend
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-backend
+spec:
+  selector:
+    app: damap-backend
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-frontend
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: damap-frontend
+  template:
+    metadata:
+      labels:
+        app: damap-frontend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      automountServiceAccountToken: false
+      {{- if .Values.frontend.customize }}
+      volumes:
+        - name: damap-customization
+          secret:
+            secretName: damap-customization
+      {{- end }}
+      containers:
+        - name: damap-frontend
+          {{- if and .Values.openshift (ne .Values.customBuild.frontend.name "") }}
+          image: "{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref }}"
+          {{- else }}
+          image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontendVersion }}"
+          {{- end }}
+
+          {{- if .Values.frontend.customize }}
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html/assets/logo-cropped.svg
+              name: damap-customization
+              subPath: logo-cropped.svg
+              readOnly: true
+            - mountPath: /usr/share/nginx/html/assets/logo.svg
+              name: damap-customization
+              subPath: logo.svg
+              readOnly: true
+          {{- end }}
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 512Mi
+              cpu: "0.5"
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - "ALL"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-frontend
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-frontend
+spec:
+  selector:
+    app: damap-frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: damap-db
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: damap-db
+  template:
+    metadata:
+      labels:
+        app: damap-db
+    spec:
+      securityContext:
+        {{- if .Values.openshift }}
+        runAsNonRoot: true
+        {{- end }}
+        seccompProfile:
+          type: RuntimeDefault
+      automountServiceAccountToken: false
+      {{- if .Values.damap.persistData }}
+      volumes:
+        - name: damap-db
+          persistentVolumeClaim:
+            claimName: damap-db
+      {{- end }}
+      containers:
+        - name: damap-db
+          image: postgres:16
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2G
+              cpu: "0.25"
+          {{- if .Values.damap.persistData }}
+          volumeMounts:
+            - name: damap-db
+              mountPath: /var/lib/postgresql/data
+          {{- end }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/damap-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbUsername
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbPassword
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbDatabase
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - /usr/bin/pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          {{- if .Values.openshift }}
+          securityContext:
+            runAsNonRoot: true
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: damap-db
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: damap-db
+spec:
+  selector:
+    app: damap-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

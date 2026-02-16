@@ -1,0 +1,38 @@
+apiVersion: v2
+name: damap
+description: A tool to create machine-actionable data management plans.
+type: application
+
+version: 0.1.0-rc1
+appVersion: "5.0.0-rc1"
+
+kubeVersion: ">=1.25.0"
+
+home: https://damap.org
+sources:
+  - https://github.com/damap-org/damap-backend
+  - https://github.com/damap-org/damap-frontend
+
+keywords:
+  - damap
+  - data-management
+  - dmp
+  - research
+  - pure
+  - keycloak
+  - oidc
+  - openid
+
+maintainers:
+  - name: DAMAP Team
+    email: info@damap.org
+
+icon: https://damap.org/logo.svg
+
+annotations:
+  artifacthub.io/prerelease: "true"
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial release of DAMAP Helm chart
+    - kind: note
+      description: This chart version is intended for testing and is not recommended for production use

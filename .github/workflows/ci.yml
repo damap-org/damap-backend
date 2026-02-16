@@ -44,7 +44,7 @@ jobs:
           done
 
           if [ "$response" != "200" ]; then
-            echo "Health check failed after 10 attempts."
+            echo "Health check failed after 120 attempts."
             exit 1
           fi
 
@@ -130,3 +130,43 @@ jobs:
               -Dquarkus.datasource.jdbc.url=${{ matrix.url }} \
               -Dquarkus.hibernate-orm.dialect=${{ matrix.dialect }}
           fi
+
+  test-helm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install KinD
+        run: |
+          set -euo pipefail
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
+      - name: Bring up KinD cluster
+        run: |
+          set -euo pipefail
+          ./helm/test/create-test-cluster.sh
+      - name: Deploy Helm chart
+        run: |
+          set -euo pipefail
+          cd helm
+          helm install damap ./ --values values.yaml
+      - name: Run health check
+        run: |
+          set -euo pipefail
+          max_attempts=8
+          sleep_interval=2
+
+          for i in $(seq 1 $max_attempts); do
+            response=$(curl -s -w "%{http_code}" -o /dev/null http://localhost/api/config)
+            if [ "$response" == "200" ]; then
+              echo "Backend is healthy after $i attempts."
+              exit 0
+            fi
+            echo "Backend not healthy (status code: $response). Retrying in ${sleep_interval}s..."
+            sleep $sleep_interval
+            sleep_interval=$((sleep_interval * 2)) # Exponential backoff
+          done
+
+          echo "Health check failed after $max_attempts attempts."
+          exit 1

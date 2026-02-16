@@ -1,0 +1,651 @@
+{
+  "$id": "https://damap.org/helm-chart/values.schema.json",
+  "type": "object",
+  "required": [
+    "damap",
+    "oidc"
+  ],
+  "properties": {
+    "debug": {
+      "title": "Debug",
+      "description": "Deploy a non-production debug instance",
+      "type": "boolean",
+      "default": false
+    },
+    "openshift": {
+      "title": "OpenShift",
+      "description": "Deploy OpenShift-specific resources",
+      "type": "boolean",
+      "default": false
+    },
+    "customBuild": {
+      "title": "Custom build (OpenShift only)",
+      "description": "Custom build configuration for the DAMAP backend.",
+      "type": "object",
+      "properties": {
+        "backend": {
+          "title": "DAMAP backend custom build",
+          "description": "Custom build configuration for the DAMAP backend",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "Set this field to non-empty to trigger an OpenShift build for the DAMAP backend",
+              "type": "string",
+              "default": ""
+            },
+            "repo": {
+              "title": "Repository",
+              "description": "Git repository to build the DAMAP backend from",
+              "type": "string",
+              "format": "url"
+            },
+            "ref": {
+              "title": "Ref",
+              "description": "Git ref for the DAMAP backend build",
+              "example": "next",
+              "type": "string"
+            }
+          },
+          "dependentRequired": {
+            "name": [
+              "ref",
+              "repo"
+            ]
+          }
+        },
+        "frontend": {
+          "title": "DAMAP frontend custom build",
+          "description": "Custom build configuration for the DAMAP frontend",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "Set this field to non-empty to trigger an OpenShift build for the DAMAP frontend",
+              "type": "string",
+              "default": ""
+            },
+            "repo": {
+              "title": "Repository",
+              "description": "Git repository to build the DAMAP frontend from",
+              "type": "string",
+              "format": "url"
+            },
+            "ref": {
+              "title": "Ref",
+              "description": "Git ref for the DAMAP frontend build",
+              "example": "next",
+              "type": "string"
+            }
+          },
+          "dependentRequired": {
+            "name": [
+              "ref",
+              "repo"
+            ]
+          }
+        }
+      }
+    },
+    "damap": {
+      "title": "DAMAP",
+      "description": "DAMAP configuration",
+      "type": "object",
+      "required": [
+        "backendVersion",
+        "frontendVersion",
+        "dbName",
+        "dbPassword",
+        "dbUser",
+        "hostname",
+        "protocol"
+      ],
+      "properties": {
+        "backendVersion": {
+          "title": "Backend image",
+          "description": "Container image for the backend",
+          "type": "string",
+          "example": "4.5.0"
+        },
+        "customDomain": {
+          "title": "Custom domain",
+          "description": "Use a custom domain for the ingress. You have to configure the DNS records for the custom domain yourself.",
+          "type": "boolean",
+          "default": false
+        },
+        "dbName": {
+          "title": "Database name",
+          "description": "Database name for the PostgreSQL server.",
+          "type": "string"
+        },
+        "dbPassword": {
+          "title": "Database password",
+          "description": "Password for the PostgreSQL server.",
+          "type": "string"
+        },
+        "dbUser": {
+          "title": "Database username",
+          "description": "Username for the PostgreSQL server.",
+          "type": "string"
+        },
+        "frontendVersion": {
+          "title": "Frontend image",
+          "description": "Container image for the frontend",
+          "type": "string",
+          "example": "4.5.0"
+        },
+        "hostFolder": {
+          "title": "Host folder",
+          "description": "Host folder when creating a PV.",
+          "type": "string"
+        },
+        "hostname": {
+          "title": "Hostname",
+          "description": "Effective hostname for DAMAP.",
+          "type": "string",
+          "minLength": 1
+        },
+        "ingressClass": {
+          "title": "Ingress class",
+          "description": "Ingress class to use for the DAMAP ingress. If empty, the default ingress class will be used.",
+          "type": "string"
+        },
+        "multitenancy": {
+          "title": "Multitenancy",
+          "description": "Multitenancy configuration.",
+          "type": "object",
+          "required": [
+            "autoCreateDatabases",
+            "enabled"
+          ],
+          "properties": {
+            "autoCreateDatabases": {
+              "title": "Auto-create databases",
+              "description": "Automatically create a new database for each tenant. This is required if multitenancy is enabled, but you can disable it if you want to manage the databases manually.",
+              "type": "boolean",
+              "default": false
+            },
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "tenants": {
+              "title": "Tenants",
+              "description": "List of tenants to create. The tenant name will be used as the database name.",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "persistData": {
+          "title": "Persist data",
+          "description": "Persist data across deployments. This will create a Persistent Volume (Vanilla K8s) and Persistent Volume Claim for the database. Do not use for production without proper backup and migration strategy!",
+          "type": "boolean",
+          "default": false
+        },
+        "personServices": {
+          "title": "Person services",
+          "description": "Configuration for person services that DAMAP can use to fetch person data. The services will be used in the order they are defined here.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["display-text", "query-value", "class-name"],
+            "properties": {
+              "display-text": { "type": "string" },
+              "query-value": { "type": "string" },
+              "class-name": { "type": "string" }
+            }
+          }
+        },
+        "protocol": {
+          "title": "Protocol",
+          "description": "Protocol for DAMAP",
+          "type": "string",
+          "enum": ["http", "https"]
+        },
+        "storageClassName": {
+          "title": "Storage class name",
+          "description": "Name for the storage class to use for allocating PVs.",
+          "type": "string"
+        },
+        "tlsClusterIssuer": {
+          "title": "TLS cluster issuer",
+          "description": "Cluster issuer to use for TLS certificates.",
+          "type": "string"
+        },
+        "useExistingSecret": {
+          "title": "Use existing secret",
+          "description": "Use an existing Kubernetes secret for the database credentials instead of creating a new one. This is useful if you want to use Sealed Secrets or manage the secret manually.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "frontend": {
+      "title": "Frontend",
+      "description": "Frontend customization settings. The two logos must not exceed 1 MB in size together.",
+      "type": "object",
+      "required": [
+        "customize"
+      ],
+      "properties": {
+        "customize": {
+          "title": "Customize",
+          "type": "boolean",
+          "default": false
+        },
+        "logo": {
+          "title": "Logo (authenticated)",
+          "description": "Logo for the authenticated area in SVG format.",
+          "type": "string",
+          "contentMediaType": "image/svg",
+          "format": "binary",
+          "contentEncoding": "base64",
+          "default": ""
+        },
+        "logo_cropped": {
+          "title": "Logo (front page)",
+          "description": "Logo for the front page in SVG format.",
+          "type": "string",
+          "contentMediaType": "image/svg",
+          "format": "binary",
+          "contentEncoding": "base64",
+          "default": ""
+        }
+      }
+    },
+    "keycloak": {
+      "title": "Keycloak",
+      "description": "Keycloak configuration",
+      "type": "object",
+      "required": [
+        "adminPassword",
+        "adminUser",
+        "deploy",
+        "dbName",
+        "dbPassword",
+        "dbUser"
+      ],
+      "properties": {
+        "adminPassword": {
+          "title": "Admin password",
+          "description": "Admin password for initial provisioning",
+          "type": "string",
+          "format": "password"
+        },
+        "adminUser": {
+          "title": "Admin user",
+          "description": "Admin user for initial provisioning",
+          "type": "string",
+          "format": "username"
+        },
+        "customDomain": {
+          "title": "Custom domain",
+          "description": "Use a custom domain for the ingress. You have to configure the DNS records for the custom domain yourself."
+        },
+        "dbName": {
+          "title": "Database name",
+          "description": "Database name for the PostgreSQL server.",
+          "type": "string"
+        },
+        "dbPassword": {
+          "title": "Database password",
+          "description": "Password for the PostgreSQL server.",
+          "type": "string",
+          "format": "password"
+        },
+        "dbUser": {
+          "title": "Database username",
+          "description": "Username for the PostgreSQL server.",
+          "type": "string"
+        },
+        "deploy": {
+          "title": "Deploy",
+          "description": "Co-deploy Keycloak. Not for production use.",
+          "type": "boolean"
+        },
+        "hostFolder": {
+          "title": "Host folder",
+          "description": "Host folder when creating a PV.",
+          "type": "string"
+        },
+        "hostname": {
+          "title": "Hostname",
+          "description": "Effective hostname for Keycloak.",
+          "type": "string",
+          "minLength": 1
+        },
+        "ingressClass": {
+          "title": "Ingress class",
+          "description": "Ingress class to use for the Keycloak ingress. If empty, the default ingress class will be used.",
+          "type": "string"
+        },
+        "persistData": {
+          "title": "Persist data",
+          "description": "Persist data across deployments. This will create a Persistent Volume (Vanilla K8s) and Persistent Volume Claim for the database. Do not use for production without proper backup and migration strategy!",
+          "type": "boolean",
+          "default": false
+        },
+        "protocol": {
+          "title": "Protocol",
+          "description": "Protocol for Keycloak",
+          "type": "string",
+          "enum": ["http", "https"]
+        },
+        "storageClassName": {
+          "title": "Storage class name",
+          "description": "Name for the storage class to use for allocating PVs.",
+          "type": "string"
+        },
+        "tlsClusterIssuer": {
+          "title": "TLS cluster issuer",
+          "description": "Cluster issuer to use for TLS certificates.",
+          "type": "string"
+        },
+        "useExistingSecret": {
+          "title": "Use existing secret",
+          "description": "Use an existing Kubernetes secret for the database credentials instead of creating a new one. This is useful if you want to use Sealed Secrets or manage the secret manually.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "oidc": {
+      "title": "OIDC",
+      "description": "OIDC authentication configuration.",
+      "type": "object",
+      "required": [
+        "clientId",
+        "issuer",
+        "serverUrl"
+      ],
+      "properties": {
+        "adminRoleName": {
+          "title": "Admin Role Name",
+          "description": "The name of the admin role in the OIDC server.",
+          "type": "string"
+        },
+        "affiliationsClaim": {
+          "title": "Affiliations claim",
+          "description": "The name of the claim in the OIDC token that contains the user's affiliations. This is used to determine which tenants the user has access to.",
+          "type": "string"
+        },
+        "clientId": {
+          "title": "OIDC client ID",
+          "type": "string",
+          "description": "The OIDC client ID as configured in the OIDC server. This should match the client ID configured in Keycloak if keycloak.deploy is true.",
+          "default": "damap",
+          "minLength": 1
+        },
+        "emailClaim": {
+          "title": "Email claim",
+          "description": "The name of the claim in the OIDC token that contains the user's email.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "email",
+          "minLength": 1
+        },
+        "familyNameClaim": {
+          "title": "Family name claim",
+          "description": "The name of the claim in the OIDC token that contains the user's family name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "family_name",
+          "minLength": 1
+        },
+        "givenNameClaim": {
+          "title": "Given name claim",
+          "description": "The name of the claim in the OIDC token that contains the user's given name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "given_name",
+          "minLength": 1
+        },
+        "issuer": {
+          "title": "OIDC issuer",
+          "description": "The endpoint the DAMAP frontend should use from the browser. This should be accessible from the user's computer. This setting will be ignored if keycloak.deploy is true.",
+          "type": "string",
+          "format": "url",
+          "minLength": 1
+        },
+        "nameClaim": {
+          "title": "Name claim",
+          "description": "The name of the claim in the OIDC token that contains the user's name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "name",
+          "minLength": 1
+        },
+        "scope": {
+          "title": "OIDC scope",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9-_.]+$"
+          },
+          "minItems": 1,
+          "default": [
+            "openid",
+            "profile",
+            "email",
+            "offline_access",
+            "microprofile-jwt",
+            "roles",
+            "personID"
+          ]
+        },
+        "serverUrl": {
+          "title": "Backend OIDC endpoint",
+          "description": "The endpoint the DAMAP backend should use to validate tokens and fetch user info. This should be accessible from the cluster. This setting will be ignored if keycloak.deploy is true.",
+          "type": "string",
+          "format": "url",
+          "minLength": 1
+        },
+        "userIdClaim": {
+          "title": "User ID claim",
+          "description": "The name of the claim in the OIDC token that contains the user's ID.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-_.]+$",
+          "default": "personID",
+          "minLength": 1
+        },
+        "userRolesClaimPath": {
+          "title": "User roles claim path",
+          "description": "The path to the claim in the OIDC token that contains the user's roles.",
+          "type": "string"
+        }
+      }
+    },
+    "pure": {
+      "title": "Elsevier Pure",
+      "type": "object",
+      "if": {
+        "properties": {
+          "backend": {
+            "type": "string",
+            "const": "file"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "personsData",
+          "projectsData"
+        ]
+      },
+      "else": {
+        "required": [
+          "endpoint",
+          "apiKey"
+        ]
+      },
+      "properties": {
+        "apiKey": {
+          "title": "API key",
+          "description": "API key for authenticating with the Pure API. This is required if backend is set to 'http'.",
+          "type": "string",
+          "format": "password"
+        },
+        "backend": {
+          "title": "Backend",
+          "description": "The backend to use for fetching data from Elsevier Pure. If 'file' is selected, the data will be read from the 'personsData' and 'projectsData' fields in this configuration. If 'http' is selected, the data will be fetched from the Pure API using the provided endpoint and API key.",
+          "type": "string",
+          "enum": ["file","http"]
+        },
+        "descriptionClassification": {
+          "title": "Description classification",
+          "description": "The classification in Pure that contains the description for persons and projects. This should match the classification used in Pure for the description.",
+          "type": "string",
+          "pattern": "^/dk/atira/pure/"
+        },
+        "enabled": {
+          "title": "Enabled",
+          "description": "Enable the Elsevier Pure integration. If false, the Pure integration will be disabled and the backend will not attempt to fetch data from Pure.",
+          "type": "boolean",
+          "default": false
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "description": "The base URL for the Pure API. This should be the URL of your Pure instance followed by '/api', e.g., 'https://your-pure-instance.com/api'. This is required if backend is set to 'http'.",
+          "type": "string",
+          "format": "url"
+        },
+        "personsData": {
+          "title": "PURE persons data",
+          "description": "Mock persons data to use when backend is set to 'file'. This should be structured the same way as the response from the Pure API for fetching persons, including the 'count', 'pageInformation', and 'items' fields. The 'items' field should be an array of person objects as returned by the Pure API.",
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "count",
+                "pageInformation",
+                "items"
+              ],
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pageInformation": {
+                  "type": "object",
+                  "required": [
+                    "offset",
+                    "size"
+                  ],
+                  "properties": {
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            },
+            {"type": "object","additionalProperties": false}
+          ]
+        },
+        "projectLeadClassification": {
+          "title": "Project lead classification",
+          "description": "The classification in Pure that indicates the project lead role. This should match the classification used in Pure for the project lead role.",
+          "type": "string",
+          "pattern": "^/dk/atira/pure/"
+        },
+        "projectsData": {
+          "title": "PURE Projects Data",
+          "description": "Mock projects data to use when backend is set to 'file'. This should be structured the same way as the response from the Pure API for fetching projects, including the 'count', 'pageInformation', and 'items' fields. The 'items' field should be an array of project objects as returned by the Pure API.",
+          "default": {},
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "count",
+                "pageInformation",
+                "items"
+              ],
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "pageInformation": {
+                  "type": "object",
+                  "required": [
+                    "offset",
+                    "size"
+                  ],
+                  "properties": {
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            },
+            {"type": "object","additionalProperties": false}
+          ]
+        },
+        "roleClassifications": {
+          "title": "Role classifications",
+          "description": "Mappings from Pure classifications to DAMAP roles. The keys should be the Pure classifications used for roles in your Pure instance, and the values should be the corresponding DAMAP role values. This is used to determine which DAMAP role to assign to a person based on their classification in Pure. The DAMAP role values should be one of the following: DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER, PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER, RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR, PROJECT_COORDINATOR, OTHER.",
+          "type": "object",
+          "patternProperties": {
+            "^/dk/atira/pure/": {
+              "type": "string",
+              "enum": [
+                "DATA_COLLECTOR",
+                "DATA_CURATOR",
+                "DATA_MANAGER",
+                "DISTRIBUTOR",
+                "EDITOR",
+                "HOSTING_INSTITUTION",
+                "PRODUCER",
+                "PROJECT_LEADER",
+                "PROJECT_MANAGER",
+                "PROJECT_MEMBER",
+                "REGISTRATION_AGENCY",
+                "REGISTRATION_AUTHORITY",
+                "RELATED_PERSON",
+                "RESEARCHER",
+                "RESEARCH_GROUP",
+                "RIGHTS_HOLDER",
+                "SPONSOR",
+                "SUPERVISOR",
+                "WORK_PACKAGE_LEADER",
+                "PRINCIPAL_INVESTIGATOR",
+                "PROJECT_COORDINATOR",
+                "OTHER"
+              ]
+            }
+          }
+
+        }
+      }
+    }
+  }
+}
