@@ -39,7 +39,7 @@ jobs:
       # Replace the "0.0.0-SNAPSHOT" placeholder in pom.xml by the version we get from the Github context.
       - name: Change Maven version
         run: |
-          VERSION=$(echo -n 'v5.0.0-rc4' | sed -e 's/v//')
+          VERSION=$(echo -n 'v5.0.0-rc5' | sed -e 's/v//')
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
       # The maven gpg plugin automatically signs the following 4 files using the gpg private key.
@@ -62,7 +62,7 @@ jobs:
 
       - name: Change Maven version
         run: |
-          VERSION=$(echo -n 'v5.0.0-rc4' | sed -e 's/v//')
+          VERSION=$(echo -n 'v5.0.0-rc5' | sed -e 's/v//')
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
       - name: Log in to the Container registry
@@ -79,7 +79,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
           # git tag: v1.2.3, output: 1.2.3
           tags: |
-            type=raw,value=5.0.0-rc4
+            type=raw,value=5.0.0-rc5
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

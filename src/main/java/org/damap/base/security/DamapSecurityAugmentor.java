@@ -18,7 +18,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * delegates to {@link UserSyncService} to ensure the user record exists and is up-to-date.
  */
 @ApplicationScoped
-public class DamapSecurityAugmentor implements SecurityIdentityAugmentor {
+public class DamapSecurityAugmentor {
 
   @Inject UserSyncService userSyncService;
 
@@ -37,7 +37,6 @@ public class DamapSecurityAugmentor implements SecurityIdentityAugmentor {
   @ConfigProperty(name = "damap.auth.family-name-claim", defaultValue = "family_name")
   String familyNameClaim;
 
-  @Override
   public Uni<SecurityIdentity> augment(
       SecurityIdentity identity, AuthenticationRequestContext context) {
     if (identity.isAnonymous()) {
