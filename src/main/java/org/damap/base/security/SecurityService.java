@@ -103,6 +103,9 @@ public class SecurityService {
   }
 
   public String getAffiliation() {
+    if (securityIdentity.isAnonymous()) {
+      return null;
+    }
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
       return null;
