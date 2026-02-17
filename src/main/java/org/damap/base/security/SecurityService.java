@@ -121,6 +121,7 @@ public class SecurityService {
     // doesnt follow the EduID style
     // for more information see:
     // https://wiki.univie.ac.at/spaces/federation/pages/47025278/eduPersonScopedAffiliation
+    System.out.println(oidcPrincipal.getClaims().getClaimValue(affiliationsClaim));
     List<String> affiliations =
         ((JsonArray) oidcPrincipal.getClaims().getClaimValue(affiliationsClaim))
             .stream()
@@ -129,6 +130,8 @@ public class SecurityService {
                 .map(
                     aff -> {
                       if (!aff.contains("@")) {
+                        System.out.println("aff doesnt contain @");
+                        System.out.println(aff);
                         throw new UnauthorizedException(
                             "Affiliation is expected to include an @: " + aff);
                       }
@@ -145,6 +148,7 @@ public class SecurityService {
     if (validAffiliations.size() == 1) {
       return validAffiliations.get(0);
     } else {
+      System.out.println("unaothorized whyyy");
       throw new UnauthorizedException("Exactly one affiliation to a registered tenant is expected");
     }
   }
