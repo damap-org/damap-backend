@@ -32,17 +32,11 @@ public class CustomTenantResolver implements TenantResolver {
   @Override
   public String resolveTenantId() {
     String tenantId = securityService.getAffiliation();
-    System.out.println("TenantID : " + tenantId);
-    System.out.println(tenantId);
-    System.out.println("Tenants: ");
-    System.out.println(tenantIds);
     if (tenantId == null) {
-      LOG.debug("TenantId = " + tenantId);
-      System.out.println("tenantID is null");
       return "bootstrap";
     }
     if (!tenantIds.contains(tenantId)) {
-      throw new ForbiddenException("TenantId mismatch");
+      throw new ForbiddenException("TenantId " + tenantId + " not in list of tenants");
     }
     LOG.debug("TenantId = " + tenantId);
     return tenantId;

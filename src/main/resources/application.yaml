@@ -5,11 +5,11 @@ damap:
   env: DEV # override in your custom project with PROD for production deployment
   auth:
     # Scopes to request during login:
-    scope: openid profile email offline_access microprofile-jwt roles personID
+    scope: openid profile affiliation
     # The OIDC claim path that will hold your DAMAP roles in the access token
-    user-roles-claim-path: realm_access/roles
+    user-roles-claim-path: roles
     # The OIDC claim to use as a user ID:
-    user-id-claim: personID
+    user-id-claim: sub
     # The OIDC claim that holds the users full name
     name-claim: name
     # The OIDC claim that holds the users given name
@@ -23,7 +23,7 @@ damap:
     # Role name used to identify DAMAP super admins
     # If DAMAP is locally deployed ADMIN_ROLE constant in the DefaultProfile test profile needs to be
     # the same as here, otherwise the tests fail
-    admin-role-name: Damap Admin
+    admin-role-name: damap-super-admin
   repositories:
     # Zenodo, Open Science Framework, DRYAD, Mendeley Data
     # can also be [] for no repositories recommendation
@@ -88,10 +88,10 @@ quarkus:
       max-body-size: 10M
 
   oidc:
-    auth-server-url: http://keycloak:8080/realms/damap
-    client-id: damap
+    auth-server-url: https://id.arisnet.ac.at/realms/damap
+    client-id: damap-dev
     token:
-      issuer: http://localhost:8087/realms/damap
+      issuer: https://id.arisnet.ac.at/realms/damap
     roles:
       role-claim-path: ${damap.auth.user-roles-claim-path}
 
@@ -158,9 +158,9 @@ rest:
         origins: http://localhost:4200
 
     oidc:
-      auth-server-url: http://localhost:8087/realms/damap
+      auth-server-url: https://id.arisnet.ac.at/realms/damap
       token:
-        issuer: http://localhost:8087/realms/damap
+        issuer: https://id.arisnet.ac.at/realms/damap
 
     # FOR ORACLE INSTEAD USE:
     #      url: jdbc:oracle:thin:@localhost:8088/FREEPDB1
@@ -222,4 +222,4 @@ rest:
 
     config:
       # should point to a (out of classpath) config file like this /path/to/config/file.yaml
-      locations: /opt/damap/tenants.yaml
+      locations: file:/C:/Everything/Coding/DAMAP/damap-backend/docker/tenants.yaml

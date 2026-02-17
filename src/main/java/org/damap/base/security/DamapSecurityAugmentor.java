@@ -3,7 +3,6 @@ package org.damap.base.security;
 import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
-import io.quarkus.security.identity.SecurityIdentityAugmentor;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

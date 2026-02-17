@@ -31,6 +31,18 @@ public class SecurityService {
   @ConfigProperty(name = "damap.auth.user-id-claim")
   String userIdClaim;
 
+  @ConfigProperty(name = "damap.auth.name-claim")
+  String nameClaim;
+
+  @ConfigProperty(name = "damap.auth.given-name-claim")
+  String givenNameClaim;
+
+  @ConfigProperty(name = "damap.auth.family-name-claim")
+  String familyNameClaim;
+
+  @ConfigProperty(name = "damap.auth.email-claim")
+  String emailClaim;
+
   @ConfigProperty(name = "damap.auth.admin-role-name")
   String adminRoleName;
 
@@ -68,24 +80,42 @@ public class SecurityService {
     return principal.getName();
   }
 
+  public String getFirstName() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, givenNameClaim);
+  }
+
+  public String getLastName() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, familyNameClaim);
+  }
+
   public String getDisplayName() {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
       return null;
     }
 
-    String name = getClaimValueAsString(oidcPrincipal, "name");
+    String name = getClaimValueAsString(oidcPrincipal, nameClaim);
     if (name != null) {
       return name;
     }
 
-    String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
-    String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
+    String firstName = getClaimValueAsString(oidcPrincipal, givenNameClaim);
+    String lastName = getClaimValueAsString(oidcPrincipal, familyNameClaim);
     if (firstName != null && lastName != null) {
       return firstName + " " + lastName;
     }
 
-    return getClaimValueAsString(oidcPrincipal, "email");
+    return getClaimValueAsString(oidcPrincipal, emailClaim);
+  }
+
+  public String getEmail() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, emailClaim);
   }
 
   private String getClaimValueAsString(OidcJwtCallerPrincipal oidcPrincipal, String claimKey) {
@@ -103,15 +133,12 @@ public class SecurityService {
   }
 
   public String getAffiliation() {
-    System.out.println(securityIdentity);
     if (securityIdentity.isAnonymous()) {
-      System.out.println("Anonymous");
       return null;
     }
+
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
-      System.out.println("WRong principal");
-      System.out.println(principal);
       return null;
     }
 
@@ -121,7 +148,6 @@ public class SecurityService {
     // doesnt follow the EduID style
     // for more information see:
     // https://wiki.univie.ac.at/spaces/federation/pages/47025278/eduPersonScopedAffiliation
-    System.out.println(oidcPrincipal.getClaims().getClaimValue(affiliationsClaim));
     List<String> affiliations =
         ((JsonArray) oidcPrincipal.getClaims().getClaimValue(affiliationsClaim))
             .stream()
@@ -130,8 +156,6 @@ public class SecurityService {
                 .map(
                     aff -> {
                       if (!aff.contains("@")) {
-                        System.out.println("aff doesnt contain @");
-                        System.out.println(aff);
                         throw new UnauthorizedException(
                             "Affiliation is expected to include an @: " + aff);
                       }
@@ -148,7 +172,6 @@ public class SecurityService {
     if (validAffiliations.size() == 1) {
       return validAffiliations.get(0);
     } else {
-      System.out.println("unaothorized whyyy");
       throw new UnauthorizedException("Exactly one affiliation to a registered tenant is expected");
     }
   }

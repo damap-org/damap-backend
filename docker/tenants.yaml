@@ -1,18 +1,16 @@
-tenants: ['tenant_1', 'tenant_2']
+tenants: ['tuwien_ac_at']
 "%multitenant":
   quarkus:
     datasource:
-      tenant_1:
+      tuwien_ac_at:
         jdbc:
-          url: jdbc:postgresql://damap-db:5432/tenant_1
-      tenant_2:
-        jdbc:
-          url: jdbc:postgresql://damap-db:5432/tenant_2
+          url: jdbc:postgresql://localhost:8088/tuwien_ac_at
+          driver: org.postgresql.Driver
+        db-kind: postgresql
+        username: damap
+        password: pw4damap
 
     liquibase:
-      tenant_1:
-        migrate-at-start: true
-        change-log: org/damap/base/db/changeLog-root.yaml
-      tenant_2:
+      tuwien_ac_at:
         migrate-at-start: true
         change-log: org/damap/base/db/changeLog-root.yaml

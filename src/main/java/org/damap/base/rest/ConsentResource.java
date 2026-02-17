@@ -10,6 +10,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.repo.ConsentRepo;
 import org.damap.base.rest.administration.domain.ConsentDO;
 import org.damap.base.rest.administration.service.ConsentService;
+import org.damap.base.rest.auth.UserSyncService;
 import org.damap.base.security.SecurityService;
 
 /** ConsentResource class. */
@@ -26,6 +27,8 @@ public class ConsentResource {
 
   @Inject ConsentRepo consentRepo;
 
+  @Inject UserSyncService userSyncService;
+
   /**
    * getConsent.
    *
@@ -33,6 +36,18 @@ public class ConsentResource {
    */
   @GET
   public ConsentDO getConsent() {
+    // TODO: this is a replacement for the DamapSecurityAugmentor, since it doesnt work with
+    // multitenancy
+    // since the security context isnt built when Hibernate asks for a tenant
+    // as a workaround, users will be synced on this method, since its called everytime a user wants
+    // to visit the tool
+    userSyncService.syncUser(
+        securityService.getUserId(),
+        securityService.getEmail(),
+        securityService.getUserName(),
+        securityService.getFirstName(),
+        securityService.getLastName());
+
     if (consentRepo.getConsentByUniversityId(this.getPersonId()) != null) {
       return consentService.getConsentByUser(this.getPersonId());
     } else {
