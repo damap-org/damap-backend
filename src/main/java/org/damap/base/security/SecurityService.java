@@ -103,11 +103,15 @@ public class SecurityService {
   }
 
   public String getAffiliation() {
+    System.out.println(securityIdentity);
     if (securityIdentity.isAnonymous()) {
+      System.out.println("Anonymous");
       return null;
     }
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
+      System.out.println("WRong principal");
+      System.out.println(principal);
       return null;
     }
 

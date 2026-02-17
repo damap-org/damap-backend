@@ -38,6 +38,7 @@ public class CustomTenantResolver implements TenantResolver {
     System.out.println(tenantIds);
     if (tenantId == null) {
       LOG.debug("TenantId = " + tenantId);
+      System.out.println("tenantID is null");
       return "bootstrap";
     }
     if (!tenantIds.contains(tenantId)) {
