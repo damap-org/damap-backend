@@ -92,6 +92,8 @@ spec:
           ports:
             - containerPort: 9000
           env:
+            - name: QUARKUS_HTTP_CORS_ORIGINS
+              value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             - name: QUARKUS_HTTP_PORT
               value: "9000"
 
@@ -111,8 +113,6 @@ spec:
 
             - name: DAMAP_ENV
               value: "{{ if eq .Values.debug true }}DEV{{ else }}PROD{{ end }}"
-            - name: DAMAP_ORIGINS
-              value: "{{ .Values.damap.protocol }}://{{ .Values.damap.hostname }}"
             
             {{- /*
             Database configuration
@@ -213,7 +213,7 @@ spec:
             */}}
             - name: DAMAP_FITS_URL
               value: ""
-            - name: DAMAP_GOTENBERG_URL
+            - name: REST_GOTENBERG_MP_REST_URL
               value: "http://localhost:3000"
 
             {{- /*
