@@ -32,7 +32,7 @@ public interface FitsRestService {
    * @return a {@link edu.harvard.fits.Fits} object
    */
   @POST
-  @Fallback(fallbackMethod = "fallback")
+  @Fallback(fallbackMethod = "fallback", skipOn = DamapApiException.class)
   @Path("/examine")
   Fits analyseFile(MultipartBodyDTO datafile);
 

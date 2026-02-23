@@ -31,7 +31,7 @@ public interface RepositoriesRemoteResource {
    * @return a {@link java.util.List} object
    */
   @GET
-  @Fallback(fallbackMethod = "getAllFallback")
+  @Fallback(fallbackMethod = "getAllFallback", skipOn = DamapApiException.class)
   @Path("/v1/repositories")
   generated.List getAll();
 
@@ -42,7 +42,7 @@ public interface RepositoriesRemoteResource {
    * @return a {@link org.re3data.schema._2_2.Re3Data} object
    */
   @GET
-  @Fallback(fallbackMethod = "getByIdFallback")
+  @Fallback(fallbackMethod = "getByIdFallback", skipOn = DamapApiException.class)
   @Path("/v1/repository/{id}")
   Re3Data getById(@RestPath String id);
 
@@ -66,7 +66,7 @@ public interface RepositoriesRemoteResource {
    * @return a {@link java.util.List} object
    */
   @GET
-  @Fallback(fallbackMethod = "searchFallback")
+  @Fallback(fallbackMethod = "searchFallback", skipOn = DamapApiException.class)
   @Path("/beta/repositories")
   generated.List search(
       @RestQuery("subjects[]") List<String> subjects,

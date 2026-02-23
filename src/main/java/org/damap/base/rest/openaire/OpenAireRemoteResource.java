@@ -29,7 +29,7 @@ public interface OpenAireRemoteResource {
    * @return a {@link generated.Response} object
    */
   @GET
-  @Fallback(fallbackMethod = "fallback")
+  @Fallback(fallbackMethod = "fallback", skipOn = DamapApiException.class)
   @Path("/datasets")
   Response search(@QueryParam("doi") String doi);
 

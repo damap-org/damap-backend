@@ -37,7 +37,7 @@ interface OrcidPersonService {
   @Path("/expanded-search")
   @GET
   @ClientHeaderParam(name = "accept", value = MediaType.APPLICATION_JSON)
-  @Fallback(fallbackMethod = "getAllFallback")
+  @Fallback(fallbackMethod = "getAllFallback", skipOn = DamapApiException.class)
   ORCIDExpandedSearchResult getAll(@QueryParam("q") String query, @QueryParam("rows") int rows);
 
   /**
@@ -49,7 +49,7 @@ interface OrcidPersonService {
   @Path("/{orcid}/record")
   @GET
   @ClientHeaderParam(name = "accept", value = MediaType.APPLICATION_JSON)
-  @Fallback(fallbackMethod = "getFallback")
+  @Fallback(fallbackMethod = "getFallback", skipOn = DamapApiException.class)
   ORCIDRecord get(@PathParam(value = "orcid") String orcid);
 
   @ClientExceptionMapper

@@ -24,7 +24,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface GotenbergRestService {
 
   @POST
-  @Fallback(fallbackMethod = "fallback")
+  @Fallback(fallbackMethod = "fallback", skipOn = DamapApiException.class)
   @Path("/forms/libreoffice/convert")
   byte[] convertToPDF(MultipartBodyDTO datafile);
 

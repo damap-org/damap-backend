@@ -50,7 +50,7 @@ public class RepositoriesService {
 
         try {
             Re3Data repo = this.getById(repositoryId);
-            recommendedRepositories.add(RepositoryMapper.mapToRepositoryDetails(repo, id));
+            recommendedRepositoryDetails.add(RepositoryMapper.mapToRepositoryDetails(repo, repositoryId));
         } catch (DamapApiException e) {
             ErrorDto errorPayload = e.getPayload();
             switch (e.getPayload().errorCode()) {
