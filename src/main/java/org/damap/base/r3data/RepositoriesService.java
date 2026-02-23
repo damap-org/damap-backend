@@ -1,6 +1,7 @@
 package org.damap.base.r3data;
 
 import static org.damap.base.enums.EErrorCode.*;
+
 import io.quarkus.cache.CacheResult;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -48,24 +49,24 @@ public class RepositoriesService {
     for (RecommendedRepository recommendedRepository : recommendedRepositories) {
       String repositoryId = recommendedRepository.getRepositoryId();
 
-        try {
-            Re3Data repo = this.getById(repositoryId);
-            recommendedRepositoryDetails.add(RepositoryMapper.mapToRepositoryDetails(repo, repositoryId));
-        } catch (DamapApiException e) {
-            ErrorDto errorPayload = e.getPayload();
-            switch (e.getPayload().errorCode()) {
-                case RE3DATA_NOT_FOUND ->
-                        errorPayload =
-                                new ErrorDto(RE3DATA_RECOMMENDED_NOT_FOUND, e.getPayload().details());
-                case RE3DATA_NOT_AVAILABLE ->
-                        errorPayload =
-                                new ErrorDto(RE3DATA_RECOMMENDED_NOT_AVAILABLE, e.getPayload().details());
-                case RE3DATA_UNEXPECTED_ERROR ->
-                        errorPayload =
-                                new ErrorDto(RE3DATA_RECOMMENDED_UNEXPECTED_ERROR, e.getPayload().details());
-            }
-            throw new DamapApiException(errorPayload, e.getStatus(), e);
+      try {
+        Re3Data repo = this.getById(repositoryId);
+        recommendedRepositoryDetails.add(
+            RepositoryMapper.mapToRepositoryDetails(repo, repositoryId));
+      } catch (DamapApiException e) {
+        ErrorDto errorPayload = e.getPayload();
+        switch (e.getPayload().errorCode()) {
+          case RE3DATA_NOT_FOUND ->
+              errorPayload = new ErrorDto(RE3DATA_RECOMMENDED_NOT_FOUND, e.getPayload().details());
+          case RE3DATA_NOT_AVAILABLE ->
+              errorPayload =
+                  new ErrorDto(RE3DATA_RECOMMENDED_NOT_AVAILABLE, e.getPayload().details());
+          case RE3DATA_UNEXPECTED_ERROR ->
+              errorPayload =
+                  new ErrorDto(RE3DATA_RECOMMENDED_UNEXPECTED_ERROR, e.getPayload().details());
         }
+        throw new DamapApiException(errorPayload, e.getStatus(), e);
+      }
     }
     return recommendedRepositoryDetails;
   }
