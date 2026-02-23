@@ -47,7 +47,7 @@ class ExportScienceEuropeTemplateTest extends TestSetup {
 
     XWPFDocument document = null;
     try {
-      document = exportScienceEuropeTemplate.exportTemplate(dmpDO.getId());
+      document = exportScienceEuropeTemplate.exportTemplate(dmpDO.getId(), 1L);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -62,7 +62,7 @@ class ExportScienceEuropeTemplateTest extends TestSetup {
     // testing the export document return not a null document
     XWPFDocument document = null;
     try {
-      document = exportScienceEuropeTemplate.exportTemplate(emptyDmpDO.getId());
+      document = exportScienceEuropeTemplate.exportTemplate(emptyDmpDO.getId(), 1L);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -80,7 +80,7 @@ class ExportScienceEuropeTemplateTest extends TestSetup {
 
     XWPFDocument document = null;
     try {
-      document = exportScienceEuropeTemplate.exportTemplate(dmpDO.getId());
+      document = exportScienceEuropeTemplate.exportTemplate(dmpDO.getId(), 1L);
     } catch (Exception e) {
       e.printStackTrace();
     }

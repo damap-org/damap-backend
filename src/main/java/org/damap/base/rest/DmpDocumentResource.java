@@ -38,17 +38,17 @@ public class DmpDocumentResource {
    * exportTemplate.
    *
    * @param dmpId a long
-   * @param template a {@link org.damap.base.enums.ETemplateType} object
+   * @param templateId a Long object
    * @return a {@link jakarta.ws.rs.core.Response} object
    */
   @GET
   @Path("/{dmpId}")
   @Deprecated(since = "4.3.0", forRemoval = true)
   public Response exportTemplate(
-      @PathParam("dmpId") long dmpId, @QueryParam("template") ETemplateType template) {
+      @PathParam("dmpId") long dmpId, @QueryParam("template") Long templateId) {
     log.info("Return DMP document file for DMP with id=" + dmpId);
 
-    return this.export(dmpId, template, true, "docx");
+    return this.export(dmpId, templateId, true, "docx");
   }
 
   @GET
@@ -56,7 +56,7 @@ public class DmpDocumentResource {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response export(
       @PathParam("dmpId") long dmpId,
-      @QueryParam("template") ETemplateType template,
+      @QueryParam("template") Long templateId,
       @QueryParam("download") @DefaultValue("true") Boolean download,
       @QueryParam("filetype") @DefaultValue("docx") String filetype) {
 
@@ -69,7 +69,9 @@ public class DmpDocumentResource {
 
     StreamingOutput document;
     try {
-      document = documentService.getExportDocument(dmpId, template, download, filetype);
+      document = documentService.getExportDocument(dmpId, templateId, download, filetype);
+    } catch (WebApplicationException e) {
+      throw e;
     } catch (Exception e) {
       log.error("Error exporting DMP document", e);
       return Response.serverError().entity("Error exporting DMP document").build();

@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.damap.base.enums.ETemplateType;
+import org.damap.base.domain.ExportTemplate;
 import org.damap.base.rest.dmp.service.DmpService;
 
 /** ExportTemplateBroker class. */
@@ -51,27 +51,21 @@ public class ExportTemplateBroker {
    * @param dmpId a long
    * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object
    */
-  public XWPFDocument exportTemplate(long dmpId) {
-    return exportTemplateByType(
-        dmpId, templateSelectorService.selectTemplate(dmpService.getDmpById(dmpId)));
-  }
-
-  /**
-   * exportTemplateByType.
-   *
-   * @param dmpId a long
-   * @param type a {@link org.damap.base.enums.ETemplateType} object
-   * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object
-   */
-  public XWPFDocument exportTemplateByType(long dmpId, ETemplateType type) {
-    switch (type) {
-      case FWF:
-        return exportFWFTemplate.exportTemplate(dmpId);
-      case HORIZON_EUROPE:
-        return exportHorizonEuropeTemplate.exportTemplate(dmpId);
-      case SCIENCE_EUROPE:
-      default:
-        return exportScienceEuropeTemplate.exportTemplate(dmpId);
+  public XWPFDocument exportTemplate(long dmpId, Long templateId) {
+    if (templateId == null || templateId == 0) {
+      return exportScienceEuropeTemplate.exportTemplate(dmpId, 1L);
     }
+    ExportTemplate template = ExportTemplate.findById(templateId);
+
+    if (template == null || !template.isActive()) {
+      return null;
+    }
+
+    return switch (template.getTemplateKey()) {
+      case "FWF" -> exportFWFTemplate.exportTemplate(dmpId);
+      case "HORIZON_EUROPE" -> exportHorizonEuropeTemplate.exportTemplate(dmpId);
+      case "SCIENCE_EUROPE" -> exportScienceEuropeTemplate.exportTemplate(dmpId, templateId);
+      default -> exportScienceEuropeTemplate.exportTemplate(dmpId, templateId);
+    };
   }
 }

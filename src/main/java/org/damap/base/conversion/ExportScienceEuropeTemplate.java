@@ -1,21 +1,33 @@
 package org.damap.base.conversion;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import java.io.InputStream;
 import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.*;
+import org.damap.base.rest.ExportTemplateService;
 
 /** ExportScienceEuropeTemplate class. */
 @RequestScoped
 @JBossLog
 public class ExportScienceEuropeTemplate extends AbstractTemplateExportScienceEuropeComponents {
+  @Inject ExportTemplateService exportTemplateService;
 
   /**
    * exportTemplate.
    *
    * @param dmpId a long
+   * @param templateId the unique identifier of the template record in the database. This ID
+   *     determines which .docx file is used as the basis:
+   *     <ul>
+   *       <li>ID 1: Default Science Europe template (falls back to classpath resource).
+   *       <li>IDs 2, 3: Default funder templates (FWF, Horizon Europe).
+   *       <li>ID &gt; 3: Custom variations of the Science Europe template uploaded by admins.
+   *     </ul>
+   *
    * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object
    */
-  public XWPFDocument exportTemplate(long dmpId) {
+  public XWPFDocument exportTemplate(long dmpId, Long templateId) {
     log.info("Exporting Science Europe document for DMP with ID: " + dmpId);
     // load project
     exportSetup(dmpId);
@@ -24,9 +36,15 @@ public class ExportScienceEuropeTemplate extends AbstractTemplateExportScienceEu
     String endChar = "]";
     prop = templateFileBrokerService.getScienceEuropeTemplateResource();
     XWPFDocument document = null;
+    InputStream templateStream = null;
     try {
-      document =
-          loadTemplate(templateFileBrokerService.loadScienceEuropeTemplate(), startChar, endChar);
+      templateStream = exportTemplateService.getTemplateStream(templateId);
+
+      // Fallback to classpath resource if no custom database blob found
+      if (templateStream == null) {
+        templateStream = templateFileBrokerService.loadScienceEuropeTemplate();
+      }
+      document = loadTemplate(templateStream, startChar, endChar);
     } catch (Exception e) {
       log.error("Template file not found!");
       log.error(e.getMessage());

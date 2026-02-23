@@ -35,19 +35,19 @@ class DmpDocumentResourceTest extends TestSetup {
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateTypeFWF_Valid() {
-    given().when().get("/" + dmpDO.getId() + "?template=FWF").then().statusCode(200);
+    given().when().get("/" + dmpDO.getId() + "?template=2").then().statusCode(200);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateTypeScienceEurope_Valid() {
-    given().when().get("/" + dmpDO.getId() + "?template=SCIENCE_EUROPE").then().statusCode(200);
+    given().when().get("/" + dmpDO.getId() + "?template=1").then().statusCode(200);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateType_Invalid() {
-    given().when().get("/" + dmpDO.getId() + "?template=invalid").then().statusCode(404);
+    given().when().get("/" + dmpDO.getId() + "?template=999").then().statusCode(404);
   }
 
   @Test
@@ -55,7 +55,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeScienceEurope_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=SCIENCE_EUROPE&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=1&fileType=docx")
         .then()
         .statusCode(200);
   }
@@ -65,7 +65,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeHorizonEurope_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=HORIZON_EUROPE&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=3&fileType=docx")
         .then()
         .statusCode(200);
   }
@@ -75,7 +75,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeFWF_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=FWF&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=2&fileType=docx")
         .then()
         .statusCode(200);
   }

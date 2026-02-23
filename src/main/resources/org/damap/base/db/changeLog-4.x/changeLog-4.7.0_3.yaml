@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 27
+      author: Rafael dos Santos
+      changes:
+        - createSequence:
+            sequenceName: export_template_seq
+            startValue: 10
+            incrementBy: 50
+        - createTable:
+            tableName: export_template
+            columns:
+              - column: { name: id, type: BIGINT, constraints: { primaryKey: true } }
+              - column: { name: name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: template_key, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: data, type: BLOB }
+              - column: { name: active, type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: is_custom, type: BOOLEAN, defaultValueBoolean: false }
+
+        - insert:
+            tableName: export_template
+            columns:
+              - column: { name: id, value: 1 }
+              - column: { name: name, value: 'Science Europe' }
+              - column: { name: template_key, value: 'SCIENCE_EUROPE' }
+              - column: { name: active, value: true }
+              - column: { name: is_custom, value: false }
+        - insert:
+              tableName: export_template
+              columns:
+                - column: { name: id, value: 2 }
+                - column: { name: name, value: 'FWF' }
+                - column: { name: template_key, value: 'FWF' }
+                - column: { name: active, value: true }
+                - column: { name: is_custom, value: false }
+        - insert:
+              tableName: export_template
+              columns:
+                - column: { name: id, value: 3 }
+                - column: { name: name, value: 'Horizon Europe' }
+                - column: { name: template_key, value: 'HORIZON_EUROPE' }
+                - column: { name: active, value: true }
+                - column: { name: is_custom, value: false }

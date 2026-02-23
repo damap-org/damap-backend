@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.ColorTheme;
+import org.damap.base.domain.ExportTemplate;
 import org.damap.base.domain.Image;
 import org.damap.base.domain.RecommendedRepository;
 import org.damap.base.rest.admin.domain.BannerDO;
@@ -39,6 +40,7 @@ public class AdminResource {
   @Inject RecommendedRepositoryService recommendedRepositoryService;
   @Inject ColorThemeService colorThemeService;
   @Inject ImageThemeService imageThemeService;
+  @Inject ExportTemplateService exportTemplateService;
 
   @GET
   @Path("/banner")
@@ -135,5 +137,37 @@ public class AdminResource {
   public void deleteRecommendedRepository(@RestPath Long id) {
     log.info("Deleting recommended repository with id: " + id);
     this.recommendedRepositoryService.deleteRecommendedRepository(id);
+  }
+
+  @GET
+  @Path("/export-templates")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public List<ExportTemplate> getExportTemplates() {
+    return ExportTemplate.listAll();
+  }
+
+  @POST
+  @Path("/export-templates")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public ExportTemplate uploadTemplate(
+      @RestForm("name") String name,
+      @RestForm("category") String category,
+      @RestForm("file") FileUpload file) {
+    return this.exportTemplateService.uploadTemplate(name, category, file);
+  }
+
+  @PUT
+  @Path("/export-templates/{id}/toggle")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public void toggleTemplate(@RestPath Long id) {
+    this.exportTemplateService.toggleStatus(id);
+  }
+
+  @DELETE
+  @Path("/export-templates/{id}")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public void deleteTemplate(@RestPath Long id) {
+    this.exportTemplateService.deleteTemplate(id);
   }
 }
