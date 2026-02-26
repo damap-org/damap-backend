@@ -24,10 +24,6 @@ damap:
     # If DAMAP is locally deployed ADMIN_ROLE constant in the DefaultProfile test profile needs to be
     # the same as here, otherwise the tests fail
     admin-role-name: Damap Admin
-  repositories:
-    # Zenodo, Open Science Framework, DRYAD, Mendeley Data
-    # can also be [] for no repositories recommendation
-    recommendation: ['r3d100010468', 'r3d100011137', 'r3d100000044', 'r3d100011868'] # your-recommended-repositories
   fields:
     ethical-report-enabled: true
 
