@@ -83,6 +83,11 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
         }
       } catch (Exception e) {
         log.error("Project API not functioning", e);
+        ContributorDO fallbackLeader = new ContributorDO();
+        fallbackLeader.setFirstName("Project Leader");
+        fallbackLeader.setLastName("(Information currently unavailable from Project Service)");
+        fallbackLeader.setRoles(new HashSet<>(Set.of(EContributorRole.PROJECT_LEADER)));
+        projectCoordinators = List.of(fallbackLeader);
       }
     }
   }

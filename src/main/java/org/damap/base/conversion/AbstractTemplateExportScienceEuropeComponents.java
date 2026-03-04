@@ -103,8 +103,13 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     // add funding program to funding item variables
     ProjectDO projectCRIS = null;
-    if (project.getUniversityId() != null)
-      projectCRIS = projectService.read(project.getUniversityId());
+    if (project.getUniversityId() != null) {
+      try {
+        projectCRIS = projectService.read(project.getUniversityId());
+      } catch (Exception e) {
+        log.error("Could not reach Project Service for funding details", e);
+      }
+    }
 
     titlePageFunding(project, projectCRIS);
 
@@ -747,13 +752,24 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
 
     if (!repositories.isEmpty()) {
-
       repositories.forEach(
-          repo ->
-              repoTexts.add(
-                  repositoriesService.getDescription(repo.getRepositoryId())
-                      + " "
-                      + repositoriesService.getRepositoryURL(repo.getRepositoryId())));
+          repo -> {
+            String description;
+            String url = "";
+            try {
+              description = repositoriesService.getDescription(repo.getRepositoryId());
+              url = repositoriesService.getRepositoryURL(repo.getRepositoryId());
+            } catch (Exception e) {
+              log.error(
+                  "Failed to fetch repository info from external API for ID: "
+                      + repo.getRepositoryId(),
+                  e);
+              description =
+                  "re3data was not available. This should be the description fetched from re3data. "
+                      + "To get this information, please try to export at a later date.";
+            }
+            repoTexts.add(description + (url.isEmpty() ? "" : " " + url));
+          });
 
       repoInformation = String.join("; ", repoTexts);
     }
