@@ -1,4 +1,4 @@
-{{- if and .Values.openshift (not .Values.damap.custom_domain) }}
+{{- if and .Values.openshift (not .Values.damap.customDomain) }}
 {{- /*
 OpenShift default domain (Route)
 */}}
