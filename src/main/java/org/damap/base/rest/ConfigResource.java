@@ -62,9 +62,6 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.person-services")
   PersonServiceConfigurations personServiceConfigurations;
 
-  @ConfigProperty(name = "rest.fits/mp-rest/url")
-  Optional<URL> fitsUrl;
-
   @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
 
@@ -102,7 +99,6 @@ public class ConfigResource {
     configDO.setEnv(env);
     configDO.setAppTitle(appTitle);
     configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());
-    configDO.setFitsServiceAvailable(getFitsServiceAvailability());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(ethicalReportEnabled);
 
@@ -116,10 +112,6 @@ public class ConfigResource {
     configDO.setTemplates(ExportTemplateDOMapper.mapEntityListToDOList(templateEntities));
 
     return configDO;
-  }
-
-  private boolean getFitsServiceAvailability() {
-    return fitsUrl.isPresent();
   }
 
   private boolean getGotenbergServiceAvailability() {

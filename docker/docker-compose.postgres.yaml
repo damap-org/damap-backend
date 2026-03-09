@@ -21,7 +21,6 @@ services:
       - damap-db
       - keycloak
       - api-mock
-      - fits-service
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
       interval: 30s

@@ -73,13 +73,6 @@ services:
     ports:
       - "8091:80"
 
-  fits-service:
-    image: islandora/fits:main
-    pull_policy: always
-    restart: unless-stopped
-    ports:
-      - "8089:8080"
-
   gotenberg:
     image: gotenberg/gotenberg:8
     pull_policy: always

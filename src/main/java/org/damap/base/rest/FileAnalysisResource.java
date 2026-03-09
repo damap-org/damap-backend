@@ -9,19 +9,18 @@ import org.damap.base.exception.GlobalServerExceptionMapper;
 import org.damap.base.rest.dmp.domain.DatasetDO;
 import org.damap.base.rest.dmp.domain.MultipartBodyDO;
 import org.damap.base.rest.dmp.mapper.DatasetDOMapper;
-import org.damap.base.rest.fits.service.FitsService;
+import org.damap.base.rest.file_analysis.service.FileAnalysisService;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 
-/** FitsResource class. */
-@Path("/api/fits")
+@Path("/api/file-analysis")
 @Authenticated
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 @JBossLog
 @RegisterProvider(GlobalServerExceptionMapper.class)
-public class FitsResource {
+public class FileAnalysisResource {
 
-  @Inject FitsService fitsService;
+  @Inject FileAnalysisService fileAnalysisService;
 
   /**
    * examine.
@@ -33,6 +32,6 @@ public class FitsResource {
   @Path("/examine")
   public DatasetDO examine(MultipartBodyDO data) {
     log.info("Analyse file");
-    return DatasetDOMapper.mapEntityToDO(fitsService.analyseFile(data), new DatasetDO());
+    return DatasetDOMapper.mapEntityToDO(fileAnalysisService.analyseFile(data), new DatasetDO());
   }
 }

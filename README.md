@@ -30,9 +30,6 @@ in order to make this tool your own:
 2. [CRIS](https://en.wikipedia.org/wiki/Current_research_information_system) system (system managing research projects)
 3. System managing researcher data
 
-Additionally you may choose to run and integrate a [FITS](https://projects.iq.harvard.edu/fits) implementation,
-in order to provide file format recognition to the application.
-
 The actively supported database is [Postgres](https://www.postgresql.org/). Other databases could be used as well,
 but they may not be tested.
 

@@ -188,16 +188,6 @@ To create your own integration, you need to implement the following two interfac
 > [!WARNING]
 > If you do not configure a projects service explicitly, the Java CDI load order will take precedence. Make sure to add a `@Priority(1)` annotation to your custom projects service if you do not configure it explicitly.
 
-### Providing a FITS service
-
-Integrate and run a [FITS](https://projects.iq.harvard.edu/fits) service.
-You can then provide a link to your service in the config, so that damap might make use of it:
-
-```yaml
-damap:
-   fits-url: http://your.fits.service:1234
-```
-
 ### Defining Production vs. Development systems
 
 Change the **DEV** property to **PROD** in order to enable production environment specific behavior in the frontend,
