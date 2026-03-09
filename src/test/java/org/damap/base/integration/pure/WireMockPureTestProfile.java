@@ -21,25 +21,37 @@ public class WireMockPureTestProfile implements QuarkusTestProfile {
     overrides.put("quarkus.hibernate-orm.database.generation", "none");
     overrides.put("quarkus.http.test-port", "0");
 
-    overrides.put("damap.projects-service", "elsevier-pure");
-    overrides.put("damap.elsevier-pure-backend", "http");
+    overrides.put("damap.tenant-aware.project-service", "elsevier-pure");
+    overrides.put("damap.tenant-aware.elsevier-pure-backend", "http");
 
-    overrides.put("damap.elsevier-pure-endpoint-url", "http://localhost:8089");
-    overrides.put("quarkus.rest-client.elsevier-pure.url", "http://localhost:8089");
-    overrides.put("damap.elsevier-pure-api-key", "test-api-key");
-
-    overrides.put(
-        "damap.elsevier-pure-contributor-role-classifications",
-        "{\"/dk/atira/pure/member\":\"PROJECT_MEMBER\", \"/dk/atira/pure/projectlead\":\"PROJECT_LEADER\"}");
+    overrides.put("damap.tenant-aware.elsevier-pure-endpoint-url", "http://localhost:8089");
+    overrides.put("damap.tenant-aware.elsevier-pure-api-key", "test-api-key");
 
     overrides.put(
-        "damap.elsevier-pure-description-classification", "/dk/atira/pure/projectdescription");
+        "damap.tenant-aware.elsevier-pure-contributor-role-classifications[0].pure-role-uri",
+        "/dk/atira/pure/member");
     overrides.put(
-        "damap.elsevier-pure-project-lead-role-classification", "/dk/atira/pure/projectlead");
+        "damap.tenant-aware.elsevier-pure-contributor-role-classifications[0].contributor-role",
+        "PROJECT_MEMBER");
+    overrides.put(
+        "damap.tenant-aware.elsevier-pure-contributor-role-classifications[1].pure-role-uri",
+        "/dk/atira/pure/test/projectlead");
+    overrides.put(
+        "damap.tenant-aware.elsevier-pure-contributor-role-classifications[1].contributor-role",
+        "PROJECT_LEADER");
 
     overrides.put(
-        "damap.person-services",
-        "[{\"display-text\": \"Pure\", \"query-value\": \"PURE\", \"class-name\": \"org.damap.base.integration.pure.PurePersonService\"}]");
+        "damap.tenant-aware.elsevier-pure-description-classification",
+        "/dk/atira/pure/projectdescription");
+    overrides.put(
+        "damap.tenant-aware.elsevier-pure-project-lead-role-classification",
+        "/dk/atira/pure/projectlead");
+
+    overrides.put("damap.tenant-aware.person-services[0].display-text", "Pure");
+    overrides.put("damap.tenant-aware.person-services[0].query-value", "PURE");
+    overrides.put(
+        "damap.tenant-aware.person-services[0].class-name",
+        "org.damap.base.integration.pure.PurePersonService");
 
     System.out.println("WireMock PURE API configuration");
 

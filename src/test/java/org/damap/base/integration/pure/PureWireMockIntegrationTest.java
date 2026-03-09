@@ -15,7 +15,7 @@ public class PureWireMockIntegrationTest {
 
   @Inject PureAPI pureAPI;
 
-  @ConfigProperty(name = "damap.elsevier-pure-api-key")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-api-key")
   String apiKey;
 
   @Test

@@ -14,6 +14,7 @@ import jakarta.json.JsonString;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -46,7 +47,7 @@ public class SecurityService {
   @ConfigProperty(name = "damap.auth.affiliations-claim")
   String affiliationsClaim;
 
-  @ConfigProperty(name = "tenants", defaultValue = "")
+  @ConfigProperty(name = "damap.tenants.tenants", defaultValue = "")
   Optional<List<String>> tenants;
 
   @ConfigProperty(name = "invenio.shared-secret")
@@ -127,6 +128,12 @@ public class SecurityService {
     return securityIdentity.hasRole(adminRoleName);
   }
 
+  /**
+   * Returns a String representing the affiliation of the logged-in user.
+   *
+   * @return a {@link String} representing the tenants' affiliation. Returns null if no affiliation
+   *     could be read.
+   */
   public String getAffiliation() {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal) || isUserNotLoggedIn()) {
@@ -161,7 +168,7 @@ public class SecurityService {
 
     List<String> tenantList = tenants.orElse(List.of());
 
-    // check if affiliations are actual tenants and if exactly one unique affiliation  is present
+    // check if affiliations are actual tenants and if exactly one unique affiliation is present
     // currently DAMAP cannot handle multiple affiliations
     List<String> validAffiliations = affiliations.stream().filter(tenantList::contains).toList();
     if (validAffiliations.size() == 1) {

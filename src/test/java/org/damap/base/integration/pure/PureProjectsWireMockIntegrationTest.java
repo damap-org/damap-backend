@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 @TestProfile(WireMockPureTestProfile.class)
 public class PureProjectsWireMockIntegrationTest {
 
-  @ConfigProperty(name = "damap.elsevier-pure-api-key")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-api-key")
   String apiKey;
 
   private WireMockServer wireMockServer;

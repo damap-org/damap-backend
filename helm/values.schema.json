@@ -613,37 +613,39 @@
         "roleClassifications": {
           "title": "Role classifications",
           "description": "Mappings from Pure classifications to DAMAP roles. The keys should be the Pure classifications used for roles in your Pure instance, and the values should be the corresponding DAMAP role values. This is used to determine which DAMAP role to assign to a person based on their classification in Pure. The DAMAP role values should be one of the following: DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER, PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER, RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR, PROJECT_COORDINATOR, OTHER.",
-          "type": "object",
-          "patternProperties": {
-            "^/dk/atira/pure/": {
-              "type": "string",
-              "enum": [
-                "DATA_COLLECTOR",
-                "DATA_CURATOR",
-                "DATA_MANAGER",
-                "DISTRIBUTOR",
-                "EDITOR",
-                "HOSTING_INSTITUTION",
-                "PRODUCER",
-                "PROJECT_LEADER",
-                "PROJECT_MANAGER",
-                "PROJECT_MEMBER",
-                "REGISTRATION_AGENCY",
-                "REGISTRATION_AUTHORITY",
-                "RELATED_PERSON",
-                "RESEARCHER",
-                "RESEARCH_GROUP",
-                "RIGHTS_HOLDER",
-                "SPONSOR",
-                "SUPERVISOR",
-                "WORK_PACKAGE_LEADER",
-                "PRINCIPAL_INVESTIGATOR",
-                "PROJECT_COORDINATOR",
-                "OTHER"
-              ]
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["pure-role-uri", "contributor-role"],
+            "properties": {
+              "pure-role-uri": { "type": "string" },
+              "contributor-role": { "type": "string",
+                                    "enum": [
+                                      "DATA_COLLECTOR",
+                                      "DATA_CURATOR",
+                                      "DATA_MANAGER",
+                                      "DISTRIBUTOR",
+                                      "EDITOR",
+                                      "HOSTING_INSTITUTION",
+                                      "PRODUCER",
+                                      "PROJECT_LEADER",
+                                      "PROJECT_MANAGER",
+                                      "PROJECT_MEMBER",
+                                      "REGISTRATION_AGENCY",
+                                      "REGISTRATION_AUTHORITY",
+                                      "RELATED_PERSON",
+                                      "RESEARCHER",
+                                      "RESEARCH_GROUP",
+                                      "RIGHTS_HOLDER",
+                                      "SPONSOR",
+                                      "SUPERVISOR",
+                                      "WORK_PACKAGE_LEADER",
+                                      "PRINCIPAL_INVESTIGATOR",
+                                      "PROJECT_COORDINATOR",
+                                      "OTHER"
+                                    ]}
             }
           }
-
         }
       }
     }

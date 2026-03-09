@@ -35,7 +35,7 @@ class DmpServiceTest extends TestSetup {
 
   @Inject DmpService dmpService;
 
-  @ConfigProperty(name = "damap.projects-service")
+  @ConfigProperty(name = "damap.tenant-aware.project-service")
   String activeProfile;
 
   @Test

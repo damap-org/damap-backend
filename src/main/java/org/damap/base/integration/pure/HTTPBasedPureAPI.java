@@ -16,12 +16,11 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.logging.Logger;
 
 @Path("")
-@RegisterRestClient(configKey = "elsevier-pure")
-@RegisterClientHeaders(PureAuthenticationHeaderFactory.class)
 @Produces(MediaType.APPLICATION_JSON)
 @Typed(HTTPBasedPureAPI.class)
 @LookupIfProperty(name = "damap.elsevier-pure-backend", stringValue = "http")
 @Timeout(10000)
+@RegisterClientHeaders(PureAuthenticationHeaderFactory.class)
 interface HTTPBasedPureAPI extends PureAPI {
 
   Logger log = Logger.getLogger(HTTPBasedPureAPI.class);

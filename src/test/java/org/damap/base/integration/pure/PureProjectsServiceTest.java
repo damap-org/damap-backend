@@ -1,7 +1,11 @@
 package org.damap.base.integration.pure;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.io.Resources;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -10,36 +14,64 @@ import java.util.*;
 import lombok.SneakyThrows;
 import org.damap.base.enums.EContributorRole;
 import org.damap.base.enums.EIdentifierType;
-import org.damap.base.integration.ProjectServiceProvider;
 import org.damap.base.rest.ProjectService;
+import org.damap.base.rest.config.domain.DamapTenantAwareConfig;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestProfile(PureTestProfile.class)
 public class PureProjectsServiceTest {
-  private ProjectService createPersonsService() {
-    FileBasedPureAPI api = new FileBasedPureAPI();
-    api.personsFile = Resources.getResource("org/damap/base/integration/pure/persons.json");
-    api.projectsFile = Resources.getResource("org/damap/base/integration/pure/projects.json");
 
-    PureProjectService projectService = new PureProjectService();
-    projectService.contributorRoleMapping = new RoleClassificationMappingConfiguration();
-    HashMap<String, EContributorRole> roleMappings = new HashMap<>();
-    roleMappings.put("/dk/atira/pure/member", EContributorRole.PROJECT_MEMBER);
-    roleMappings.put("/dk/atira/pure/test/projectlead", EContributorRole.PROJECT_LEADER);
-    projectService.contributorRoleMapping.configs = roleMappings;
-    projectService.projectLeadRoleClassification = "/dk/atira/pure/test/projectlead";
-    projectService.descriptionClassification = "/dk/atira/pure/projectdescription";
-    projectService.pureAPI = api;
+  @InjectMock TenantConfigResolver tenantConfigResolver;
 
-    List<ProjectServiceProvider> services = new ArrayList<>();
-    services.add(projectService);
-    this.projectService = new ProjectService(services, "elsevier-pure");
-    return this.projectService;
+  @Inject PureAPI pureAPI;
+
+  @Inject ProjectService projectService;
+
+  @BeforeEach
+  public void setup() {
+
+    DamapTenantAwareConfig tenantAwareConfig = mock(DamapTenantAwareConfig.class);
+
+    DamapTenantAwareConfig.PureRoleClassification m1 =
+        mock(DamapTenantAwareConfig.PureRoleClassification.class);
+    when(m1.pureRoleUri()).thenReturn("/dk/atira/pure/member");
+    when(m1.contributorRole()).thenReturn(EContributorRole.PROJECT_MEMBER);
+
+    DamapTenantAwareConfig.PureRoleClassification m2 =
+        mock(DamapTenantAwareConfig.PureRoleClassification.class);
+    when(m2.pureRoleUri()).thenReturn("/dk/atira/pure/test/projectlead");
+    when(m2.contributorRole()).thenReturn(EContributorRole.PROJECT_LEADER);
+
+    when(tenantAwareConfig.elsevierPureContributorRoleClassifications())
+        .thenReturn(List.of(m1, m2));
+
+    when(tenantAwareConfig.elsevierPureProjectLeadRoleClassification())
+        .thenReturn("/dk/atira/pure/test/projectlead");
+
+    when(tenantAwareConfig.elsevierPureDescriptionClassification())
+        .thenReturn("/dk/atira/pure/projectdescription");
+
+    try {
+      when(tenantAwareConfig.elsevierPurePersonsFile())
+          .thenReturn(Resources.getResource("org/damap/base/integration/pure/persons.json"));
+      when(tenantAwareConfig.elsevierPureProjectsFile())
+          .thenReturn(Resources.getResource("org/damap/base/integration/pure/projects.json"));
+    } catch (Exception e) {
+      throw new RuntimeException("File URLs are not valid");
+    }
+
+    when(tenantAwareConfig.projectService()).thenReturn("elsevier-pure");
+
+    when(tenantAwareConfig.elsevierPureBackend()).thenReturn("file");
+
+    when(tenantConfigResolver.getTenantAwareConfig()).thenReturn(tenantAwareConfig);
   }
 
   @SneakyThrows
@@ -110,7 +142,7 @@ public class PureProjectsServiceTest {
 
   @Test
   public void testRead() {
-    ProjectService svc = createPersonsService();
+    ProjectService svc = this.projectService;
 
     ProjectDO expected1 = getFirstProject();
     Assertions.assertEquals(expected1, svc.read(expected1.getUniversityId()));
@@ -123,7 +155,7 @@ public class PureProjectsServiceTest {
 
   @Test
   public void testGetProjectStaff() {
-    ProjectService svc = createPersonsService();
+    ProjectService svc = this.projectService;
 
     ProjectDO project1 = getFirstProject();
     ContributorDO expectedContributor1 = getFirstContributor();
@@ -142,7 +174,7 @@ public class PureProjectsServiceTest {
 
   @Test
   public void testGetProjectLead() {
-    ProjectService svc = createPersonsService();
+    ProjectService svc = this.projectService;
 
     ProjectDO project1 = getFirstProject();
     ContributorDO expectedContributor1 = getFirstContributor();
@@ -154,14 +186,12 @@ public class PureProjectsServiceTest {
     Assertions.assertNull(svc.getProjectLeader("asdf"));
   }
 
-  @Inject PureAPI pureAPI;
-
-  @Inject ProjectService projectService;
+  @Inject PureAPIFactory pureAPIFactory;
 
   @Test
   public void testWiring() {
     Assertions.assertNotNull(pureAPI);
-    Assertions.assertTrue(pureAPI instanceof FileBasedPureAPI);
+    Assertions.assertTrue(pureAPIFactory.create() instanceof FileBasedPureAPI);
 
     Assertions.assertNotNull(projectService);
 

@@ -8,7 +8,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import java.net.URI;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,9 +20,6 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestProfile(WireMockPureTestProfile.class)
 public class PurePersonsWireMockIntegrationTest {
-
-  @ConfigProperty(name = "damap.elsevier-pure-api-key")
-  String apiKey;
 
   private WireMockServer wireMockServer;
   private HTTPBasedPureAPI pureAPI;

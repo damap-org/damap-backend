@@ -17,14 +17,11 @@ public class PureServicesIntegrationTest {
 
   @Inject PureAPI pureAPI;
 
-  @ConfigProperty(name = "damap.elsevier-pure-endpoint-url")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-endpoint-url")
   String pureEndpointUrl;
 
-  @ConfigProperty(name = "damap.elsevier-pure-backend", defaultValue = "http")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-backend", defaultValue = "http")
   String pureBackend;
-
-  @ConfigProperty(name = "quarkus.rest-client.elsevier-pure.url")
-  String restClientUrl;
 
   // Example test UUIDs - replace these with actual project UUIDs from your PURE instance
   private static final String[] TEST_PROJECT_UUIDS = {
@@ -45,7 +42,6 @@ public class PureServicesIntegrationTest {
     System.out.println("Profile: " + getConfigProfile());
     System.out.println("Backend Type: " + pureBackend);
     System.out.println("Endpoint URL: " + pureEndpointUrl);
-    System.out.println("REST Client URL: " + restClientUrl);
 
     Assertions.assertNotNull(pureEndpointUrl, "PURE endpoint URL should be configured");
     Assertions.assertTrue(

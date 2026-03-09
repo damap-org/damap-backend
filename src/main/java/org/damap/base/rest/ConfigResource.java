@@ -15,7 +15,7 @@ import org.damap.base.domain.ExportTemplate;
 import org.damap.base.domain.Image;
 import org.damap.base.rest.admin.mapper.ExportTemplateDOMapper;
 import org.damap.base.rest.config.domain.ConfigDO;
-import org.damap.base.rest.config.domain.PersonServiceConfigurations;
+import org.damap.base.rest.config.domain.*;
 import org.damap.base.rest.theme.service.ColorThemeService;
 import org.damap.base.rest.theme.service.ImageThemeService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -26,6 +26,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @PermitAll
 @JBossLog
 public class ConfigResource {
+
   @ConfigProperty(name = "quarkus.oidc.token.issuer")
   String issuer;
 
@@ -59,23 +60,14 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.env")
   String env;
 
-  @ConfigProperty(name = "damap.person-services")
-  PersonServiceConfigurations personServiceConfigurations;
-
   @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
-
-  @ConfigProperty(name = "damap.fields.ethical-report-enabled")
-  boolean ethicalReportEnabled;
-
-  @ConfigProperty(name = "damap.title", defaultValue = "DAMAP Tool")
-  String appTitle;
 
   @Inject ColorThemeService colorThemeService;
 
   @Inject ImageThemeService imageThemeService;
 
-  @Inject ExportTemplateService exportTemplateService;
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   /**
    * config.
@@ -97,10 +89,16 @@ public class ConfigResource {
     configDO.setAdminRoleName(adminRoleName);
     configDO.setResponseType("code"); // hardcoded since DAMAP only supports this flow
     configDO.setEnv(env);
-    configDO.setAppTitle(appTitle);
-    configDO.setPersonSearchServiceConfigs(personServiceConfigurations.getConfigs());
+    DamapTenantAwareConfig tenantAwareConfig = tenantConfigResolver.getTenantAwareConfig();
+    configDO.setAppTitle(tenantAwareConfig.title());
+    // The ServiceConfig runtime interface proxy cannot be marshalled and sent to the frontend, so
+    // we need a DO
+    List<ServiceConfigDO> serviceConfigDOS =
+        tenantAwareConfig.personServices().stream().map(ServiceConfigDO::new).toList();
+    configDO.setPersonSearchServiceConfigs(serviceConfigDOS);
+    configDO.setProjectSearchServiceConfig(tenantAwareConfig.projectService());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
-    configDO.setEthicalReportEnabled(ethicalReportEnabled);
+    configDO.setEthicalReportEnabled(tenantAwareConfig.fields().ethicalReportEnabled());
 
     ColorTheme colorTheme = colorThemeService.getTheme();
     configDO.setColorTheme(colorTheme);
@@ -111,6 +109,7 @@ public class ConfigResource {
     List<ExportTemplate> templateEntities = ExportTemplate.listAll();
     configDO.setTemplates(ExportTemplateDOMapper.mapEntityListToDOList(templateEntities));
 
+    configDO.setMultitenancyEnabled(!tenantConfigResolver.isMultitenancyDisabled());
     return configDO;
   }
 

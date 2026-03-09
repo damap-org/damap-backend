@@ -30,7 +30,7 @@ public class TestProfiles {
     @Override
     public Map<String, String> getConfigOverrides() {
       Map<String, String> overrides = new HashMap<>();
-      overrides.put("damap.projects-service", "default");
+      overrides.put("damap.tenant-aware.project-service", "default");
       return overrides;
     }
 

@@ -24,11 +24,14 @@ public class ConfigDO {
   private String emailClaim;
   private String adminRoleName;
   private String env;
-  private List<ServiceConfig> personSearchServiceConfigs;
+  private List<ServiceConfigDO> personSearchServiceConfigs;
+  private String projectSearchServiceConfig;
+  private boolean fitsServiceAvailable;
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
   private String appTitle;
   private ColorTheme colorTheme;
   private List<Image> images;
   private List<ExportTemplateDO> templates;
+  private boolean multitenancyEnabled;
 }

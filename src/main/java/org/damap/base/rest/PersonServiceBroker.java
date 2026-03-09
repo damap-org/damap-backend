@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.integration.PersonService;
-import org.damap.base.rest.config.domain.ServiceConfig;
+import org.damap.base.rest.config.domain.ServiceConfigDO;
 
 /** PersonServiceBroker class. */
 @JBossLog
@@ -25,7 +25,7 @@ public class PersonServiceBroker {
    */
   @Inject
   public PersonServiceBroker(ConfigResource config, @All List<PersonService> availableServices) {
-    List<ServiceConfig> configuredServices = config.personServiceConfigurations.getConfigs();
+    List<ServiceConfigDO> configuredServices = config.config().getPersonSearchServiceConfigs();
 
     configuredServices.forEach(
         serviceConfig -> {
