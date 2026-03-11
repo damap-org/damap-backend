@@ -45,10 +45,28 @@ public class TranslationRepo implements PanacheRepository<Translation> {
   }
 
   /**
+   * findAllLanguages.
+   *
+   * <p>Returns all distinct language codes present in the translation table, ordered
+   * alphabetically. Runs the aggregation at the database level.
+   *
+   * @return a {@link java.util.List} of distinct language code strings
+   */
+  public List<String> findAllLanguages() {
+    return getEntityManager()
+        .createQuery(
+            "SELECT DISTINCT t.language FROM Translation t ORDER BY t.language", String.class)
+        .getResultList();
+  }
+
+  /**
    * deleteByLanguage.
    *
-   * @param language a {@link java.lang.String} object
-   * @return number of deleted entities
+   * <p>WARNING: This is a destructive operation. It permanently deletes ALL translation entries for
+   * the given language from the database and cannot be undone.
+   *
+   * @param language a {@link java.lang.String} language code
+   * @return the number of deleted translation entities
    */
   @Transactional
   public long deleteByLanguage(String language) {

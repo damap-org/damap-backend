@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 25
+      id: 28
       author: Translation Management System
       comment: Create translation table for backend translation management
       changes:

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 /** TranslationResource class. */
 @Path("/api/languages")
 @JBossLog
+@Produces(MediaType.APPLICATION_JSON)
 public class TranslationResource {
 
   @Inject TranslationService translationService;
@@ -64,5 +66,5 @@ public class TranslationResource {
 
   private record ActivateLanguageRequest(@NotNull Boolean active) {}
 
-  public record PatchTranslationRequest(@NotNull String value, @NotNull Boolean active) {}
+  public record PatchTranslationRequest(String value, @NotNull Boolean active) {}
 }

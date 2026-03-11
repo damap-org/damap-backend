@@ -61,7 +61,7 @@ public class TranslationService {
    */
   public List<String> getAllLanguages() {
     log.infov("Getting all languages");
-    return translationRepo.findAll().stream().map(Translation::getLanguage).distinct().toList();
+    return translationRepo.findAllLanguages();
   }
 
   /**
@@ -129,7 +129,15 @@ public class TranslationService {
   /**
    * deleteLanguage.
    *
+   * <p>WARNING: This is a destructive operation. All translations for the given language will be
+   * permanently removed from the database.
+   *
+   * <p>Deleting the English ("en") language is not allowed and will throw a {@link
+   * jakarta.ws.rs.BadRequestException}.
+   *
    * @param language a {@link java.lang.String} language code
+   * @throws jakarta.ws.rs.BadRequestException if the language is "en"
+   * @throws jakarta.ws.rs.NotFoundException if no translations exist for the given language
    */
   @Transactional
   public void deleteLanguage(String language) {
