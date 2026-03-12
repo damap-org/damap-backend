@@ -35,6 +35,8 @@ services:
       # --- Settings needed for DAMAP to use the Person and Projects services --- #
       DAMAP_PERSON_SERVICES: ${DAMAP_PERSON_SERVICES:-[{"display-text":"Pure","query-value":"PURE","class-name":"org.damap.base.integration.pure.PurePersonService"},{"display-text":"ORCID","query-value":"ORCID","class-name":"org.damap.base.integration.orcid.ORCIDPersonServiceImpl"}]}
       DAMAP_PROJECTS_SERVICE: ${DAMAP_PROJECTS_SERVICE:-elsevier-pure}
+    volumes:
+      - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     expose:
       - 8080
     configs:

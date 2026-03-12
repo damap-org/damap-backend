@@ -10,7 +10,7 @@ services:
   backend:
     image: ghcr.io/damap-org/damap-backend:next
     build:
-      context: ../
+      context: ../../
     restart: unless-stopped
     environment:
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
@@ -19,7 +19,7 @@ services:
       QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
       QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
-      - ./tenants.yaml:/opt/damap/tenants.yaml:ro
+      - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
       db:
         condition: service_started
