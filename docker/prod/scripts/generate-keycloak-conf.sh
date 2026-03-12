@@ -8,9 +8,13 @@ set -e
 CONF=/etc/nginx/conf.d/keycloak.conf
 
 if getent hosts keycloak >/dev/null 2>&1; then
-    cat > "$CONF" <<EOF
+    cat > "$CONF" <<'EOF'
 location ~ ^/(admin|realms|resources)/ {
     proxy_pass http://keycloak:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 }
 EOF
 else
