@@ -1,5 +1,7 @@
+name: damap-dev
+
 include:
-  - docker-compose.dev.common.yaml
+  - docker-compose.common.yaml
 
 services:
   backend:
@@ -7,7 +9,7 @@ services:
     # just pull the latest container image.
     image: ghcr.io/damap-org/damap-backend:next
     build:
-      context: ../
+      context: ../../
     restart: unless-stopped
     environment:
       QUARKUS_PROFILE: ${QUARKUS_PROFILE}
@@ -18,11 +20,16 @@ services:
       QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
       QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
-      - ./tenants.yaml:/opt/damap/tenants.yaml:ro
+      - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
-      - damap-db
-      - keycloak
       - api-mock
+      - db
+      - keycloak
+      - fits
+    networks:
+      default:
+        aliases:
+          - damap-be
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
       interval: 30s
@@ -33,13 +40,17 @@ services:
     image: gvenzl/oracle-free:23-slim
     restart: unless-stopped
     environment:
-      ORACLE_PASSWORD: pw4damap
-      APP_USER: damap
-      APP_USER_PASSWORD: pw4damap
+      ORACLE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      APP_USER: ${QUARKUS_DATASOURCE_USERNAME:-damap}
+      APP_USER_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     ports:
       - "8088:1521"
     volumes:
       - oracle-data:/opt/oracle/oradata
+    networks:
+      default:
+        aliases:
+          - damap-db
     healthcheck:
       test: [ "CMD-SHELL", "healthcheck.sh" ]
       interval: 30s
