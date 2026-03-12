@@ -1,5 +1,5 @@
-include:
-  - docker-compose.keycloak.config.yaml
+# This file defines auxiliary services for the production deployment of DAMAP.
+# It is included in the main docker-compose.yaml file and should not be used on its own.
 
 services:
   keycloak:
