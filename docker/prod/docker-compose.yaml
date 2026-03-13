@@ -51,6 +51,8 @@ services:
       keycloak:
         condition: service_healthy
         required: false # We don't require this since the DB only exists when the with_keycloak profile is enabled.
+      gotenberg:
+        condition: service_started
     networks:
       damap-internal:
         aliases:
@@ -103,7 +105,6 @@ services:
       timeout: 15s
       retries: 5
 
-
   proxy:
     image: nginx:1
     restart: unless-stopped
@@ -133,6 +134,15 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      damap-internal:
 
 secrets:
   certificate:
