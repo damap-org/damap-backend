@@ -13,7 +13,7 @@ services:
       context: ../../
     restart: unless-stopped
     environment:
-      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE}
+      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
       QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://damap-db:5432/damap"
       QUARKUS_DATASOURCE_DB_KIND: "postgresql"
       QUARKUS_DATASOURCE_USERNAME: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
