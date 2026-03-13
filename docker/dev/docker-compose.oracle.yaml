@@ -12,13 +12,13 @@ services:
       context: ../../
     restart: unless-stopped
     environment:
-      QUARKUS_PROFILE: ${QUARKUS_PROFILE}
+      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE}
       QUARKUS_DATASOURCE_JDBC_URL: "jdbc:oracle:thin:@damap-db:1521/FREEPDB1"
       QUARKUS_HIBERNATE_ORM_DIALECT: "org.hibernate.dialect.OracleDialect"
       QUARKUS_DATASOURCE_JDBC_DRIVER: "oracle.jdbc.driver.OracleDriver"
       QUARKUS_DATASOURCE_DB_KIND: "oracle"
-      QUARKUS_DATASOURCE_USERNAME: ${QUARKUS_DATASOURCE_USERNAME:-damap}
-      QUARKUS_DATASOURCE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      QUARKUS_DATASOURCE_USERNAME: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
+      QUARKUS_DATASOURCE_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     volumes:
       - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
@@ -40,9 +40,9 @@ services:
     image: gvenzl/oracle-free:23-slim
     restart: unless-stopped
     environment:
-      ORACLE_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
-      APP_USER: ${QUARKUS_DATASOURCE_USERNAME:-damap}
-      APP_USER_PASSWORD: ${QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      ORACLE_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      APP_USER: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
+      APP_USER_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
     ports:
       - "8088:1521"
     volumes:
