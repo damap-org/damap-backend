@@ -13,21 +13,32 @@ services:
       context: ../../
     restart: unless-stopped
     environment:
-      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
-      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://damap-db:5432/damap"
-      QUARKUS_DATASOURCE_DB_KIND: "postgresql"
+      # Optional database configuration values, can be overridden by environment variables.
+      # This is useful in case the database host/port/name are different from the defaults.
+      # Prefixed with DAMAP_ (not Quarkus-specific), used to build the full JDBC URL.
+      DAMAP_DB_HOST: ${DAMAP_DB_HOST:-}
+      DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
+      DAMAP_DB_NAME: ${DAMAP_DB_NAME:-}
+      QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_QUARKUS_DATASOURCE_DB_KIND:-postgresql}
       QUARKUS_DATASOURCE_USERNAME: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
       QUARKUS_DATASOURCE_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
     volumes:
       - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     depends_on:
-      db:
+      postgres-db:
         condition: service_started
+        required: false
+      oracle-db:
+        condition: service_started
+        required: false
       keycloak:
         condition: service_healthy
       api-mock:
         condition: service_started
       fits:
+        condition: service_started
+      gotenberg:
         condition: service_started
     networks:
       default:
@@ -39,10 +50,13 @@ services:
       timeout: 15s
       retries: 5
 
-  db:
+  postgres-db:
     image: postgres:16
     pull_policy: always
     restart: unless-stopped
+    profiles:
+      - "" # default profile, active when no profile is specified
+      - with_postgres
     environment:
       POSTGRES_USER: damap
       POSTGRES_PASSWORD: pw4damap
@@ -51,15 +65,32 @@ services:
       - "8088:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
-    networks:
-      default:
-        aliases:
-          - damap-db
     healthcheck:
       test: [ "CMD-SHELL", "sh -c 'pg_isready -U damap -d damap'" ]
       interval: 30s
       timeout: 15s
       retries: 5
 
+  oracle-db:
+    image: gvenzl/oracle-free:23-slim
+    pull_policy: always
+    restart: unless-stopped
+    profiles:
+      - with_oracle
+    environment:
+      ORACLE_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      APP_USER: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
+      APP_USER_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+    ports:
+      - "8088:1521"
+    volumes:
+      - ora-data:/opt/oracle/oradata
+    healthcheck:
+      test: [ "CMD-SHELL", "healthcheck.sh" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
 volumes:
   pg-data:
+  ora-data:

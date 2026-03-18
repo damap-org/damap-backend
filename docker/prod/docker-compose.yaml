@@ -15,6 +15,12 @@ services:
       DAMAP_ENV: PROD
       DAMAP_TITLE: ${DAMAP_TITLE:-DAMAP Tool}
       # --- Database settings --- #
+      # Optional database configuration values, can be overridden by environment variables.
+      # This is useful in case the database host/port/name are different from the defaults.
+      # Prefixed with DAMAP_ (not Quarkus-specific), used to build the full JDBC URL.
+      DAMAP_DB_HOST: ${DAMAP_DB_HOST:-}
+      DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
+      DAMAP_DB_NAME: ${DAMAP_DB_NAME:-}
       QUARKUS_DATASOURCE_JDBC_URL: "${DAMAP_QUARKUS_DATASOURCE_JDBC_URL:-jdbc:postgresql://${DAMAP_DATABASE_HOST:-damap-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}}"
       QUARKUS_DATASOURCE_JDBC_DRIVER: ${DAMAP_QUARKUS_DATASOURCE_JDBC_DRIVER:-org.postgresql.Driver}
       QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_QUARKUS_DATASOURCE_DB_KIND:-postgresql}
