@@ -9,7 +9,7 @@ include:
 
 services:
   backend:
-    image: ghcr.io/damap-org/damap-backend:next
+    image: ghcr.io/damap-org/damap-backend:${DAMAP_VERSION:-next}
     restart: unless-stopped
     environment:
       DAMAP_ENV: PROD
@@ -21,11 +21,9 @@ services:
       DAMAP_DB_HOST: ${DAMAP_DB_HOST:-}
       DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
       DAMAP_DB_NAME: ${DAMAP_DB_NAME:-}
-      QUARKUS_DATASOURCE_JDBC_URL: "${DAMAP_QUARKUS_DATASOURCE_JDBC_URL:-jdbc:postgresql://${DAMAP_DATABASE_HOST:-damap-db}:5432/${DAMAP_DATABASE_NAME?The DAMAP database name is required}}"
-      QUARKUS_DATASOURCE_JDBC_DRIVER: ${DAMAP_QUARKUS_DATASOURCE_JDBC_DRIVER:-org.postgresql.Driver}
       QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_QUARKUS_DATASOURCE_DB_KIND:-postgresql}
-      QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}"
-      QUARKUS_DATASOURCE_JDBC_PASSWORD: "${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}"
+      QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
+      QUARKUS_DATASOURCE_JDBC_PASSWORD: "${DAMAP_DB_PASSWORD?The DAMAP database password is required}"
       # --- OIDC / Auth settings --- #
       QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
       QUARKUS_OIDC_AUTH_SERVER_URL: "${DAMAP_QUARKUS_OIDC_AUTH_SERVER_URL?The OIDC AUTH SERVER URL is required}"
@@ -78,9 +76,9 @@ services:
       - with_db
     environment:
       PGDATA: /var/lib/postgresql/data/damap-db
-      POSTGRES_USER: ${DAMAP_DATABASE_USERNAME?The DAMAP datasource username is required}
-      POSTGRES_PASSWORD: ${DAMAP_DATABASE_PASSWORD?The DAMAP datasource password is required}
-      POSTGRES_DB: ${DAMAP_DATABASE_NAME?The DAMAP database name is required}
+      POSTGRES_USER: ${DAMAP_DB_USERNAME?The DAMAP database username is required}
+      POSTGRES_PASSWORD: ${DAMAP_DB_PASSWORD?The DAMAP database password is required}
+      POSTGRES_DB: ${DAMAP_DB_NAME?The DAMAP database name is required}
     volumes:
       - ${DAMAP_DATABASE_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
     networks:
@@ -95,7 +93,7 @@ services:
       retries: 5
 
   frontend:
-    image: ghcr.io/damap-org/damap-frontend:next
+    image: ghcr.io/damap-org/damap-frontend:${DAMAP_VERSION:-next}
     restart: unless-stopped
     expose:
       - 8080
