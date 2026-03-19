@@ -51,7 +51,7 @@ services:
       - source: pure-projects-data
         target: ${DAMAP_ELSEVIER_PURE_PROJECTS_FILE:-/opt/damap/config/pure-projects-data.json}
     depends_on:
-      db:
+      postgres-db:
         condition: service_healthy
         required: false # We don't require this since the DB only exists when the with_db profile is enabled.
       keycloak:
@@ -70,7 +70,7 @@ services:
       timeout: 15s
       retries: 5
 
-  db:
+  postgres-db:
     image: postgres:16
     pull_policy: always
     restart: unless-stopped
