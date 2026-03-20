@@ -1,36 +1,4 @@
 services:
-  frontend:
-    # Since DAMAP containers are publicly available on GitHub packages one can
-    # just pull the latest container image.
-    image: ghcr.io/damap-org/damap-frontend:next
-    pull_policy: always
-    restart: unless-stopped
-    depends_on:
-      - backend
-    networks:
-      default:
-        aliases:
-          - damap-fe
-    # Assumed to be checked-out beside the 'damap-backend' repository.
-    # If you want to test changes to the frontend, you can build the image
-    # locally by commenting the 'image' line above.
-    build:
-      context: ../../damap-frontend
-
-  proxy:
-    # Since several components share the same ports and address, this docker
-    # configuration needs a proxy to manage the connections between them,
-    # as well as access from the outside.
-    image: nginx:1
-    restart: unless-stopped
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf
-    ports:
-      - "8085:80"
-    depends_on:
-      - frontend
-      - backend
-
   keycloak:
     image: quay.io/keycloak/keycloak:26.3
     pull_policy: always
@@ -54,7 +22,7 @@ services:
     ports:
       - "8087:8080"
     volumes:
-      - ./sample-damap-realm-export.json:/opt/keycloak/data/import/damap-realm-import.json
+      - ./keycloak/sample-damap-realm-export.json:/opt/keycloak/data/import/damap-realm-import.json
     depends_on:
       - keycloak-db
     healthcheck:
@@ -90,8 +58,8 @@ services:
     restart: unless-stopped
     command: db.json --routes routes.json
     volumes:
-      - ./api-mock/data/db.json:/data/db.json
-      - ./api-mock/data/routes.json:/data/routes.json
+      - ./api-mock/db.json:/data/db.json
+      - ./api-mock/routes.json:/data/routes.json
     ports:
       - "8091:80"
     networks:

@@ -4,11 +4,13 @@
 name: damap-dev
 
 include:
-  - docker-compose.common.yaml
+  - docker-compose.auxiliary.yaml
 
 services:
   backend:
     image: ghcr.io/damap-org/damap-backend:next
+    # If testing a local backend build, Compose will build the image from this context 
+    # and tag it as ghcr.io/damap-org/damap-backend:next, instead of pulling it.
     build:
       context: ../../
     restart: unless-stopped
@@ -50,6 +52,33 @@ services:
       timeout: 15s
       retries: 5
 
+  frontend:
+    image: ghcr.io/damap-org/damap-frontend:next
+    # If testing a local frontend build, Compose will build the image from this context 
+    # and tag it as ghcr.io/damap-org/damap-frontend:next, instead of pulling it.
+    # This assumes that the frontend is checked out alogside the backend.
+    build:
+      context: ../../damap-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      default:
+        aliases:
+          - damap-fe
+
+  nginx:
+    image: nginx:1
+    pull_policy: always
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8085:80"
+    depends_on:
+      - frontend
+      - backend
+
   postgres-db:
     image: postgres:16
     pull_policy: always
@@ -58,15 +87,15 @@ services:
       - "" # default profile, active when no profile is specified
       - with_postgres
     environment:
-      POSTGRES_USER: damap
-      POSTGRES_PASSWORD: pw4damap
-      POSTGRES_DB: damap
+      POSTGRES_USER: ${DAMAP_DB_USERNAME:-damap}
+      POSTGRES_PASSWORD: ${DAMAP_DB_PASSWORD:-pw4damap}
+      POSTGRES_DB: ${DAMAP_DB_NAME:-damap}
     ports:
       - "8088:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U damap -d damap'" ]
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${DAMAP_DB_USERNAME:-damap} -d ${DAMAP_DB_NAME:-damap}'" ]
       interval: 30s
       timeout: 15s
       retries: 5
@@ -78,9 +107,9 @@ services:
     profiles:
       - with_oracle
     environment:
-      ORACLE_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
-      APP_USER: ${DAMAP_QUARKUS_DATASOURCE_USERNAME:-damap}
-      APP_USER_PASSWORD: ${DAMAP_QUARKUS_DATASOURCE_PASSWORD:-pw4damap}
+      APP_USER: ${DAMAP_DB_USERNAME:-damap}
+      APP_USER_PASSWORD: ${DAMAP_DB_PASSWORD:-pw4damap}
+      ORACLE_PASSWORD: ${DAMAP_DB_PASSWORD:-pw4damap}
     ports:
       - "8088:1521"
     volumes:
