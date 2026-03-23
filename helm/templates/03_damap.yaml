@@ -77,7 +77,7 @@ spec:
         - name: damap-backend
 
           {{- if and .Values.openshift (ne .Values.customBuild.backend.name "") }}
-          image: "image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref }}"
+          image: "image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref | replace "/" "-" | lower }}"
           {{- else }}
           image: "ghcr.io/damap-org/damap-backend:{{ .Values.damap.backendVersion }}"
           {{- end }}
@@ -345,7 +345,7 @@ spec:
       containers:
         - name: damap-frontend
           {{- if and .Values.openshift (ne .Values.customBuild.frontend.name "") }}
-          image: "image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref }}"
+          image: "image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref | replace "/" "-" | lower }}"
           {{- else }}
           image: "ghcr.io/damap-org/damap-frontend:{{ .Values.damap.frontendVersion }}"
           {{- end }}

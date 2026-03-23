@@ -21,12 +21,12 @@ spec:
       ref: "{{ .Values.customBuild.backend.ref }}"
     contextDir: /
   strategy:
-    type: docker
+    type: Docker
     dockerStrategy: {}
   output:
     to:
       kind: ImageStreamTag
-      name: "{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref }}"
+      name: "{{ .Values.customBuild.backend.name }}:{{ .Values.customBuild.backend.ref | replace "/" "-" | lower }}"
   resources:
     limits:
       memory: 2G
@@ -63,7 +63,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: "{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref }}"
+      name: "{{ .Values.customBuild.frontend.name }}:{{ .Values.customBuild.frontend.ref | replace "/" "-" | lower }}"
   resources:
     limits:
       memory: 2G
