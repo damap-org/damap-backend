@@ -18,7 +18,7 @@ public class CustomTenantResolver implements TenantResolver {
 
   private static final Logger LOG = Logger.getLogger(CustomTenantResolver.class);
 
-  @ConfigProperty(name = "damap.tenants.tenants", defaultValue = "default")
+  @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "default")
   List<String> tenantIds;
 
   @Inject SecurityService securityService;

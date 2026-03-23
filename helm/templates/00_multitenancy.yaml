@@ -11,7 +11,7 @@ stringData:
   tenants.yaml: |-
     damap:
       tenants:
-        tenants: {{ .Values.damap.multitenancy.tenants | toJson }}
+        tenant-list: {{ .Values.damap.multitenancy.tenants | toJson }}
     "%multitenant":
       quarkus:
         datasource:

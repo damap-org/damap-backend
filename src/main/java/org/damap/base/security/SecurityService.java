@@ -47,7 +47,7 @@ public class SecurityService {
   @ConfigProperty(name = "damap.auth.affiliations-claim")
   String affiliationsClaim;
 
-  @ConfigProperty(name = "damap.tenants.tenants", defaultValue = "")
+  @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "")
   Optional<List<String>> tenants;
 
   @ConfigProperty(name = "invenio.shared-secret")
