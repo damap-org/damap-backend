@@ -3,7 +3,7 @@
 This Helm chart deploys [DAMAP](https://damap.org) on Kubernetes or OpenShift cluster. Some features, such as auto-creating a custom build from Git, are only supported on OpenShift.
 
 > [!WARNING]
-> This chart is currently marked as a pre-release and targets DAMAP 5.0.0-rc1. It is intended for evaluation and testing.
+> This chart is currently marked as a pre-release and targets DAMAP 5.0.0-rc.1. It is intended for evaluation and testing.
 
 
 ## Pre-requisites
@@ -26,13 +26,13 @@ This chart is published as an OCI artifact.
 Install:
 
 ```bash
-helm install damap oci://ghcr.io/damap-org/damap --version 0.1.0-rc1
+helm install damap oci://ghcr.io/damap-org/damap-chart --version 0.1.0-rc.1
 ```
 
 Upgrade:
 
 ```bash
-helm upgrade damap oci://ghcr.io/damap-org/damap --version 0.1.0-rc1
+helm upgrade damap oci://ghcr.io/damap-org/damap-chart --version 0.1.0-rc.1
 ```
 
 ## Configuration
@@ -194,7 +194,7 @@ spec:
   source:
     repoURL: oci://ghcr.io/damap-org
     chart: damap
-    targetRevision: 0.1.0-rc1
+    targetRevision: 0.1.0-rc.1
     helm:
       valueFiles:
         - values.yaml
@@ -236,8 +236,8 @@ helm install --values values.yaml <RELEASE_NAME> ./  # Install the chart.
 
 ## Versioning Strategy
 
-Chart version tracks Helm lifecycle (e.g. `0.1.0-rc1`)
+Chart version tracks Helm lifecycle (e.g. `0.1.0-rc.1`)
 
-appVersion tracks DAMAP version (e.g. `5.0.0-rc1`)
+appVersion tracks DAMAP version (e.g. `5.0.0-rc.1`)
 
 Prereleases are explicitly marked in Artifact Hub

@@ -14,7 +14,7 @@ customBuild:
     repo: https://github.com/damap-org/damap-frontend
 
 damap:
-  backendVersion: 5.0.0-rc1
+  backendVersion: 5.0.0-rc.1
   customDomain: false
   dbName: damap
   # NOTE: When db_password is empty, Helm will try to reuse the existing Secret if present.
@@ -23,7 +23,7 @@ damap:
   # This mismatch can cause DB/service failures. Use a fixed password or pre-created Secret to ensure stability.
   dbPassword: "damap_pass" # Empty defaults to auto-generate.
   dbUser: damap
-  frontendVersion: 5.0.0-rc1
+  frontendVersion: 5.0.0-rc.1
   # Host folder to persist data for demo / small scale deployments.
   # NOTE: Do not use for production!
   hostFolder: /tmp/damap

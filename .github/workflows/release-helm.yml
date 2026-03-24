@@ -3,7 +3,7 @@
 # - Triggered only when `helm/Chart.yaml` changes
 # - Chart versions must be bumped manually in Chart.yaml
 
-name: release helm
+name: Release Helm Chart
 
 env:
   REGISTRY: ghcr.io
@@ -11,7 +11,7 @@ env:
 on:
   push:
     branches:
-      - next
+      - st/release-helm
     paths:
       - "helm/Chart.yaml"
   workflow_dispatch:
