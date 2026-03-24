@@ -14,11 +14,12 @@ jobs:
   # This job builds the Docker backend image and runs a health check to ensure it is up and running.
   # It uses 2 databases: Oracle and PostgreSQL.
   test-docker:
+    name: test-docker (${{ matrix.database }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - database: postgresql
+          - database: postgres
             profile: with_postgres
             db_kind: postgresql
 
@@ -62,7 +63,7 @@ jobs:
   # The Oracle and PostgreSQL databases are started using Docker Compose profiles.
   # The H2 database is used by default and does not require a Docker container.
   test-maven:
-    name: test-maven
+    name: test-maven (${{ matrix.database }})
     runs-on: ubuntu-latest
     needs: test-docker
     strategy:
@@ -72,11 +73,15 @@ jobs:
 
           - database: postgres
             db_kind: postgresql
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            driver: org.postgresql.Driver
             url: jdbc:postgresql://127.0.0.1:8088/damap
             profile: with_postgres
 
           - database: oracle
             db_kind: oracle
+            dialect: org.hibernate.dialect.OracleDialect
+            driver: oracle.jdbc.driver.OracleDriver
             url: jdbc:oracle:thin:@127.0.0.1:8088/FREEPDB1
             profile: with_oracle
 
@@ -127,7 +132,9 @@ jobs:
           else
             mvn -B clean install \
               -Dquarkus.datasource.db-kind=${{ matrix.db_kind }} \
-              -Dquarkus.datasource.jdbc.url=${{ matrix.url }}
+              -Dquarkus.datasource.jdbc.driver=${{ matrix.driver }} \
+              -Dquarkus.datasource.jdbc.url=${{ matrix.url }} \
+              -Dquarkus.hibernate-orm.dialect=${{ matrix.dialect }}
           fi
 
   test-helm:
