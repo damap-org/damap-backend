@@ -31,6 +31,15 @@ public class SecurityService {
   @ConfigProperty(name = "damap.auth.user-id-claim")
   String userIdClaim;
 
+  @ConfigProperty(name = "damap.auth.given-name-claim")
+  String userGivenNameClaim;
+
+  @ConfigProperty(name = "damap.auth.family-name-claim")
+  String userFamilyNameClaim;
+
+  @ConfigProperty(name = "damap.auth.email-claim")
+  String emailClaim;
+
   @ConfigProperty(name = "damap.auth.admin-role-name")
   String adminRoleName;
 
@@ -68,24 +77,40 @@ public class SecurityService {
     return principal.getName();
   }
 
-  public String getDisplayName() {
+  public String getGivenName() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
-      return null;
-    }
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
 
-    String name = getClaimValueAsString(oidcPrincipal, "name");
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, userGivenNameClaim);
+  }
+
+  public String getFamilyName() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, userFamilyNameClaim);
+  }
+
+  public String getDisplayName() {
+    String name = getUserName();
     if (name != null) {
       return name;
     }
 
-    String firstName = getClaimValueAsString(oidcPrincipal, "given_name");
-    String lastName = getClaimValueAsString(oidcPrincipal, "family_name");
+    String firstName = getGivenName();
+    String lastName = getFamilyName();
     if (firstName != null && lastName != null) {
       return firstName + " " + lastName;
     }
 
-    return getClaimValueAsString(oidcPrincipal, "email");
+    return getEmail();
+  }
+
+  public String getEmail() {
+    final Principal principal = securityIdentity.getPrincipal();
+    if (!(principal instanceof OidcJwtCallerPrincipal)) return null;
+
+    return getClaimValueAsString((OidcJwtCallerPrincipal) principal, emailClaim);
   }
 
   private String getClaimValueAsString(OidcJwtCallerPrincipal oidcPrincipal, String claimKey) {
@@ -104,7 +129,7 @@ public class SecurityService {
 
   public String getAffiliation() {
     final Principal principal = securityIdentity.getPrincipal();
-    if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal)) {
+    if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal) || isUserNotLoggedIn()) {
       return null;
     }
 
@@ -180,5 +205,9 @@ public class SecurityService {
     if (jwt == null) throw new UnauthorizedException("User unauthorized.");
 
     return jwt;
+  }
+
+  public boolean isUserNotLoggedIn() {
+    return securityIdentity.isAnonymous();
   }
 }

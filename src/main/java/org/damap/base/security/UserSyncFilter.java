@@ -6,8 +6,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
 import org.damap.base.rest.auth.UserSyncService;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 /**
  * Intercepts incoming REST requests to synchronize user data from the OIDC token (JWT) into the
@@ -18,38 +16,23 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @ApplicationScoped
 public class UserSyncFilter implements ContainerRequestFilter {
 
+  @Inject SecurityService securityService;
+
   @Inject UserSyncService userSyncService;
-
-  @Inject JsonWebToken jwt;
-
-  @ConfigProperty(name = "damap.auth.user-id-claim", defaultValue = "sub")
-  String userIdClaim;
-
-  @ConfigProperty(name = "damap.auth.email-claim", defaultValue = "email")
-  String emailClaim;
-
-  @ConfigProperty(name = "damap.auth.name-claim", defaultValue = "name")
-  String nameClaim;
-
-  @ConfigProperty(name = "damap.auth.given-name-claim", defaultValue = "given_name")
-  String givenNameClaim;
-
-  @ConfigProperty(name = "damap.auth.family-name-claim", defaultValue = "family_name")
-  String familyNameClaim;
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    if (jwt == null || jwt.getRawToken() == null) {
+    if (securityService.isUserNotLoggedIn()) {
       return;
     }
 
-    String userId = jwt.getClaim(userIdClaim);
+    String userId = securityService.getUserId();
 
     if (userId != null) {
-      String email = jwt.getClaim(emailClaim);
-      String name = jwt.getClaim(nameClaim);
-      String firstName = jwt.getClaim(givenNameClaim);
-      String lastName = jwt.getClaim(familyNameClaim);
+      String email = securityService.getEmail();
+      String name = securityService.getUserName();
+      String firstName = securityService.getGivenName();
+      String lastName = securityService.getFamilyName();
 
       userSyncService.syncUser(userId, email, name, firstName, lastName);
     }
