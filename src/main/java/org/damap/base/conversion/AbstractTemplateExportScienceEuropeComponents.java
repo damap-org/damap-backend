@@ -12,6 +12,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.damap.base.domain.*;
 import org.damap.base.enums.*;
 import org.damap.base.rest.dmp.domain.ContributorDO;
+import org.damap.base.rest.dmp.domain.FundingDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.mapper.ContributorDOMapper;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
@@ -103,8 +104,21 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
 
     // add funding program to funding item variables
     ProjectDO projectCRIS = null;
-    if (project.getUniversityId() != null)
-      projectCRIS = projectService.read(project.getUniversityId());
+    if (project.getUniversityId() != null) {
+      try { // This try catch is there to prevent export crashing when an external dependency is
+        // down
+        projectCRIS = projectService.read(project.getUniversityId());
+      } catch (Exception e) {
+        ProjectDO fallback = new ProjectDO();
+        FundingDO dummyFunding = new FundingDO();
+        dummyFunding.setFundingProgram(
+            "Project service was not available. This should be the funding program fetched"
+                + " from the project service. To get this information, please try to export at a later date.");
+        fallback.setFunding(dummyFunding);
+        projectCRIS = fallback;
+        log.error("Could not reach Project Service for funding details", e);
+      }
+    }
 
     titlePageFunding(project, projectCRIS);
 
@@ -747,13 +761,25 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     }
 
     if (!repositories.isEmpty()) {
-
       repositories.forEach(
-          repo ->
-              repoTexts.add(
-                  repositoriesService.getDescription(repo.getRepositoryId())
-                      + " "
-                      + repositoriesService.getRepositoryURL(repo.getRepositoryId())));
+          repo -> {
+            String description;
+            String url = "";
+            try { // This try catch is there to prevent export crashing when an external dependency
+              // is down
+              description = repositoriesService.getDescription(repo.getRepositoryId());
+              url = repositoriesService.getRepositoryURL(repo.getRepositoryId());
+            } catch (Exception e) {
+              log.error(
+                  "Failed to fetch repository info from external API for ID: "
+                      + repo.getRepositoryId(),
+                  e);
+              description =
+                  "re3data was not available. This should be the description fetched from re3data. "
+                      + "To get this information, please try to export at a later date.";
+            }
+            repoTexts.add(description + (url.isEmpty() ? "" : " " + url));
+          });
 
       repoInformation = String.join("; ", repoTexts);
     }
@@ -1359,9 +1385,15 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         docVar.add(joinWithComma(repositoryTitles));
 
         Set<EIdentifierType> pids = new HashSet<>();
-        for (Repository repository : repositories) {
-          pids.addAll(repositoriesService.getPidSystems(repository.getRepositoryId()));
+        try { // This try catch is there to prevent export crashing when an external dependency is
+          // down
+          for (Repository repository : repositories) {
+            pids.addAll(repositoriesService.getPidSystems(repository.getRepositoryId()));
+          }
+        } catch (Exception e) {
+          log.error("Could not reach repository service for PidSystems information.");
         }
+
         docVar.add(joinWithComma(pids.stream().map(EIdentifierType::getType).toList()));
 
         // suppress license information for closed datasets

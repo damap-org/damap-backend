@@ -244,8 +244,12 @@ public class DmpService {
     }
 
     String universityId = dmp.getProject().getUniversityId();
-    ProjectDO universityProject =
-        (universityId != null) ? projectServiceBroker.read(universityId) : null;
+    ProjectDO universityProject = new ProjectDO();
+    try { // This try catch is there to prevent export crashing when an external dependency is down
+      universityProject = (universityId != null) ? projectServiceBroker.read(universityId) : null;
+    } catch (Exception e) {
+
+    }
 
     if (universityProject != null && universityProject.getAcronym() != null) {
       return universityProject.getAcronym();
