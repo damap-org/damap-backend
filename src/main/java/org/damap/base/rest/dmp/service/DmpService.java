@@ -251,7 +251,6 @@ public class DmpService {
 
     }
 
-
     if (universityProject != null && universityProject.getAcronym() != null) {
       return universityProject.getAcronym();
     }

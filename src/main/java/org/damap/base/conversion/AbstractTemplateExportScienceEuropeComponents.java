@@ -105,13 +105,15 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
     // add funding program to funding item variables
     ProjectDO projectCRIS = null;
     if (project.getUniversityId() != null) {
-      try { // This try catch is there to prevent export crashing when an external dependency is down
+      try { // This try catch is there to prevent export crashing when an external dependency is
+        // down
         projectCRIS = projectService.read(project.getUniversityId());
       } catch (Exception e) {
         ProjectDO fallback = new ProjectDO();
         FundingDO dummyFunding = new FundingDO();
-        dummyFunding.setFundingProgram("Project service was not available. This should be the funding program fetched" +
-                " from the project service. To get this information, please try to export at a later date.");
+        dummyFunding.setFundingProgram(
+            "Project service was not available. This should be the funding program fetched"
+                + " from the project service. To get this information, please try to export at a later date.");
         fallback.setFunding(dummyFunding);
         projectCRIS = fallback;
         log.error("Could not reach Project Service for funding details", e);
@@ -763,7 +765,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
           repo -> {
             String description;
             String url = "";
-            try { // This try catch is there to prevent export crashing when an external dependency is down
+            try { // This try catch is there to prevent export crashing when an external dependency
+              // is down
               description = repositoriesService.getDescription(repo.getRepositoryId());
               url = repositoriesService.getRepositoryURL(repo.getRepositoryId());
             } catch (Exception e) {
@@ -1382,7 +1385,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         docVar.add(joinWithComma(repositoryTitles));
 
         Set<EIdentifierType> pids = new HashSet<>();
-        try { // This try catch is there to prevent export crashing when an external dependency is down
+        try { // This try catch is there to prevent export crashing when an external dependency is
+          // down
           for (Repository repository : repositories) {
             pids.addAll(repositoriesService.getPidSystems(repository.getRepositoryId()));
           }
