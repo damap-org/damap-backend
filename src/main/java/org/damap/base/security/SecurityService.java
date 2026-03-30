@@ -133,6 +133,10 @@ public class SecurityService {
       return null;
     }
 
+    if (oidcPrincipal.getClaims().getClaimValue(affiliationsClaim) == null) {
+      throw new UnauthorizedException("Affiliation is required");
+    }
+
     // affiliations come from the eduPersonScopedAffiliation attribute - in EduID they are
     // structured like role@institution
     // EduGain does not have this convention - currently we just throw an error if the affiliation
