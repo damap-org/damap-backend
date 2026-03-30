@@ -6,7 +6,6 @@ import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import org.damap.base.TestProfiles;
 import org.damap.base.TestSetup;
-import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.FundingDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
@@ -40,8 +39,7 @@ class TemplateSelectorServiceImplTest extends TestSetup {
     testDMP.setProject(project);
     DmpDO updatedDMP = dmpService.update(testDMP);
 
-    Assertions.assertEquals(
-        ETemplateType.SCIENCE_EUROPE, templateSelectorService.selectTemplate(updatedDMP));
+    Assertions.assertEquals("SCIENCE_EUROPE", templateSelectorService.selectTemplate(updatedDMP));
   }
 
   @Test
@@ -59,7 +57,7 @@ class TemplateSelectorServiceImplTest extends TestSetup {
     testDMP.setProject(project);
     DmpDO updatedDMP = dmpService.update(testDMP);
 
-    Assertions.assertEquals(ETemplateType.FWF, templateSelectorService.selectTemplate(updatedDMP));
+    Assertions.assertEquals("FWF", templateSelectorService.selectTemplate(updatedDMP));
   }
 
   @Test
@@ -77,7 +75,6 @@ class TemplateSelectorServiceImplTest extends TestSetup {
     testDMP.setProject(project);
     DmpDO updatedDMP = dmpService.update(testDMP);
 
-    Assertions.assertEquals(
-        ETemplateType.HORIZON_EUROPE, templateSelectorService.selectTemplate(updatedDMP));
+    Assertions.assertEquals("HORIZON_EUROPE", templateSelectorService.selectTemplate(updatedDMP));
   }
 }

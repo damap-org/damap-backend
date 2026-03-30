@@ -12,7 +12,6 @@ import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.damap.base.conversion.ExportTemplateBroker;
 import org.damap.base.conversion.TemplateSelectorServiceImpl;
-import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.document.dto.MultipartBodyDTO;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -29,8 +28,7 @@ public class DocumentService {
 
   @Inject @RestClient GotenbergRestService gotenbergRestService;
 
-  public StreamingOutput getExportDocument(
-      long dmpId, Long templateId, boolean download, String filetype) {
+  public StreamingOutput getExportDocument(long dmpId, Long templateId, String filetype) {
     if ((!filetype.equals("pdf") && !filetype.equals("docx"))) {
       filetype = "docx";
     }
@@ -95,7 +93,7 @@ public class DocumentService {
     };
   }
 
-  public ETemplateType getTemplateType(long dmpId) {
+  public String getTemplateType(long dmpId) {
     return templateSelectorService.selectTemplate(dmpService.getDmpById(dmpId));
   }
 }

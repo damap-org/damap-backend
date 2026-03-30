@@ -16,8 +16,11 @@ public class ExportTemplate extends PanacheEntity {
   @Column(name = "name", nullable = false)
   private String name; // e.g., "Standard FWF" or "Science Europe - Special Version"
 
-  @Column(name = "template_key", nullable = false)
-  private String templateKey; // "FWF", "HORIZON", or "SCIENCE_EUROPE"
+  @Column(name = "template_category", nullable = false)
+  // We use a String instead of an Enum to allow for future extensibility.
+  // For example, in the future we might make funders customizable and
+  // then link custom funders to custom DMP types.
+  private String templateCategory; // "FWF", "HORIZON", or "SCIENCE_EUROPE"
 
   @Lob
   @Basic(fetch = FetchType.LAZY)

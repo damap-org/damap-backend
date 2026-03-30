@@ -20,9 +20,8 @@ public class ExportScienceEuropeTemplate extends AbstractTemplateExportScienceEu
    * @param templateId the unique identifier of the template record in the database. This ID
    *     determines which .docx file is used as the basis:
    *     <ul>
-   *       <li>ID 1: Default Science Europe template (falls back to classpath resource).
-   *       <li>IDs 2, 3: Default funder templates (FWF, Horizon Europe).
-   *       <li>ID &gt; 3: Custom variations of the Science Europe template uploaded by admins.
+   *       <li>Default standard templates fall back to classpath resources.
+   *       <li>Custom variations uploaded by admins are loaded directly from the database.
    *     </ul>
    *
    * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object

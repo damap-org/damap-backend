@@ -17,37 +17,37 @@ class DmpDocumentResourceTest extends TestSetup {
 
   @Test
   void testExportTemplateEndpoint_Invalid() {
-    given().when().get("/0").then().statusCode(401);
+    given().when().get("/0/export").then().statusCode(401);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpoint_Unauthorized() {
-    given().when().get("/0").then().statusCode(403);
+    given().when().get("/0/export").then().statusCode(403);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpoint_Valid() {
-    given().when().get("/" + dmpDO.getId()).then().statusCode(200);
+    given().when().get("/" + dmpDO.getId() + "/export").then().statusCode(200);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateTypeFWF_Valid() {
-    given().when().get("/" + dmpDO.getId() + "?template=2").then().statusCode(200);
+    given().when().get("/" + dmpDO.getId() + "/export?template=2").then().statusCode(200);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateTypeScienceEurope_Valid() {
-    given().when().get("/" + dmpDO.getId() + "?template=1").then().statusCode(200);
+    given().when().get("/" + dmpDO.getId() + "/export?template=1").then().statusCode(200);
   }
 
   @Test
   @TestSecurity(user = "userJwt", roles = "user")
   void testExportTemplateEndpointWithTemplateType_Invalid() {
-    given().when().get("/" + dmpDO.getId() + "?template=999").then().statusCode(404);
+    given().when().get("/" + dmpDO.getId() + "/export?template=999").then().statusCode(404);
   }
 
   @Test
@@ -55,7 +55,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeScienceEurope_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=1&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=1&filetype=docx")
         .then()
         .statusCode(200);
   }
@@ -65,7 +65,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeHorizonEurope_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=3&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=3&filetype=docx")
         .then()
         .statusCode(200);
   }
@@ -75,7 +75,7 @@ class DmpDocumentResourceTest extends TestSetup {
   void testExportEndpointForPDFWithTemplateTypeFWF_Valid() {
     given()
         .when()
-        .get("/" + dmpDO.getId() + "/export?template=2&fileType=docx")
+        .get("/" + dmpDO.getId() + "/export?template=2&filetype=docx")
         .then()
         .statusCode(200);
   }

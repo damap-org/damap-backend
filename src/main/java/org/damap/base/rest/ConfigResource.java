@@ -13,7 +13,6 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.ColorTheme;
 import org.damap.base.domain.ExportTemplate;
 import org.damap.base.domain.Image;
-import org.damap.base.rest.admin.domain.ExportTemplateDO;
 import org.damap.base.rest.admin.mapper.ExportTemplateDOMapper;
 import org.damap.base.rest.config.domain.ConfigDO;
 import org.damap.base.rest.config.domain.PersonServiceConfigurations;
@@ -113,12 +112,8 @@ public class ConfigResource {
     List<Image> images = imageThemeService.getImages();
     configDO.setImages(images);
 
-    List<ExportTemplate> entities = ExportTemplate.listAll();
-    List<ExportTemplateDO> dtos =
-        entities.stream()
-            .map(entity -> ExportTemplateDOMapper.mapEntityToDO(entity, new ExportTemplateDO()))
-            .toList();
-    configDO.setTemplates(dtos);
+    List<ExportTemplate> templateEntities = ExportTemplate.listAll();
+    configDO.setTemplates(ExportTemplateDOMapper.mapEntityListToDOList(templateEntities));
 
     return configDO;
   }

@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 import java.io.*;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.conversion.ExportTemplateBroker;
-import org.damap.base.enums.ETemplateType;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.document.service.DocumentService;
 import org.damap.base.security.SecurityService;
@@ -34,30 +33,12 @@ public class DmpDocumentResource {
 
   @Inject DocumentService documentService;
 
-  /**
-   * exportTemplate.
-   *
-   * @param dmpId a long
-   * @param templateId a Long object
-   * @return a {@link jakarta.ws.rs.core.Response} object
-   */
-  @GET
-  @Path("/{dmpId}")
-  @Deprecated(since = "4.3.0", forRemoval = true)
-  public Response exportTemplate(
-      @PathParam("dmpId") long dmpId, @QueryParam("template") Long templateId) {
-    log.info("Return DMP document file for DMP with id=" + dmpId);
-
-    return this.export(dmpId, templateId, true, "docx");
-  }
-
   @GET
   @Path("/{dmpId}/export")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response export(
       @PathParam("dmpId") long dmpId,
       @QueryParam("template") Long templateId,
-      @QueryParam("download") @DefaultValue("true") Boolean download,
       @QueryParam("filetype") @DefaultValue("docx") String filetype) {
 
     log.info("Returning DMP document file for DMP with id=" + dmpId);
@@ -69,7 +50,7 @@ public class DmpDocumentResource {
 
     StreamingOutput document;
     try {
-      document = documentService.getExportDocument(dmpId, templateId, download, filetype);
+      document = documentService.getExportDocument(dmpId, templateId, filetype);
     } catch (WebApplicationException e) {
       throw e;
     } catch (Exception e) {
@@ -96,7 +77,7 @@ public class DmpDocumentResource {
   @GET
   @Path("/{dmpId}/template_type")
   @Produces(MediaType.APPLICATION_JSON)
-  public ETemplateType getTemplateType(@PathParam("dmpId") long dmpId) {
+  public String getTemplateType(@PathParam("dmpId") long dmpId) {
     log.info("Return template type for DMP with id=" + dmpId);
 
     String personId = this.getPersonId();

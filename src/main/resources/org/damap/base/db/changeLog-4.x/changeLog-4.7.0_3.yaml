@@ -12,7 +12,7 @@ databaseChangeLog:
             columns:
               - column: { name: id, type: BIGINT, constraints: { primaryKey: true } }
               - column: { name: name, type: VARCHAR(255), constraints: { nullable: false } }
-              - column: { name: template_key, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: template_category, type: VARCHAR(255), constraints: { nullable: false } }
               - column: { name: data, type: BLOB }
               - column: { name: active, type: BOOLEAN, defaultValueBoolean: true }
               - column: { name: is_custom, type: BOOLEAN, defaultValueBoolean: false }
@@ -22,7 +22,7 @@ databaseChangeLog:
             columns:
               - column: { name: id, value: 1 }
               - column: { name: name, value: 'Science Europe' }
-              - column: { name: template_key, value: 'SCIENCE_EUROPE' }
+              - column: { name: template_category, value: 'SCIENCE_EUROPE' }
               - column: { name: active, value: true }
               - column: { name: is_custom, value: false }
         - insert:
@@ -30,7 +30,7 @@ databaseChangeLog:
               columns:
                 - column: { name: id, value: 2 }
                 - column: { name: name, value: 'FWF' }
-                - column: { name: template_key, value: 'FWF' }
+                - column: { name: template_category, value: 'FWF' }
                 - column: { name: active, value: true }
                 - column: { name: is_custom, value: false }
         - insert:
@@ -38,6 +38,6 @@ databaseChangeLog:
               columns:
                 - column: { name: id, value: 3 }
                 - column: { name: name, value: 'Horizon Europe' }
-                - column: { name: template_key, value: 'HORIZON_EUROPE' }
+                - column: { name: template_category, value: 'HORIZON_EUROPE' }
                 - column: { name: active, value: true }
                 - column: { name: is_custom, value: false }

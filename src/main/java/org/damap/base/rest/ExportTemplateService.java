@@ -22,7 +22,13 @@ public class ExportTemplateService {
   @Inject FitsService fitsService;
 
   @Transactional
-  public ExportTemplate uploadTemplate(String name, String templateKey, FileUpload file) {
+  public ExportTemplate uploadTemplate(String name, FileUpload file) {
+    long maxFileSize = 10 * 1024 * 1024; // 10 MB
+    if (file.size() > maxFileSize) {
+      log.error("Upload rejected: File size " + file.size() + " exceeds limit of " + maxFileSize);
+      throw new BadRequestException("Template file is too large. Maximum size allowed is 10MB.");
+    }
+
     try {
       MultipartBodyDO multipartBody = new MultipartBodyDO();
       multipartBody.file = file.uploadedFile().toFile();
@@ -39,7 +45,7 @@ public class ExportTemplateService {
       }
       ExportTemplate template = new ExportTemplate();
       template.setName(name);
-      template.setTemplateKey(templateKey);
+      template.setTemplateCategory("SCIENCE_EUROPE");
       template.setData(Files.readAllBytes(file.uploadedFile()));
       template.setActive(true);
       template.setCustom(true);
@@ -52,13 +58,13 @@ public class ExportTemplateService {
   }
 
   @Transactional
-  public void toggleStatus(Long id) {
+  public void toggleActiveStatus(Long id) {
     ExportTemplate t = ExportTemplate.findById(id);
     if (t != null) {
       if (t.isActive()) {
         long activeCount = ExportTemplate.count("active = true");
         if (activeCount <= 1) {
-          throw new jakarta.ws.rs.BadRequestException("At least one template must remain active.");
+          throw new BadRequestException("At least one template must remain active.");
         }
       }
 

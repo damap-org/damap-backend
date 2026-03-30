@@ -6,7 +6,7 @@ import lombok.Data;
 public class ExportTemplateDO {
   private Long id;
   private String name;
-  private String templateKey;
+  private String templateCategory;
   private boolean active;
   private boolean isCustom;
 }

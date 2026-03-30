@@ -4,14 +4,7 @@ import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
@@ -139,29 +132,20 @@ public class AdminResource {
     this.recommendedRepositoryService.deleteRecommendedRepository(id);
   }
 
-  @GET
-  @Path("/export-templates")
-  @RolesAllowed("${damap.auth.admin-role-name}")
-  public List<ExportTemplate> getExportTemplates() {
-    return ExportTemplate.listAll();
-  }
-
   @POST
   @Path("/export-templates")
   @RolesAllowed("${damap.auth.admin-role-name}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   public ExportTemplate uploadTemplate(
-      @RestForm("name") String name,
-      @RestForm("category") String category,
-      @RestForm("file") FileUpload file) {
-    return this.exportTemplateService.uploadTemplate(name, category, file);
+      @RestForm("name") String name, @RestForm("file") FileUpload file) {
+    return this.exportTemplateService.uploadTemplate(name, file);
   }
 
-  @PUT
-  @Path("/export-templates/{id}/toggle")
+  @PATCH
+  @Path("/export-templates/{id}/toggle-active")
   @RolesAllowed("${damap.auth.admin-role-name}")
-  public void toggleTemplate(@RestPath Long id) {
-    this.exportTemplateService.toggleStatus(id);
+  public void toggleTemplateActive(@RestPath Long id) {
+    this.exportTemplateService.toggleActiveStatus(id);
   }
 
   @DELETE
