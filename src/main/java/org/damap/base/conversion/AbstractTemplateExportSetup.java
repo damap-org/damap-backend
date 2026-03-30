@@ -81,11 +81,11 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
             log.warn("Project Leader is null for project ID: " + dmp.getProjectUniversityId());
           }
         }
-      } catch (Exception e) {
+      } catch (Exception e) { // This try catch is there to prevent export crashing when an external dependency is down
         log.error("Project API not functioning", e);
         ContributorDO fallbackLeader = new ContributorDO();
         fallbackLeader.setFirstName("Project Leader");
-        fallbackLeader.setLastName("(Information currently unavailable from Project Service)");
+        fallbackLeader.setLastName("(Information currently unavailable from Project Service, try again at a later date)");
         fallbackLeader.setRoles(new HashSet<>(Set.of(EContributorRole.PROJECT_LEADER)));
         projectCoordinators = List.of(fallbackLeader);
       }
