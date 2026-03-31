@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Data;
 import org.damap.base.domain.ColorTheme;
 import org.damap.base.domain.Image;
+import org.damap.base.rest.admin.domain.ExportTemplateDO;
 
 /** ConfigDO class. */
 @Data
@@ -30,4 +31,5 @@ public class ConfigDO {
   private String appTitle;
   private ColorTheme colorTheme;
   private List<Image> images;
+  private List<ExportTemplateDO> templates;
 }

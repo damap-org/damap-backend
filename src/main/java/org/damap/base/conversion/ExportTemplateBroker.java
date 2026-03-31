@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.damap.base.enums.ETemplateType;
+import org.damap.base.domain.ExportTemplate;
 import org.damap.base.rest.dmp.service.DmpService;
 
 /** ExportTemplateBroker class. */
@@ -12,12 +12,9 @@ import org.damap.base.rest.dmp.service.DmpService;
 @JBossLog
 public class ExportTemplateBroker {
 
-  private final DmpService dmpService;
   private final ExportScienceEuropeTemplate exportScienceEuropeTemplate;
   private final ExportFWFTemplate exportFWFTemplate;
   private final ExportHorizonEuropeTemplate exportHorizonEuropeTemplate;
-
-  private final TemplateSelectorServiceImpl templateSelectorService;
 
   @Inject
   /**
@@ -33,45 +30,48 @@ public class ExportTemplateBroker {
    *     object
    */
   public ExportTemplateBroker(
-      DmpService dmpService,
       ExportScienceEuropeTemplate exportScienceEuropeTemplate,
       ExportFWFTemplate exportFWFTemplate,
-      ExportHorizonEuropeTemplate exportHorizonEuropeTemplate,
-      TemplateSelectorServiceImpl templateSelectorService) {
-    this.dmpService = dmpService;
+      ExportHorizonEuropeTemplate exportHorizonEuropeTemplate) {
     this.exportScienceEuropeTemplate = exportScienceEuropeTemplate;
     this.exportFWFTemplate = exportFWFTemplate;
     this.exportHorizonEuropeTemplate = exportHorizonEuropeTemplate;
-    this.templateSelectorService = templateSelectorService;
   }
 
-  /**
-   * Decides which export template to use. Currently only supports FWF and Science Europe templates.
-   *
-   * @param dmpId a long
-   * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object
-   */
-  public XWPFDocument exportTemplate(long dmpId) {
-    return exportTemplateByType(
-        dmpId, templateSelectorService.selectTemplate(dmpService.getDmpById(dmpId)));
-  }
+  @Inject DmpService dmpService;
+  @Inject TemplateSelectorService templateSelectorService;
 
   /**
-   * exportTemplateByType.
+   * Decides which export template to use. Supports standard FWF, Horizon Europe, Science Europe
+   * templates, as well as custom uploaded templates.
    *
-   * @param dmpId a long
-   * @param type a {@link org.damap.base.enums.ETemplateType} object
+   * @param dmpId the unique identifier of the DMP
+   * @param templateId the unique identifier of the export template to be used (can be null for
+   *     default)
    * @return a {@link org.apache.poi.xwpf.usermodel.XWPFDocument} object
    */
-  public XWPFDocument exportTemplateByType(long dmpId, ETemplateType type) {
-    switch (type) {
-      case FWF:
-        return exportFWFTemplate.exportTemplate(dmpId);
-      case HORIZON_EUROPE:
-        return exportHorizonEuropeTemplate.exportTemplate(dmpId);
-      case SCIENCE_EUROPE:
-      default:
-        return exportScienceEuropeTemplate.exportTemplate(dmpId);
+  public XWPFDocument exportTemplate(long dmpId, Long templateId) {
+    ExportTemplate template;
+    if (templateId == null || templateId == 0) {
+      String templateCategory =
+          templateSelectorService.selectTemplate(dmpService.getDmpById(dmpId));
+      template =
+          ExportTemplate.find("templateCategory = ?1 and active = true", templateCategory)
+              .firstResult();
+      if (template == null) {
+        template = ExportTemplate.find("active = true").firstResult();
+      }
+    } else {
+      template = ExportTemplate.findById(templateId);
     }
+
+    if (template == null || !template.isActive()) {
+      return null;
+    }
+    return switch (template.getTemplateCategory()) {
+      case "FWF" -> exportFWFTemplate.exportTemplate(dmpId);
+      case "HORIZON_EUROPE" -> exportHorizonEuropeTemplate.exportTemplate(dmpId);
+      default -> exportScienceEuropeTemplate.exportTemplate(dmpId, template.id);
+    };
   }
 }

@@ -4,18 +4,12 @@ import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.ColorTheme;
+import org.damap.base.domain.ExportTemplate;
 import org.damap.base.domain.Image;
 import org.damap.base.domain.RecommendedRepository;
 import org.damap.base.rest.admin.domain.BannerDO;
@@ -39,6 +33,7 @@ public class AdminResource {
   @Inject RecommendedRepositoryService recommendedRepositoryService;
   @Inject ColorThemeService colorThemeService;
   @Inject ImageThemeService imageThemeService;
+  @Inject ExportTemplateService exportTemplateService;
 
   @GET
   @Path("/banner")
@@ -135,5 +130,28 @@ public class AdminResource {
   public void deleteRecommendedRepository(@RestPath Long id) {
     log.info("Deleting recommended repository with id: " + id);
     this.recommendedRepositoryService.deleteRecommendedRepository(id);
+  }
+
+  @POST
+  @Path("/export-templates")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public ExportTemplate uploadTemplate(
+      @RestForm("name") String name, @RestForm("file") FileUpload file) {
+    return this.exportTemplateService.uploadTemplate(name, file);
+  }
+
+  @PATCH
+  @Path("/export-templates/{id}/toggle-active")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public void toggleTemplateActive(@RestPath Long id) {
+    this.exportTemplateService.toggleActiveStatus(id);
+  }
+
+  @DELETE
+  @Path("/export-templates/{id}")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public void deleteTemplate(@RestPath Long id) {
+    this.exportTemplateService.deleteTemplate(id);
   }
 }
