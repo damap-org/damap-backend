@@ -85,7 +85,9 @@ public class DmpDocumentResource {
       throw new ForbiddenException("Not authorized to access dmp with id " + dmpId);
     }
 
-    return documentService.getTemplateType(dmpId);
+    String type = documentService.getTemplateType(dmpId);
+
+    return "\"" + type + "\"";
   }
 
   private String getPersonId() {
