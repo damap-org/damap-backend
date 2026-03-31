@@ -1,0 +1,49 @@
+# This workflow can be used to manually release a docker-image with a tag to use it for testing
+# It's just a temporary cheap solution and should be replaced with a proper workflow in the future
+name: release-dev
+
+env:
+  REGISTRY: ghcr.io
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag of the package"
+        required: true
+        default: "my-default-dev-tag"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  container-build-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          # git tag: v1.2.3, output: 1.2.3
+          tags: |
+            type=raw,value=${{ github.event.inputs.tag }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
