@@ -14,7 +14,6 @@ import jakarta.json.JsonString;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
