@@ -12,6 +12,9 @@ Usage:
         --changeset-id 26 \
         --author "Your Name" \
         --output changeLog-5.0.0_2.yaml
+
+python generate-translation-changelog.py --input translations_new.json --language en --changeset-id 29 --author "Geoffrey Karnbach" --output changeLog-5.0.0_2.yaml
+
 """
 
 import argparse
