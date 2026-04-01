@@ -12,8 +12,10 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.exception.GlobalServerExceptionMapper;
 import org.damap.base.r3data.dto.RepositoryDetails;
 import org.damap.base.r3data.mapper.RepositoryMapper;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.jboss.resteasy.reactive.RestPath;
 
 /** RepositoriesResource class. */
@@ -21,6 +23,7 @@ import org.jboss.resteasy.reactive.RestPath;
 @Authenticated
 @Produces(MediaType.APPLICATION_JSON)
 @JBossLog
+@RegisterProvider(GlobalServerExceptionMapper.class)
 public class RepositoriesResource {
 
   @Inject RepositoriesService repositoriesService;
