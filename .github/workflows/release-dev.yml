@@ -31,14 +31,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if base version exists
+        run: |
+          REPO="${{ env.REGISTRY }}/${{ github.repository }}"
+          BASE_TAG="${{ github.event.inputs.tag }}"
+
+          echo "Checking if $REPO:$BASE_TAG exists..."
+
+          if docker pull "$REPO:$BASE_TAG" > /dev/null 2>&1; then
+            echo "❌ Tag $BASE_TAG already exists. Bump the version."
+            exit 1
+          else
+            echo "✅ Tag does not exist, continuing."
+          fi
+
+      - name: Compute full tag
+        run: |
+          HASH=$(git rev-parse --short=7 HEAD)
+          FULL_TAG="${{ github.event.inputs.tag }}_${HASH}"
+          echo "FULL_TAG=$FULL_TAG" >> $GITHUB_ENV
+          echo "Using tag: $FULL_TAG"
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
-          # git tag: v1.2.3, output: 1.2.3
+          # git tag: v1.2.3, output: 1.2.3_<hash>
           tags: |
-            type=raw,value=${{ github.event.inputs.tag }}
+            type=raw,value=${{ env.FULL_TAG }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
