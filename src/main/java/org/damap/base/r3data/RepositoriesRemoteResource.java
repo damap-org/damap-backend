@@ -10,7 +10,6 @@ import java.util.List;
 import org.damap.base.enums.EErrorCode;
 import org.damap.base.exception.DamapApiException;
 import org.damap.base.exception.ErrorDto;
-import org.damap.base.rest.fits.service.FitsRestService;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
