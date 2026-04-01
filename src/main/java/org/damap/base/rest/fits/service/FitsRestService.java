@@ -1,7 +1,5 @@
 package org.damap.base.rest.fits.service;
 
-import static org.reflections.Reflections.log;
-
 import edu.harvard.fits.Fits;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.Consumes;
@@ -17,6 +15,7 @@ import org.damap.base.rest.fits.dto.MultipartBodyDTO;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 
 /** FitsRestService interface. */
 @RegisterRestClient(configKey = "rest.fits")
@@ -24,6 +23,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 @Timeout(10000)
 public interface FitsRestService {
+
+  Logger log = Logger.getLogger(FitsRestService.class);
 
   /**
    * analyseFile.

@@ -1,15 +1,16 @@
 package org.damap.base.exception;
 
-import static org.reflections.Reflections.log;
-
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.Provider;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 @Provider
 public class GlobalServerExceptionMapper {
+
+  Logger log = Logger.getLogger(GlobalServerExceptionMapper.class);
 
   @ServerExceptionMapper(DamapApiException.class)
   public RestResponse<ErrorDto> mapException(DamapApiException e) {

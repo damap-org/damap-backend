@@ -1,7 +1,5 @@
 package org.damap.base.rest.openaire;
 
-import static org.reflections.Reflections.log;
-
 import generated.Response;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.GET;
@@ -15,12 +13,15 @@ import org.damap.base.exception.ErrorDto;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 
 /** OpenAireRemoteResource interface. */
 @RegisterRestClient(configKey = "rest.openaire")
 @Produces(MediaType.APPLICATION_XML)
 @Timeout(10000)
 public interface OpenAireRemoteResource {
+
+  Logger log = Logger.getLogger(OpenAireRemoteResource.class);
 
   /**
    * search.

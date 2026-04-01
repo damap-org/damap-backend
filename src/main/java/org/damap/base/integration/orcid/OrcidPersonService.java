@@ -1,7 +1,5 @@
 package org.damap.base.integration.orcid;
 
-import static org.reflections.Reflections.log;
-
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -15,10 +13,12 @@ import org.damap.base.exception.DamapApiException;
 import org.damap.base.exception.ErrorDto;
 import org.damap.base.integration.orcid.models.ORCIDExpandedSearchResult;
 import org.damap.base.integration.orcid.models.ORCIDRecord;
+import org.damap.base.rest.fits.service.FitsRestService;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 
 /** OrcidPersonService interface. */
 @RegisterRestClient(configKey = "rest.orcid.search")
@@ -26,6 +26,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Produces(MediaType.APPLICATION_JSON)
 @Timeout(10000)
 interface OrcidPersonService {
+
+  Logger log = Logger.getLogger(OrcidPersonService.class);
 
   /**
    * getAll.

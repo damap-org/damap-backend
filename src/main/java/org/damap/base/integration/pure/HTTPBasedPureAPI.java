@@ -1,7 +1,5 @@
 package org.damap.base.integration.pure;
 
-import static org.reflections.Reflections.log;
-
 import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.enterprise.inject.Typed;
@@ -15,6 +13,7 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 
 @Path("")
 @RegisterRestClient(configKey = "elsevier-pure")
@@ -24,6 +23,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @LookupIfProperty(name = "damap.elsevier-pure-backend", stringValue = "http")
 @Timeout(10000)
 interface HTTPBasedPureAPI extends PureAPI {
+
+  Logger log = Logger.getLogger(HTTPBasedPureAPI.class);
+
   /**
    * List all projects using pagination.
    *

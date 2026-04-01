@@ -1,7 +1,5 @@
 package org.damap.base.r3data;
 
-import static org.reflections.Reflections.log;
-
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -12,9 +10,11 @@ import java.util.List;
 import org.damap.base.enums.EErrorCode;
 import org.damap.base.exception.DamapApiException;
 import org.damap.base.exception.ErrorDto;
+import org.damap.base.rest.fits.service.FitsRestService;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.re3data.schema._2_2.Re3Data;
@@ -24,6 +24,8 @@ import org.re3data.schema._2_2.Re3Data;
 @Produces(MediaType.TEXT_XML)
 @Timeout(10000)
 public interface RepositoriesRemoteResource {
+
+  Logger log = Logger.getLogger(RepositoriesRemoteResource.class);
 
   /**
    * getAll.

@@ -1,7 +1,5 @@
 package org.damap.base.rest.document.service;
 
-import static org.reflections.Reflections.log;
-
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -16,12 +14,15 @@ import org.damap.base.rest.document.dto.MultipartBodyDTO;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.logging.Logger;
 
 @RegisterRestClient(configKey = "rest.gotenberg")
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 @Consumes(MediaType.MULTIPART_FORM_DATA)
 @Timeout(10000)
 public interface GotenbergRestService {
+
+  Logger log = Logger.getLogger(GotenbergRestService.class);
 
   @POST
   @Fallback(fallbackMethod = "fallback", skipOn = DamapApiException.class)
