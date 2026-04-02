@@ -172,11 +172,7 @@
             "tenants": {
               "title": "Tenants",
               "description": "List of tenants to create. The tenant name will be used as the database name.",
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              }
+              "type": "object"
             }
           }
         },

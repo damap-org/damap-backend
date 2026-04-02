@@ -73,6 +73,51 @@ spec:
           secret:
             secretName: damap-pure
         {{- end }}
+
+      initContainers:
+        - name: multitenant-db-check
+          image: postgres:16
+          securityContext:
+            runAsUser: 999 # postgres user in official image
+            runAsNonRoot: true
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbPassword
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for PostgreSQL to become available..."
+              MAX_RETRIES=60
+              RETRY_INTERVAL=2
+              ATTEMPT=1
+              until psql -h damap-db -U {{ .Values.damap.dbUser }} -d postgres -c '\q'; do
+                if [ $ATTEMPT -ge $MAX_RETRIES ]; then
+                  echo "ERROR: PostgreSQL did not become ready in time."
+                  exit 1
+                fi
+                echo "PostgreSQL not ready yet (attempt $ATTEMPT/$MAX_RETRIES)..."
+                ATTEMPT=$((ATTEMPT+1))
+                sleep $RETRY_INTERVAL
+              done
+
+              echo "PostgreSQL ready. Creating tenant databases if missing..."
+              {{- range $tenant := keys .Values.damap.multitenancy.tenants }}
+              echo "Checking database '{{ $tenant }}'"
+              if ! psql -h damap-db -U {{ $.Values.damap.dbUser }} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='{{ $tenant }}'" | grep -q 1; then
+                echo "Database '{{ $tenant }}' does not exist. Creating..."
+                psql -h damap-db -U {{ $.Values.damap.dbUser }} -d postgres -c "CREATE DATABASE {{ $tenant }} OWNER {{ $.Values.damap.dbUser }}"
+                echo "Database '{{ $tenant }}' created."
+              else
+                echo "Database '{{ $tenant }}' already exists. Skipping."
+              fi
+              {{- end }}
+              echo "Tenant database initialization finished."
+
       containers:
         - name: damap-backend
 
@@ -84,10 +129,10 @@ spec:
 
           resources:
             requests:
-              cpu: 10m
+              cpu: 1
               memory: 2G
             limits:
-              cpu: "0.25"
+              cpu: "1"
               memory: 2G
           ports:
             - containerPort: 9000
@@ -184,11 +229,13 @@ spec:
 
             {{- if .Values.keycloak.deploy }}
               {{- /* Case where OIDC Keycloak is deployed alongside DAMAP */}}
+              
+              {{- $kcPath := include "keycloakPath" . | trim }}
 
               {{- if eq .Values.keycloak.hostname "localhost" }}
                 {{- /* Case where OIDC Keycloak is deployed locally */}}
-                {{- $authServerUrl = "http://keycloak:8080/realms/damap" }}
-                {{- $issuer = printf "%s://%s/realms/damap" .Values.keycloak.protocol .Values.keycloak.hostname }}
+                {{- $authServerUrl = printf "http://keycloak:8080%s/realms/damap" $kcPath }}
+                {{- $issuer = printf "%s://%s%s/realms/damap" .Values.keycloak.protocol .Values.keycloak.hostname $kcPath }}
               {{- else }}
                 {{- /* Case where OIDC Keycloak is deployed remotely */}}
                 {{- $authServerUrl = printf "%s://%s/realms/damap" .Values.keycloak.protocol .Values.keycloak.hostname }}

@@ -14,7 +14,7 @@ customBuild:
     repo: https://github.com/damap-org/damap-frontend
 
 damap:
-  backendVersion: 5.0.0-rc1
+  backendVersion: 5.0.0-dev.1_1b83918
   customDomain: false
   dbName: damap
   # NOTE: When db_password is empty, Helm will try to reuse the existing Secret if present.
@@ -33,8 +33,44 @@ damap:
     autoCreateDatabases: false
     enabled: false
     tenants:
-      - tenant_1
-      - tenant_2
+      tenant_1:
+        title: Tenant 1 DAMAP Tool
+        fields:
+          ethical-report-enabled: false
+        project-service: default
+        elsevier-pure-description-classification: /dk/atira/pure/projectdescription
+        elsevier-pure-contributor-role-classifications:
+          - pure-role-uri: /dk/atira/pure/member
+            contributor-role: PROJECT_MEMBER
+        elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
+        elsevier-pure-backend: http
+        elsevier-pure-endpoint-url: "https://tenant1.example.com/ws/api/"
+        elsevier-pure-api-key: "your API key here"
+        elsevier-pure-projects-file: "file:///path/to/projects.json"
+        elsevier-pure-persons-file: "file:///path/to/persons.json"
+        person-services:
+          - display-text: ORCID
+            query-value: ORCID
+            class-name: org.damap.base.integration.orcid.ORCIDPersonServiceImpl
+      tenant_2:
+        title: Tenant 2 DAMAP Tool
+        fields:
+          ethical-report-enabled: false
+        project-service: disabled
+        elsevier-pure-description-classification: /dk/atira/pure/projectdescription
+        elsevier-pure-contributor-role-classifications:
+          - pure-role-uri: /dk/atira/pure/member
+            contributor-role: PROJECT_MEMBER
+        elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
+        elsevier-pure-backend: http
+        elsevier-pure-endpoint-url: "https://tenant2.example.com/ws/api/"
+        elsevier-pure-api-key: "your API key here"
+        elsevier-pure-projects-file: "file:///path/to/projects.json"
+        elsevier-pure-persons-file: "file:///path/to/persons.json"
+        person-services:
+          - display-text: Pure
+            query-value: PURE
+            class-name: org.damap.base.integration.pure.PurePersonService
   persistData: false
   personServices:
     # Elsevier Pure integration (pure.enabled must be true for this to work):

@@ -1,4 +1,7 @@
 {{- if .Values.keycloak.deploy }}
+
+{{- $kcPath := include "keycloakPath" . | trim }}
+
 {{- if and .Values.openshift (not .Values.keycloak.customDomain) }}
 {{- /*
 OpenShift default domain (Route)
@@ -14,8 +17,8 @@ metadata:
     haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
   {{- end }}
 spec:
-  host: "{{ .Values.keycloak.hostname }}"
-  path: "{{ if and (eq .Values.keycloak.hostname "localhost") (.Values.keycloak.deploy) }}/realms{{ else }}/{{ end }}"
+  host: {{ .Values.keycloak.hostname }}
+  path: {{ $kcPath | quote }}
   to:
     name: keycloak
     weight: 100
@@ -53,21 +56,28 @@ spec:
     - host: {{ .Values.keycloak.hostname }}
       http:
         paths:
-          - path: /
+          - path: {{ default "/" $kcPath | quote }}
             pathType: Prefix
             backend:
               service:
                 name: keycloak
                 port:
                   number: 8080
-          - path: /admin
-            pathType: Prefix
-            backend:
-              service:
-                name: keycloak
-                port:
-                  number: 8080
-          - path: /resources
+          # - path: {{ printf "%s/admin" $kcPath | quote }}
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: keycloak
+          #       port:
+          #         number: 8080
+          # - path: {{ printf "%s/realms" $kcPath | quote }}
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: keycloak
+          #       port:
+          #         number: 8080
+          - path: {{ printf "%s/resources" $kcPath | quote }}
             pathType: Prefix
             backend:
               service:
