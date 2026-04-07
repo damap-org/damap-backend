@@ -46,6 +46,7 @@ public class FileAnalysisMapper {
       case "application/x-7z-compressed":
       case "application/zip":
       case "application/x-tar":
+      case "application/x-gtar":
       case "application/vnd.rar":
       case "application/x-bzip":
       case "application/x-bzip2":
