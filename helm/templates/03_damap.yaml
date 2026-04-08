@@ -73,6 +73,55 @@ spec:
           secret:
             secretName: damap-pure
         {{- end }}
+
+      {{- if and .Values.damap.multitenancy.enabled .Values.damap.multitenancy.autoCreateDatabases }}
+      initContainers:
+        - name: multitenant-db-check
+          image: postgres:16
+          securityContext:
+            {{- if not .Values.openshift }}
+            runAsUser: 999
+            {{- end }}
+            runAsNonRoot: true
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: damap
+                  key: dbPassword
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for PostgreSQL to become available..."
+              MAX_RETRIES=60
+              RETRY_INTERVAL=2
+              ATTEMPT=1
+              until psql -h damap-db -U {{ .Values.damap.dbUser }} -d postgres -c '\q'; do
+                if [ $ATTEMPT -ge $MAX_RETRIES ]; then
+                  echo "ERROR: PostgreSQL did not become ready in time."
+                  exit 1
+                fi
+                echo "PostgreSQL not ready yet (attempt $ATTEMPT/$MAX_RETRIES)..."
+                ATTEMPT=$((ATTEMPT+1))
+                sleep $RETRY_INTERVAL
+              done
+
+              echo "PostgreSQL ready. Creating tenant databases if missing..."
+              {{- range $tenant := .Values.damap.multitenancy.tenants }}
+              echo "Checking database '{{ $tenant }}'"
+              if ! psql -h damap-db -U {{ $.Values.damap.dbUser }} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='{{ $tenant }}'" | grep -q 1; then
+                echo "Database '{{ $tenant }}' does not exist. Creating..."
+                psql -h damap-db -U {{ $.Values.damap.dbUser }} -d postgres -c "CREATE DATABASE {{ $tenant }} OWNER {{ $.Values.damap.dbUser }}"
+                echo "Database '{{ $tenant }}' created."
+              else
+                echo "Database '{{ $tenant }}' already exists. Skipping."
+              fi
+              {{- end }}
+              echo "Tenant database initialization finished."
+      {{- end }}
+
       containers:
         - name: damap-backend
 
