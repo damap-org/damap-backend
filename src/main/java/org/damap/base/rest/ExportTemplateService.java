@@ -12,14 +12,14 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Dataset;
 import org.damap.base.domain.ExportTemplate;
 import org.damap.base.rest.dmp.domain.MultipartBodyDO;
-import org.damap.base.rest.fits.service.FitsService;
+import org.damap.base.rest.file_analysis.service.FileAnalysisService;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @ApplicationScoped
 @JBossLog
 public class ExportTemplateService {
 
-  @Inject FitsService fitsService;
+  @Inject FileAnalysisService fileAnalysisService;
 
   @Transactional
   public ExportTemplate uploadTemplate(String name, FileUpload file) {
@@ -33,7 +33,7 @@ public class ExportTemplateService {
       MultipartBodyDO multipartBody = new MultipartBodyDO();
       multipartBody.file = file.uploadedFile().toFile();
 
-      Dataset analyzedData = fitsService.analyseFile(multipartBody);
+      Dataset analyzedData = fileAnalysisService.analyseFile(multipartBody);
 
       String mimeType = analyzedData.getFileFormat();
       if (!"application/vnd.openxmlformats-officedocument.wordprocessingml.document"

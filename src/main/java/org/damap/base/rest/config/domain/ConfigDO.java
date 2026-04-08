@@ -25,7 +25,6 @@ public class ConfigDO {
   private String adminRoleName;
   private String env;
   private List<ServiceConfig> personSearchServiceConfigs;
-  private boolean fitsServiceAvailable;
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
   private String appTitle;

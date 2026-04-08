@@ -1,24 +1,27 @@
 package org.damap.base.rest.theme.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Image;
+import org.damap.base.rest.file_analysis.service.FileAnalysisService;
 import org.hibernate.Hibernate;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @ApplicationScoped
 @JBossLog
 public class ImageThemeService {
+
+  @Inject FileAnalysisService fileAnalysisService;
 
   public enum AllowedImageType {
     PNG("image/png"),
@@ -77,7 +80,7 @@ public class ImageThemeService {
             Response.Status.REQUEST_ENTITY_TOO_LARGE);
       }
 
-      String mimeType = detectMimeType(file);
+      String mimeType = fileAnalysisService.detectMimeType(file.uploadedFile().toFile());
 
       if (!isAllowedImageType(mimeType)) {
         throw new ClientErrorException(
@@ -124,49 +127,6 @@ public class ImageThemeService {
     if (Image.delete("imageKey", imageKey) == 0) {
       throw new NotFoundException("Image not found for key: " + imageKey);
     }
-  }
-
-  private String detectMimeType(FileUpload file) {
-    // MIME from header
-    String mimeType = file.contentType();
-    if (mimeType != null && !mimeType.isBlank()) {
-      return mimeType;
-    }
-
-    // MIME from filename
-    String filename = file.fileName();
-    if (filename != null && !filename.isBlank()) {
-      mimeType = detectMimeTypeFromExtension(filename);
-      if (mimeType != null) {
-        return mimeType;
-      }
-    }
-
-    // MIME from content
-    try {
-      mimeType = Files.probeContentType(file.uploadedFile());
-      if (mimeType != null && !mimeType.isBlank()) {
-        return mimeType;
-      }
-    } catch (IOException e) {
-      // ignore and return the fallback
-    }
-
-    // fallback
-    return MediaType.APPLICATION_OCTET_STREAM;
-  }
-
-  private String detectMimeTypeFromExtension(String filename) {
-    String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
-    return switch (extension) {
-      case "png" -> "image/png";
-      case "jpg", "jpeg" -> "image/jpeg";
-      case "gif" -> "image/gif";
-      case "svg" -> "image/svg+xml";
-      case "webp" -> "image/webp";
-      case "ico" -> "image/x-icon";
-      default -> null;
-    };
   }
 
   private String getAllowedTypesString() {

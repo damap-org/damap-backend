@@ -218,6 +218,16 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>3.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers-standard-package</artifactId>
+      <version>3.2.3</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -282,7 +292,6 @@
         </executions>
         <configuration>
           <sources>
-            <source>src/main/resources/org/damap/base/spec/fits/fits_output.xsd</source>
             <source>src/main/resources/org/damap/base/spec/re3data/re3dataV3-0.xsd</source>
             <source>src/main/resources/org/damap/base/spec/re3data/re3dataV2-2.xsd</source>
             <source>src/main/resources/org/damap/base/spec/re3data/re3data_index_V1-0.xsd</source>

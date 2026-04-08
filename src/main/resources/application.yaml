@@ -79,7 +79,7 @@ quarkus:
       origins: http://localhost:8085
       headers: origin,content-type,accept,authorization
       access-control-max-age: 1
-    # needed for the fits service. Specify how large a single file for upload may be.
+    # needed for the file analysis endpoint. Specify how large a single file for upload may be.
     limits:
       max-body-size: 10M
 
@@ -135,7 +135,6 @@ rest:
   elsevier-pure/mp-rest/url: ${damap.elsevier-pure-endpoint-url}
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80
-  fits/mp-rest/url: http://fits-service:8080/fits
   gotenberg/mp-rest/url: http://gotenberg:3000
   r3data:
     repositories/mp-rest/url: https://www.re3data.org/api
@@ -170,7 +169,6 @@ rest:
       password: pw4damap
 
   rest:
-    fits/mp-rest/url: http://localhost:8089/fits
     gotenberg/mp-rest/url: http://localhost:3000
     mock-projects/mp-rest/url: http://localhost:8091
     mock-persons/mp-rest/url: http://localhost:8091
