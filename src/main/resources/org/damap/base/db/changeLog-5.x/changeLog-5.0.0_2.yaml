@@ -5013,13 +5013,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: dmp.steps.data.specify.dialog.fileFormat
+                  value: dmp.steps.data.specify.dialog.fileFormat.info
               - column:
                   name: language
                   value: en
               - column:
                   name: default_value
-                  value: File Format
+                  value: Specify mime type (e.g. image/png) or file format (png)
               - column:
                   name: active
                   valueBoolean: true
@@ -5031,13 +5031,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: dmp.steps.data.specify.dialog.fileFormat.info
+                  value: dmp.steps.data.specify.dialog.fileFormat.label
               - column:
                   name: language
                   value: en
               - column:
                   name: default_value
-                  value: Specify mime type (e.g. image/png) or file format (png)
+                  value: File Format
               - column:
                   name: active
                   valueBoolean: true
@@ -7839,7 +7839,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: dmp.steps.people.search
+                  value: dmp.steps.people.search.field
               - column:
                   name: language
                   value: en
