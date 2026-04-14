@@ -2769,7 +2769,7 @@ databaseChangeLog:
                   value: en
               - column:
                   name: default_value
-                  value: TODO
+                  value: Templates
               - column:
                   name: active
                   valueBoolean: true
@@ -3933,6 +3933,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.costs.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Step 10, you’re almost there, Firstname!'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.costs.infoBox.description
               - column:
                   name: language
@@ -4192,6 +4210,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Data management costs
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.costs.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Estimate the costs for data management in this project.
               - column:
                   name: active
                   valueBoolean: true
@@ -4527,6 +4563,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.data.reuse.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'On to Step 9, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.data.reuse.instructions
               - column:
                   name: language
@@ -4660,6 +4714,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Data reuse planning
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.data.reuse.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Consider potential research uses and users of your data sets.
               - column:
                   name: active
                   valueBoolean: true
@@ -5121,6 +5193,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.data.specify.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Let’s talk about data, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.data.specify.info.none
               - column:
                   name: language
@@ -5326,6 +5416,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Explanation no data
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.data.specify.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Describe your research data.
               - column:
                   name: active
                   valueBoolean: true
@@ -5589,6 +5697,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.documentation.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Now onto Step 4, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.documentation.info.metadata
               - column:
                   name: language
@@ -5823,6 +5949,42 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.documentation.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Outline how your data will be organised throughout the project.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.end.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Finally, let’s review your work, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.end.instructions
               - column:
                   name: language
@@ -5848,6 +6010,42 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Summary
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.end.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Check if you covered everything.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.legal.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'On to Step 6, you’re halfway there, Firstname!'
               - column:
                   name: active
                   valueBoolean: true
@@ -6777,6 +6975,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.legal.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Address important legal and ethical dimensions of your project.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.legal.view.button.ethical
               - column:
                   name: language
@@ -6802,6 +7018,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Legal aspects
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.licensing.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Advancing to Step 7, Firstname'
               - column:
                   name: active
                   valueBoolean: true
@@ -7018,6 +7252,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Access control and licensing overview
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.licensing.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Elaborate on future access to your data.
               - column:
                   name: active
                   valueBoolean: true
@@ -7443,6 +7695,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.people.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Welcome to Step 2, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.people.instructions
               - column:
                   name: language
@@ -7605,6 +7875,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.people.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Identify team members in your project.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.people.view.button.manualContributor
               - column:
                   name: language
@@ -7630,6 +7918,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Search contributor
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.project.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Hi Firstname, let’s get started'
               - column:
                   name: active
                   valueBoolean: true
@@ -7911,6 +8217,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.project.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Begin creating your DMP by identifying your project.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.project.view.button.choose
               - column:
                   name: language
@@ -8001,13 +8325,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: dmp.steps.repositories.filter
+                  value: dmp.steps.repositories.filter.find
               - column:
                   name: language
                   value: en
               - column:
                   name: default_value
-                  value: Filter repositories
+                  value: Find repositories
               - column:
                   name: active
                   valueBoolean: true
@@ -8019,13 +8343,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: dmp.steps.repositories.filter.find
+                  value: dmp.steps.repositories.filter.label
               - column:
                   name: language
                   value: en
               - column:
                   name: default_value
-                  value: Find repositories
+                  value: Filter repositories
               - column:
                   name: active
                   valueBoolean: true
@@ -8098,6 +8422,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Find other repository
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.repositories.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Step 8, Firstname'
               - column:
                   name: active
                   valueBoolean: true
@@ -8379,6 +8721,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.repositories.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Choose suitable repositories for your data.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.repositories.table.header.title
               - column:
                   name: language
@@ -8649,6 +9009,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: dmp.steps.storage.greeting
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Step 5, Let’s elaborate on your storage, Firstname'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: dmp.steps.storage.instructions
               - column:
                   name: language
@@ -8746,6 +9124,24 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: Remove storage
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: dmp.steps.storage.summaryLine
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Define who can access and modify your data and describe your storage and backup strategies.
               - column:
                   name: active
                   valueBoolean: true
