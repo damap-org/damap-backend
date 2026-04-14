@@ -2763,6 +2763,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: admin.templates.sectionTitle
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: TODO
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: admin.templates.success.delete
               - column:
                   name: language
@@ -16659,7 +16677,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: 'sidebar.footer.data-protection-declaration'
+                  value: 'sidebar.footer.data-protection-declaration.label'
               - column:
                   name: language
                   value: en
@@ -16713,7 +16731,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: sidebar.footer.impressum
+                  value: sidebar.footer.impressum.label
               - column:
                   name: language
                   value: en
@@ -16749,7 +16767,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
-                  value: 'sidebar.footer.terms-and-conditions'
+                  value: 'sidebar.footer.terms-and-conditions.label'
               - column:
                   name: language
                   value: en

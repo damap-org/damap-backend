@@ -11,13 +11,13 @@
   "sidebar.navigation.home": "Home",
   "sidebar.navigation.dmps": "DMPs",
   "sidebar.navigation.admin": "Admin",
-  "sidebar.footer.impressum": "Impressum",
+  "sidebar.footer.impressum.label": "Impressum",
   "sidebar.footer.impressum.link": "#",
   "sidebar.footer.gdpr-info": "GDPR Info",
-  "sidebar.footer.terms-and-conditions": "Terms and Conditions",
+  "sidebar.footer.terms-and-conditions.label": "Terms and Conditions",
   "sidebar.footer.terms-and-conditions.link": "#",
   "sidebar.footer.version": "Version",
-  "sidebar.footer.data-protection-declaration": "Data Protection Declaration",
+  "sidebar.footer.data-protection-declaration.label": "Data Protection Declaration",
   "sidebar.footer.data-protection-declaration.link": "#",
   "sidebar.footer.collapsed.hint": "Expand the menu to access legal information",
   "dashboard.home.section-intro": "Welcome to DAMAP, a service that helps you create a Data Management Plan (DMP) for your project.",
@@ -435,7 +435,7 @@
   "dmp.steps.project.success": "Updated project information!",
   "dmp.steps.project.warning.dmp": "A DMP already exists for this project",
   "dmp.steps.repositories.add": "Add repository",
-  "dmp.steps.repositories.filter": "Filter repositories",
+  "dmp.steps.repositories.filter.label": "Filter repositories",
   "dmp.steps.repositories.filter.find": "Find repositories",
   "dmp.steps.repositories.filter.reset": "Reset filter",
   "dmp.steps.repositories.filters": "Filters",
@@ -954,5 +954,6 @@
   "treeselect.filter": "Filter selection",
   "treeselect.options": "Select options",
   "treeselect.toggle": "Toggle {{value}}",
-  "yes": "Yes"
+  "yes": "Yes",
+  "admin.templates.sectionTitle": "TODO"
 }

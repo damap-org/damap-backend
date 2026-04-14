@@ -13,7 +13,7 @@ Usage:
         --author "Your Name" \
         --output changeLog-5.0.0_2.yaml
 
-python generate-translation-changelog.py --input translations_new.json --language en --changeset-id 29 --author "Geoffrey Karnbach" --output changeLog-5.0.0_2.yaml
+python generate-translation-changelog.py --input translations_new.json --language en --changeset-id 29 --author "Geoffrey Karnbach" --output ../src/main/resources/org/damap/base/db/changeLog-5.x/changeLog-5.0.0_2.yaml
 
 """
 
