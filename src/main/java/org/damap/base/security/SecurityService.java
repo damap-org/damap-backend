@@ -16,6 +16,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -53,6 +54,9 @@ public class SecurityService {
   String sharedSecret;
 
   @Inject JWTParser parser;
+
+  @Inject
+  TenantConfigResolver tenantConfigResolver;
 
   /**
    * getUserId.
@@ -136,6 +140,10 @@ public class SecurityService {
   public String getAffiliation() {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal) || isUserNotLoggedIn()) {
+      return null;
+    }
+
+    if (tenantConfigResolver.isMultitenancyDisabled()) {
       return null;
     }
 
