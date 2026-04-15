@@ -1305,6 +1305,24 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: admin.edit.translations
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Edit translations
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: admin.images.actions.delete
               - column:
                   name: language

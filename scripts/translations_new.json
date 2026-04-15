@@ -977,5 +977,6 @@
   "dmp.steps.repositories.greeting": "Step 8, Firstname",
   "dmp.steps.data.reuse.greeting": "On to Step 9, Firstname",
   "dmp.steps.costs.greeting": "Step 10, you’re almost there, Firstname!",
-  "dmp.steps.end.greeting": "Finally, let’s review your work, Firstname"
+  "dmp.steps.end.greeting": "Finally, let’s review your work, Firstname",
+  "admin.edit.translations": "Edit translations"
 }
