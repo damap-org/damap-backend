@@ -222,10 +222,10 @@ components:
               $ref: "#/components/schemas/SystemProjectID"
     Project:
       x-parent: true
-      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Project"
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/init/openapi.yaml#/components/schemas/Project"
     Contact:
       x-parent: true
-      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contact"
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/init/openapi.yaml#/components/schemas/Contact"
     DAMAPContact:
       allOf:
         - $ref: "#/components/schemas/Contact"
@@ -237,7 +237,7 @@ components:
               $ref: "#/components/schemas/SystemContactID"
     Contributor:
       x-parent: true
-      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contributor"
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/init/openapi.yaml#/components/schemas/Contributor"
     DAMAPContributor:
       allOf:
         - $ref: "#/components/schemas/Contributor"
