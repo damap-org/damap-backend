@@ -54,6 +54,9 @@ public class ConfigResource {
   @ConfigProperty(name = "damap.auth.email-claim")
   String emailClaim;
 
+  @ConfigProperty(name = "damap.auth.affiliations-claim")
+  String affiliationClaim;
+
   @ConfigProperty(name = "damap.auth.admin-role-name")
   String adminRoleName;
 
@@ -62,6 +65,9 @@ public class ConfigResource {
 
   @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
+
+  @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "")
+  Optional<List<String>> tenants;
 
   @Inject ColorThemeService colorThemeService;
 
@@ -86,6 +92,7 @@ public class ConfigResource {
     configDO.setGivenNameClaim(givenNameClaim);
     configDO.setFamilyNameClaim(familyNameClaim);
     configDO.setEmailClaim(emailClaim);
+    configDO.setAffiliationClaim(affiliationClaim);
     configDO.setAdminRoleName(adminRoleName);
     configDO.setResponseType("code"); // hardcoded since DAMAP only supports this flow
     configDO.setEnv(env);
@@ -110,6 +117,7 @@ public class ConfigResource {
     configDO.setTemplates(ExportTemplateDOMapper.mapEntityListToDOList(templateEntities));
 
     configDO.setMultitenancyEnabled(!tenantConfigResolver.isMultitenancyDisabled());
+    configDO.setTenants(tenants.orElse(List.of()));
     return configDO;
   }
 

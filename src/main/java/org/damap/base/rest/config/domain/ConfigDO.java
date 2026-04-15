@@ -22,6 +22,7 @@ public class ConfigDO {
   private String givenNameClaim;
   private String familyNameClaim;
   private String emailClaim;
+  private String affiliationClaim;
   private String adminRoleName;
   private String env;
   private List<ServiceConfigDO> personSearchServiceConfigs;
@@ -34,4 +35,5 @@ public class ConfigDO {
   private List<Image> images;
   private List<ExportTemplateDO> templates;
   private boolean multitenancyEnabled;
+  private List<String> tenants;
 }
