@@ -258,7 +258,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/init/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
               <output>${project.build.directory}/generated-sources/rda-dmp-common-standard</output>
               <generateApis>false</generateApis>
