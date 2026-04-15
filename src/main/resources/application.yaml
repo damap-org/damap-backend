@@ -27,6 +27,11 @@ damap:
   fields:
     ethical-report-enabled: true
 
+  mock-endpoint-url: http://api-mock:80
+
+  generic-cris-endpoint-url: http://localhost:8888/
+  generic-cris-api-key: "api-key-here"
+
   projects-service: default
   ## Elsevier Pure integration:
   # projects-service: elsevier-pure
@@ -132,6 +137,7 @@ quarkus:
       url: ${damap.elsevier-pure-endpoint-url}
 
 rest:
+  generic-cris/mp-rest/url: ${damap.generic-cris-endpoint-url}
   elsevier-pure/mp-rest/url: ${damap.elsevier-pure-endpoint-url}
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80

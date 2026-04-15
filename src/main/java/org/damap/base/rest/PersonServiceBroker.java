@@ -72,8 +72,15 @@ public class PersonServiceBroker {
    */
   public PersonService getServiceForQueryParam(String searchServiceType) {
     PersonService searchService = personServices.get(searchServiceType);
-    if (searchService == null && !personServices.isEmpty()) {
-      searchService = personServices.entrySet().iterator().next().getValue();
+    if (searchService == null) {
+      // TODO convert this to an exception that can be sent to the client.
+
+      throw new RuntimeException(
+          "No such person service registered: "
+              + searchServiceType
+              + " (available services: "
+              + String.join(", ", personServices.keySet())
+              + ")");
     }
 
     return searchService;
