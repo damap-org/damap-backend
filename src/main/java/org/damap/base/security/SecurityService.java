@@ -55,8 +55,7 @@ public class SecurityService {
 
   @Inject JWTParser parser;
 
-  @Inject
-  TenantConfigResolver tenantConfigResolver;
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   /**
    * getUserId.
