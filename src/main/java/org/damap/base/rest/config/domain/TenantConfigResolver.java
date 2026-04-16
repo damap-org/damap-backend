@@ -23,7 +23,7 @@ public class TenantConfigResolver {
   }
 
   public boolean isMultitenancyDisabled() {
-    List<String> tenants = multiTenantConfig.tenants().orElse(null);
+    List<String> tenants = multiTenantConfig.tenantList().orElse(null);
     return tenants == null || tenants.isEmpty();
   }
 }

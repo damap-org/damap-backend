@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 @ConfigMapping(prefix = "damap.tenants")
 public interface DamapMultiTenantConfig {
-  Optional<List<String>> tenants();
+  Optional<List<String>> tenantList();
 
   Map<String, DamapTenantAwareConfig> tenantConfigs();
 }
