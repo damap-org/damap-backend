@@ -1,4 +1,51 @@
 {{- if .Values.damap.multitenancy.enabled }}
+{{- $tenants := keys .Values.damap.multitenancy.tenants }}
+
+{{- /* Build tenant-configs map */}}
+{{- $tenantConfigs := dict }}
+{{- range $tenants }}
+{{- $_ := set $tenantConfigs . (index $.Values.damap.multitenancy.tenants .) }}
+{{- end }}
+
+{{- /* Build datasource map */}}
+{{- $datasources := dict }}
+{{- range $tenants }}
+{{- $_ := set $datasources . (dict
+  "jdbc" (dict
+    "url" (printf "jdbc:postgresql://damap-db:5432/%s" .)
+    "driver" "org.postgresql.Driver"
+  )
+  "db-kind" "postgresql"
+  "username" "${QUARKUS_DATASOURCE_USERNAME}"
+  "password" "${QUARKUS_DATASOURCE_PASSWORD}"
+) }}
+{{- end }}
+
+{{- /* Build liquibase map */}}
+{{- $liquibase := dict }}
+{{- range $tenants }}
+{{- $_ := set $liquibase . (dict
+  "migrate-at-start" true
+  "change-log" "org/damap/base/db/changeLog-root.yaml"
+) }}
+{{- end }}
+
+{{- /* Final structure */}}
+{{- $config := dict
+  "damap" (dict
+    "tenants" (dict
+      "tenant-list" (join "," $tenants)
+      "tenant-configs" $tenantConfigs
+    )
+  )
+  "%multitenant" (dict
+    "quarkus" (dict
+      "datasource" $datasources
+      "liquibase" $liquibase
+    )
+  )
+}}
+
 ---
 apiVersion: v1
 kind: Secret
@@ -9,23 +56,11 @@ metadata:
     app: damap
 stringData:
   tenants.yaml: |-
-    tenants: {{ .Values.damap.multitenancy.tenants | toJson }}
-    "%multitenant":
-      quarkus:
-        datasource:
-          {{- range $tenant := .Values.damap.multitenancy.tenants }}
-          {{ $tenant }}:
-            jdbc:
-              url: jdbc:postgresql://damap-db:5432/{{ $tenant }}
-              driver: org.postgresql.Driver
-            db-kind: postgresql
-            username: ${QUARKUS_DATASOURCE_USERNAME}
-            password: ${QUARKUS_DATASOURCE_PASSWORD}
-          {{- end }}
-        liquibase:
-          {{- range $tenant := .Values.damap.multitenancy.tenants }}
-          {{ $tenant }}:
-            migrate-at-start: true
-            change-log: org/damap/base/db/changeLog-root.yaml
-          {{- end }}
+  {{- $damap := dict "damap" (dict
+    "tenants" (dict
+      "tenant-list" $tenants
+      "tenant-configs" $tenantConfigs
+    )
+  ) }}
+  {{ toYaml $damap | nindent 4 }}
 {{- end }}

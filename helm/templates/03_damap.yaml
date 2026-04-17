@@ -109,7 +109,7 @@ spec:
               done
 
               echo "PostgreSQL ready. Creating tenant databases if missing..."
-              {{- range $tenant := .Values.damap.multitenancy.tenants }}
+              {{- range $tenant := keys .Values.damap.multitenancy.tenants }}
               echo "Checking database '{{ $tenant }}'"
               if ! psql -h damap-db -U {{ $.Values.damap.dbUser }} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='{{ $tenant }}'" | grep -q 1; then
                 echo "Database '{{ $tenant }}' does not exist. Creating..."
@@ -266,30 +266,36 @@ spec:
             {{- /*
             Additional integrations configuration
             */}}
-            - name: DAMAP_PERSON_SERVICES
-              value: {{ .Values.damap.personServices | toJson | quote }}
-            - name: DAMAP_PROJECTS_SERVICE
-              value: {{ .Values.damap.projectsService }}
+            {{- range $index, $svc := .Values.damap.personServices }}
+            - name: DAMAP_TENANT_AWARE_PERSON_SERVICES_{{ $index }}__DISPLAY_TEXT
+              value: {{ index $svc "display-text" | quote }}
+            - name: DAMAP_TENANT_AWARE_PERSON_SERVICES_{{ $index }}__QUERY_VALUE
+              value: {{ index $svc "query-value" | quote }}
+            - name: DAMAP_TENANT_AWARE_PERSON_SERVICES_{{ $index }}__CLASS_NAME
+              value: {{ index $svc "class-name" | quote }}
+            {{- end }}
+            - name: DAMAP_TENANT_AWARE_PROJECT_SERVICE
+              value: {{ .Values.damap.projectService }}
 
             {{- /*
             Elsevier Pure integration
             */}}
             {{- if .Values.pure.enabled }}
-            - name: DAMAP_ELSEVIER_PURE_BACKEND
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND
               value: "{{ .Values.pure.backend }}"
-            - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE
               value: file:///data/projects.json
-            - name: DAMAP_ELSEVIER_PURE_PERSONS_FILE
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE
               value: file:///data/persons.json
-            - name: DAMAP_ELSEVIER_PURE_ENDPOINT_URL
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL
               value: "{{ .Values.pure.endpoint }}"
-            - name: DAMAP_ELSEVIER_PURE_API_KEY
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY
               value: "{{ .Values.pure.apiKey }}"
-            - name: DAMAP_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
               value: {{ .Values.pure.descriptionClassification | quote }}
-            - name: DAMAP_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
               value: {{ .Values.pure.projectLeadClassification | quote }}
-            - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
+            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
               value: {{ .Values.pure.roleClassifications | toJson | quote }}
             {{- end }}
           volumeMounts:
@@ -297,7 +303,7 @@ spec:
             - name: damap-tenants
               mountPath: /opt/damap/tenants.yaml
               subPath: tenants.yaml
-              readonly: true
+              readOnly: true
             {{- end }}
             {{- if .Values.pure.enabled }}
             - mountPath: /data/persons.json
