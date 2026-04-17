@@ -260,8 +260,6 @@ spec:
             {{- /*
             Auxiliary services configuration
             */}}
-            - name: DAMAP_FITS_URL
-              value: ""
             - name: REST_GOTENBERG_MP_REST_URL
               value: "http://localhost:3000"
 
