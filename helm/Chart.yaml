@@ -3,8 +3,8 @@ name: damap-chart
 description: A tool to create machine-actionable data management plans.
 type: application
 
-version: 0.1.0-dev.4
-appVersion: "5.0.0-rc.1"
+version: 0.1.0-dev.5
+appVersion: "5.0.0-dev.3"
 
 kubeVersion: ">=1.25.0"
 
@@ -30,7 +30,16 @@ maintainers:
 icon: https://damap.org/logo.svg
 
 annotations:
+  artifacthub.io/images: |
+    - name: damap-backend
+      image: ghcr.io/damap-org/damap-backend:5.0.0-dev.3_60bd433
+    - name: damap-frontend
+      image: ghcr.io/damap-org/damap-frontend:5.0.0-rc.1
   artifacthub.io/prerelease: "true"
   artifacthub.io/changes: |
+    - kind: added
+      description: Support per-tenant configuration.
     - kind: fixed
-      description: Move multitenancy initialization to a separate init container to prevent DB connection timeouts.
+      description: Correct UID for mock Pure contributor in the default values.
+    - kind: removed
+      description: Remove unused FITS environment variable from DAMAP backend deployment.
