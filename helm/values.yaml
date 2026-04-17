@@ -139,7 +139,7 @@ pure:
           lastName: Faketon
         orcid: 0000-0000-0000-0001
         email: alice.faketon@example.com
-      - uuid: 6542321
+      - uuid: 654321
         name:
           firstName: Bob
           lastName: Mockman
