@@ -9,9 +9,7 @@ metadata:
     app: damap
 stringData:
   tenants.yaml: |-
-    damap:
-      tenants:
-        tenant-list: {{ .Values.damap.multitenancy.tenants | toJson }}
+    tenants: {{ .Values.damap.multitenancy.tenants | toJson }}
     "%multitenant":
       quarkus:
         datasource:

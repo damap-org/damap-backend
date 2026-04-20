@@ -219,30 +219,30 @@ spec:
             {{- /*
             Additional integrations configuration
             */}}
-            - name: DAMAP_TENANT_AWARE_PERSON_SERVICES
+            - name: DAMAP_PERSON_SERVICES
               value: {{ .Values.damap.personServices | toJson | quote }}
-            - name: DAMAP_TENANT_AWARE_PROJECT_SERVICE
-              value: {{ .Values.damap.projectService }}
+            - name: DAMAP_PROJECTS_SERVICE
+              value: {{ .Values.damap.projectsService }}
 
             {{- /*
             Elsevier Pure integration
             */}}
             {{- if .Values.pure.enabled }}
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND
+            - name: DAMAP_ELSEVIER_PURE_BACKEND
               value: "{{ .Values.pure.backend }}"
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE
+            - name: DAMAP_ELSEVIER_PURE_PROJECTS_FILE
               value: file:///data/projects.json
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE
+            - name: DAMAP_ELSEVIER_PURE_PERSONS_FILE
               value: file:///data/persons.json
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL
+            - name: DAMAP_ELSEVIER_PURE_ENDPOINT_URL
               value: "{{ .Values.pure.endpoint }}"
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY
+            - name: DAMAP_ELSEVIER_PURE_API_KEY
               value: "{{ .Values.pure.apiKey }}"
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
+            - name: DAMAP_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION
               value: {{ .Values.pure.descriptionClassification | quote }}
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
+            - name: DAMAP_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION
               value: {{ .Values.pure.projectLeadClassification | quote }}
-            - name: DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
+            - name: DAMAP_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS
               value: {{ .Values.pure.roleClassifications | toJson | quote }}
             {{- end }}
           volumeMounts:

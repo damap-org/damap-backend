@@ -45,7 +45,7 @@ damap:
     - display-text: "ORCID"
       query-value: "ORCID"
       class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
-  projectService: elsevier-pure
+  projectsService: elsevier-pure
   protocol: http
   storageClassName: ""
   tlsClusterIssuer: ""
@@ -335,5 +335,4 @@ pure:
   # RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR,
   # PROJECT_COORDINATOR, OTHER
   roleClassifications:
-    - pure-role-uri: /dk/atira/pure/member
-      contributor-role: PROJECT_MEMBER
+    /dk/atira/pure/...: PROJECT_MEMBER
