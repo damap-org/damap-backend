@@ -1,7 +1,11 @@
 package org.damap.base.integration.pure;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.google.common.io.Resources;
 import io.quarkus.arc.All;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -11,22 +15,48 @@ import org.damap.base.integration.PersonService;
 import org.damap.base.rest.base.Pagination;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
+import org.damap.base.rest.config.domain.DamapTenantAwareConfig;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestProfile(PureTestProfile.class)
 public class PurePersonsServiceTest {
-  private PersonService createPersonsService() {
-    FileBasedPureAPI api = new FileBasedPureAPI();
-    api.personsFile = Resources.getResource("org/damap/base/integration/pure/persons.json");
-    api.projectsFile = Resources.getResource("org/damap/base/integration/pure/projects.json");
 
-    PurePersonService personService = new PurePersonService();
-    personService.pureAPI = api;
-    return personService;
+  @InjectMock TenantConfigResolver tenantConfigResolver;
+
+  @Inject PureAPI pureAPI;
+
+  @Inject @All List<PersonService> personsServices;
+
+  @BeforeEach
+  public void setup() {
+
+    DamapTenantAwareConfig tenantAwareConfig = mock(DamapTenantAwareConfig.class);
+
+    try {
+      when(tenantAwareConfig.elsevierPurePersonsFile())
+          .thenReturn(Resources.getResource("org/damap/base/integration/pure/persons.json"));
+      when(tenantAwareConfig.elsevierPureProjectsFile())
+          .thenReturn(Resources.getResource("org/damap/base/integration/pure/projects.json"));
+    } catch (Exception e) {
+      throw new RuntimeException("File URLs are not valid");
+    }
+
+    when(tenantAwareConfig.elsevierPureBackend()).thenReturn("file");
+
+    when(tenantConfigResolver.getTenantAwareConfig()).thenReturn(tenantAwareConfig);
+  }
+
+  private PersonService getPersonsService() {
+    return personsServices.stream()
+        .filter(item -> item instanceof PurePersonService)
+        .findFirst()
+        .orElse(null);
   }
 
   private ContributorDO getFirstPerson() {
@@ -57,7 +87,7 @@ public class PurePersonsServiceTest {
 
   @Test
   public void testRead() {
-    PersonService svc = createPersonsService();
+    PersonService svc = this.getPersonsService();
 
     ContributorDO expected = getFirstPerson();
     Assertions.assertEquals(expected, svc.read(expected.getUniversityId()));
@@ -71,7 +101,7 @@ public class PurePersonsServiceTest {
 
   @Test
   public void testSearch() {
-    PersonService svc = createPersonsService();
+    PersonService svc = getPersonsService();
 
     ContributorDO expected = getSecondPerson();
     Search search = new Search();
@@ -82,14 +112,12 @@ public class PurePersonsServiceTest {
     Assertions.assertEquals(expected, results.getItems().get(0));
   }
 
-  @Inject PureAPI pureAPI;
-
-  @Inject @All List<PersonService> personsServices;
+  @Inject PureAPIFactory pureAPIFactory;
 
   @Test
   public void testWiring() {
     Assertions.assertNotNull(pureAPI);
-    Assertions.assertTrue(pureAPI instanceof FileBasedPureAPI);
+    Assertions.assertTrue(pureAPIFactory.create() instanceof FileBasedPureAPI);
 
     PersonService svc =
         personsServices.stream()

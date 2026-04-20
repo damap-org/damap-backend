@@ -1,14 +1,14 @@
 package org.damap.base.integration.pure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.arc.lookup.LookupIfProperty;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import lombok.extern.jbosslog.JBossLog;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 /**
  * This implementation for the {@link PureAPI} reads the data from files instead of a remote
@@ -17,18 +17,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @JBossLog
 @ApplicationScoped
 @Typed(FileBasedPureAPI.class)
-@LookupIfProperty(name = "damap.elsevier-pure-backend", stringValue = "file")
+@RegisterClientHeaders(PureAuthenticationHeaderFactory.class)
 class FileBasedPureAPI implements PureAPI {
-  @ConfigProperty(name = "damap.elsevier-pure-projects-file")
-  URL projectsFile;
 
-  @ConfigProperty(name = "damap.elsevier-pure-persons-file")
-  URL personsFile;
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   @Override
   public PureAPIPaginatedProjectsResponse listAllProjects(Long size, Long offset) {
     ObjectMapper mapper = new ObjectMapper();
-    try (InputStream in = projectsFile.openStream()) {
+    try (InputStream in =
+        tenantConfigResolver.getTenantAwareConfig().elsevierPureProjectsFile().openStream()) {
       return mapper.readValue(in, PureAPIPaginatedProjectsResponse.class);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -46,7 +44,8 @@ class FileBasedPureAPI implements PureAPI {
   @Override
   public PureAPIPaginatedPersonsResponse listAllPersons(Long size, Long offset) {
     ObjectMapper mapper = new ObjectMapper();
-    try (InputStream in = personsFile.openStream()) {
+    try (InputStream in =
+        tenantConfigResolver.getTenantAwareConfig().elsevierPurePersonsFile().openStream()) {
       return mapper.readValue(in, PureAPIPaginatedPersonsResponse.class);
     } catch (IOException e) {
       throw new RuntimeException(e);

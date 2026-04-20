@@ -16,10 +16,10 @@ public class PureAPIConnectionTest {
 
   @Inject PureAPI pureAPI;
 
-  @ConfigProperty(name = "damap.elsevier-pure-api-key")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-api-key")
   String apiKey;
 
-  @ConfigProperty(name = "damap.elsevier-pure-endpoint-url")
+  @ConfigProperty(name = "damap.tenant-aware.elsevier-pure-endpoint-url")
   String endpointUrl;
 
   // Example test UUIDs - replace these with actual project UUIDs from your PURE instance

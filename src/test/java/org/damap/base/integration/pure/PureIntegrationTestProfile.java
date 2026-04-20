@@ -22,13 +22,11 @@ public class PureIntegrationTestProfile implements QuarkusTestProfile {
 
     overrides.put("quarkus.http.test-port", "0");
 
-    overrides.put("damap.elsevier-pure-backend", "http");
+    overrides.put("damap.tenant-aware.elsevier-pure-backend", "http");
     overrides.put(
-        "damap.elsevier-pure-endpoint-url", "https://your-pure-instance.elsevierpure.com/ws/api");
-    overrides.put("damap.elsevier-pure-api-key", "your-pure-api-key-here");
-    overrides.put(
-        "quarkus.rest-client.elsevier-pure.url",
+        "damap.tenant-aware.elsevier-pure-endpoint-url",
         "https://your-pure-instance.elsevierpure.com/ws/api");
+    overrides.put("damap.tenant-aware.elsevier-pure-api-key", "your-pure-api-key-here");
 
     System.out.println("PURE API configuration loaded for testing");
 

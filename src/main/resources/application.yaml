@@ -1,7 +1,6 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
-  title: DAMAP Tool
   env: DEV # override in your custom project with PROD for production deployment
   auth:
     # Scopes to request during login:
@@ -24,48 +23,55 @@ damap:
     # If DAMAP is locally deployed ADMIN_ROLE constant in the DefaultProfile test profile needs to be
     # the same as here, otherwise the tests fail
     admin-role-name: Damap Admin
-  fields:
-    ethical-report-enabled: true
 
-  projects-service: default
-  ## Elsevier Pure integration:
-  # projects-service: elsevier-pure
-  # The following settings map Pure classification URIs to DAMAP properties. Pure classification URIs start with
-  # /dk/atira/pure, but are otherwise specific to the institutional setup in Pure.
+  # tenant-aware here means that in case of multitenancy, these configs need to be set per tenant, and not per instance
+  # for more information, see the multitenancy documentation on the website
+  tenant-aware:
+    title: DAMAP Tool
 
-  # The project description field DAMAP should use:
-  elsevier-pure-description-classification: /dk/atira/pure/projectdescription
-  # How Pure project contributor classifications map to DAMAP:
-  elsevier-pure-contributor-role-classifications:
-    # DAMAP supports the following roles:
-    # DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER,
-    # PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER,
-    # RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR,
-    # PROJECT_COORDINATOR, OTHER
-    /dk/atira/pure/member: PROJECT_MEMBER
-  # Which Pure classification should be read as the project lead:
-  elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
-  ## HTTP backend:
-  elsevier-pure-backend: http
-  elsevier-pure-endpoint-url: "https://your-pure-instance.elsevierpure.com/ws/api"
-  elsevier-pure-api-key: "your API key here"
-  ## Alternatively, the file-based backend:
-  # elsevier-pure-backend: file
-  elsevier-pure-projects-file: "file:///path/to/projects.json"
-  elsevier-pure-persons-file: "file:///path/to/persons.json"
+    fields:
+      ethical-report-enabled: true
 
-  ## Set up person lookups here:
-  person-services:
+    project-service: default
     ## Elsevier Pure integration:
-    # - display-text: 'Pure'
-    #   query-value: 'PURE'
-    #   class-name: 'org.damap.base.integration.pure.PurePersonService'
-    - display-text: 'University'
-      query-value: 'UNIVERSITY'
-      class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-    - display-text: 'ORCID'
-      query-value: 'ORCID'
-      class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
+    # project-service: elsevier-pure
+    # The following settings map Pure classification URIs to DAMAP properties. Pure classification URIs start with
+    # /dk/atira/pure, but are otherwise specific to the institutional setup in Pure.
+
+    # The project description field DAMAP should use:
+    elsevier-pure-description-classification: /dk/atira/pure/projectdescription
+    # How Pure project contributor classifications map to DAMAP:
+    elsevier-pure-contributor-role-classifications:
+      # DAMAP supports the following roles:
+      # DATA_COLLECTOR, DATA_CURATOR, DATA_MANAGER, DISTRIBUTOR, EDITOR, HOSTING_INSTITUTION, PRODUCER, PROJECT_LEADER,
+      # PROJECT_MANAGER, PROJECT_MEMBER, REGISTRATION_AGENCY, REGISTRATION_AUTHORITY, RELATED_PERSON, RESEARCHER,
+      # RESEARCH_GROUP, RIGHTS_HOLDER, SPONSOR, SUPERVISOR, WORK_PACKAGE_LEADER, PRINCIPAL_INVESTIGATOR,
+      # PROJECT_COORDINATOR, OTHER
+      - pure-role-uri: /dk/atira/pure/member
+        contributor-role: PROJECT_MEMBER
+    # Which Pure classification should be read as the project lead:
+    elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
+    ## HTTP backend:
+    elsevier-pure-backend: http
+    elsevier-pure-endpoint-url: "https://your-pure-instance.elsevierpure.com/ws/api"
+    elsevier-pure-api-key: "your API key here"
+    ## Alternatively, the file-based backend:
+    # elsevier-pure-backend: file
+    elsevier-pure-projects-file: "file:///path/to/projects.json"
+    elsevier-pure-persons-file: "file:///path/to/persons.json"
+
+    ## Set up person lookups here:
+    person-services:
+      ## Elsevier Pure integration:
+      # - display-text: 'Pure'
+      #   query-value: 'PURE'
+      #   class-name: 'org.damap.base.integration.pure.PurePersonService'
+      - display-text: 'University'
+        query-value: 'UNIVERSITY'
+        class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
+      - display-text: 'ORCID'
+        query-value: 'ORCID'
+        class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
 
 invenio:
   disabled: true
@@ -127,12 +133,7 @@ quarkus:
     always-include: true # set to false if swagger-ui should only be available in dev mode
     oauth-client-id: ${quarkus.oidc.client-id}
 
-  rest-client:
-    elsevier-pure:
-      url: ${damap.elsevier-pure-endpoint-url}
-
 rest:
-  elsevier-pure/mp-rest/url: ${damap.elsevier-pure-endpoint-url}
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80
   gotenberg/mp-rest/url: http://gotenberg:3000
@@ -187,8 +188,6 @@ rest:
         url: jdbc:h2:mem:test
     oidc:
       enabled: false
-  rest:
-    elsevier-pure/mp-rest/url: "http://localhost:9999/fake-pure-api"
 
 "%multitenant":
   quarkus:

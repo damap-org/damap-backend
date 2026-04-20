@@ -16,6 +16,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -46,13 +47,15 @@ public class SecurityService {
   @ConfigProperty(name = "damap.auth.affiliations-claim")
   String affiliationsClaim;
 
-  @ConfigProperty(name = "tenants", defaultValue = "")
+  @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "")
   Optional<List<String>> tenants;
 
   @ConfigProperty(name = "invenio.shared-secret")
   String sharedSecret;
 
   @Inject JWTParser parser;
+
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   /**
    * getUserId.
@@ -127,9 +130,19 @@ public class SecurityService {
     return securityIdentity.hasRole(adminRoleName);
   }
 
+  /**
+   * Returns a String representing the affiliation of the logged-in user.
+   *
+   * @return a {@link String} representing the tenants' affiliation. Returns null if no affiliation
+   *     could be read.
+   */
   public String getAffiliation() {
     final Principal principal = securityIdentity.getPrincipal();
     if (!(principal instanceof OidcJwtCallerPrincipal oidcPrincipal) || isUserNotLoggedIn()) {
+      return null;
+    }
+
+    if (tenantConfigResolver.isMultitenancyDisabled()) {
       return null;
     }
 
@@ -161,7 +174,7 @@ public class SecurityService {
 
     List<String> tenantList = tenants.orElse(List.of());
 
-    // check if affiliations are actual tenants and if exactly one unique affiliation  is present
+    // check if affiliations are actual tenants and if exactly one unique affiliation is present
     // currently DAMAP cannot handle multiple affiliations
     List<String> validAffiliations = affiliations.stream().filter(tenantList::contains).toList();
     if (validAffiliations.size() == 1) {

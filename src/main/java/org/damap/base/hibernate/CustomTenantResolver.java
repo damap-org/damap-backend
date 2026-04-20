@@ -18,7 +18,7 @@ public class CustomTenantResolver implements TenantResolver {
 
   private static final Logger LOG = Logger.getLogger(CustomTenantResolver.class);
 
-  @ConfigProperty(name = "tenants", defaultValue = "default")
+  @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "default")
   List<String> tenantIds;
 
   @Inject SecurityService securityService;
@@ -36,7 +36,7 @@ public class CustomTenantResolver implements TenantResolver {
       return getDefaultTenantId();
     }
     if (!tenantIds.contains(tenantId)) {
-      throw new ForbiddenException("TenantId " + tenantId + " not in list of tenants");
+      throw new ForbiddenException("TenantId mismatch for tenantId: " + tenantId);
     }
     LOG.debug("TenantId = " + tenantId);
     return tenantId;

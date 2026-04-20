@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.damap.base.integration.ProjectServiceProvider;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * This class is an overlay for {@link ProjectServiceProvider} that automatically determines which
@@ -29,19 +29,18 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public final class ProjectService implements ProjectServiceProvider {
   @Inject @All List<ProjectServiceProvider> services;
 
-  @ConfigProperty(name = "damap.projects-service")
-  String selectedService;
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   ProjectServiceProvider backingServiceCache;
 
   public ProjectService() {}
 
-  public ProjectService(List<ProjectServiceProvider> services, String selectedService) {
+  public ProjectService(List<ProjectServiceProvider> services) {
     this.services = services;
-    this.selectedService = selectedService;
   }
 
   private ProjectServiceProvider getProjectService() {
+    String selectedService = tenantConfigResolver.getTenantAwareConfig().projectService();
     log.info("Getting projects service " + selectedService);
     if (backingServiceCache == null) {
       if (services.isEmpty()) {
@@ -72,7 +71,7 @@ public final class ProjectService implements ProjectServiceProvider {
                 .map(configId -> configId == null ? "default" : configId)
                 .collect(Collectors.toSet());
         throw new RuntimeException(
-            "The configured damap.projects-service ("
+            "The configured damap.tenant-aware.project-service ("
                 + selectedService
                 + ") was not found. "
                 + "Please select one of "

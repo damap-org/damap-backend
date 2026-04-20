@@ -4,15 +4,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.*;
 import lombok.extern.jbosslog.JBossLog;
-import org.damap.base.enums.EContributorRole;
 import org.damap.base.integration.ProjectServiceProvider;
 import org.damap.base.rest.base.ResultList;
 import org.damap.base.rest.base.Search;
+import org.damap.base.rest.config.domain.DamapTenantAwareConfig;
+import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 import org.damap.base.rest.dmp.domain.ProjectSupplementDO;
 import org.damap.base.security.SecurityService;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * This class partially implements reading Elsevier Pure Project and Person objects from their API.
@@ -24,22 +24,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @JBossLog
 @ApplicationScoped
 public class PureProjectService implements ProjectServiceProvider {
+
   @Inject PureAPI pureAPI;
   @Inject SecurityService securityService;
 
-  /** Maps the configured Pure contributor role classification URIs to DAMAP roles. */
-  @ConfigProperty(
-      name = "damap.elsevier-pure-contributor-role-classifications",
-      defaultValue = "{}")
-  RoleClassificationMappingConfiguration contributorRoleMapping;
-
-  /** Describes the Pure classification URI for project descriptions. */
-  @ConfigProperty(name = "damap.elsevier-pure-description-classification", defaultValue = "")
-  String descriptionClassification;
-
-  /** Describes the Pure classification URI for project lead. */
-  @ConfigProperty(name = "damap.elsevier-pure-project-lead-role-classification", defaultValue = "")
-  String projectLeadRoleClassification;
+  @Inject TenantConfigResolver tenantConfigResolver;
 
   @Override
   public List<ContributorDO> getProjectStaff(String projectId) {
@@ -75,12 +64,16 @@ public class PureProjectService implements ProjectServiceProvider {
 
   private void convertContributorRoles(
       PureAPIParticipantAssociation participantAssociation, ContributorDO contributor) {
-    if (participantAssociation.role != null
-        && participantAssociation.role.uri != null
-        && contributorRoleMapping.configs.containsKey(participantAssociation.role.uri)) {
-      Set<EContributorRole> roles = new HashSet<>();
-      roles.add(contributorRoleMapping.configs.get(participantAssociation.role.uri));
-      contributor.setRoles(roles);
+    List<DamapTenantAwareConfig.PureRoleClassification> elsevierPureContributorRoleClassifications =
+        tenantConfigResolver.getTenantAwareConfig().elsevierPureContributorRoleClassifications();
+    if (participantAssociation.role != null && participantAssociation.role.uri != null) {
+      elsevierPureContributorRoleClassifications.stream()
+          .filter(
+              pureRoleClassification ->
+                  pureRoleClassification.pureRoleUri().equals(participantAssociation.role.uri))
+          .findFirst()
+          .map(DamapTenantAwareConfig.PureRoleClassification::contributorRole)
+          .ifPresent(role -> contributor.setRoles(Set.of(role)));
     }
   }
 
@@ -100,7 +93,10 @@ public class PureProjectService implements ProjectServiceProvider {
         .filter(participantAssociation -> participantAssociation.role.uri != null)
         .filter(
             participantAssociation ->
-                participantAssociation.role.uri.equals(projectLeadRoleClassification))
+                participantAssociation.role.uri.equals(
+                    tenantConfigResolver
+                        .getTenantAwareConfig()
+                        .elsevierPureProjectLeadRoleClassification()))
         .map(this::getContributorDO)
         .findFirst()
         .orElse(null);
@@ -116,7 +112,7 @@ public class PureProjectService implements ProjectServiceProvider {
     ResultList<ProjectDO> res = new ResultList<>();
     res.setSearch(search);
     res.setItems(
-        this.pureAPI.listAllProjects().stream()
+        pureAPI.listAllProjects().stream()
             .filter(
                 project ->
                     project.participants.stream()
@@ -129,7 +125,12 @@ public class PureProjectService implements ProjectServiceProvider {
                             participant ->
                                 ((PureAPIInternalParticipantAssociation) participant)
                                     .person.uuid.equals(securityService.getUserId())))
-            .map(project -> project.toProjectDO(descriptionClassification))
+            .map(
+                project ->
+                    project.toProjectDO(
+                        tenantConfigResolver
+                            .getTenantAwareConfig()
+                            .elsevierPureDescriptionClassification()))
             .toList());
     return res;
   }
@@ -140,7 +141,8 @@ public class PureProjectService implements ProjectServiceProvider {
     if (project == null || project.participants == null) {
       return null;
     }
-    return project.toProjectDO(descriptionClassification);
+    return project.toProjectDO(
+        tenantConfigResolver.getTenantAwareConfig().elsevierPureDescriptionClassification());
   }
 
   @Override
@@ -150,7 +152,12 @@ public class PureProjectService implements ProjectServiceProvider {
     res.setItems(
         pureAPI.listAllProjects().stream()
             .filter(project -> project.titleContains(query.getQuery()))
-            .map(project -> project.toProjectDO(descriptionClassification))
+            .map(
+                project ->
+                    project.toProjectDO(
+                        tenantConfigResolver
+                            .getTenantAwareConfig()
+                            .elsevierPureDescriptionClassification()))
             .toList());
     return res;
   }
