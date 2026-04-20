@@ -56,11 +56,5 @@ metadata:
     app: damap
 stringData:
   tenants.yaml: |-
-  {{- $damap := dict "damap" (dict
-    "tenants" (dict
-      "tenant-list" $tenants
-      "tenant-configs" $tenantConfigs
-    )
-  ) }}
-  {{ toYaml $damap | nindent 4 }}
+  {{ toYaml $config | nindent 4 }}
 {{- end }}
