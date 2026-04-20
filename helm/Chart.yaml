@@ -3,7 +3,7 @@ name: damap-chart
 description: A tool to create machine-actionable data management plans.
 type: application
 
-version: 0.1.0-dev.5
+version: 0.1.0-dev.6
 appVersion: "5.0.0-dev.3"
 
 kubeVersion: ">=1.25.0"
@@ -38,8 +38,4 @@ annotations:
   artifacthub.io/prerelease: "true"
   artifacthub.io/changes: |
     - kind: added
-      description: Support per-tenant configuration.
-    - kind: fixed
-      description: Correct UID for mock Pure contributor in the default values.
-    - kind: removed
-      description: Remove unused FITS environment variable from DAMAP backend deployment.
+      description: Specify resource requests and limits for the multitenant-db-check init container.
