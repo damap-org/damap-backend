@@ -46,7 +46,7 @@ public class TranslationService {
               .language(newLanguage)
               .defaultValue(englishTranslation.getDefaultValue())
               .value(null)
-              .active(false)
+              .active(true)
               .build();
 
       translationRepo.persist(newTranslation);
