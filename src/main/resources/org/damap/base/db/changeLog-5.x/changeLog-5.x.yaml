@@ -1,5 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: org/damap/base/db/changeLog-5.x/changeLog-5.0.0_1.yaml
-  - include:
-      file: org/damap/base/db/changeLog-5.x/changeLog-5.0.0_2.yaml

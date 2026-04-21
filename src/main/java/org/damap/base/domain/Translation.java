@@ -1,6 +1,6 @@
 package org.damap.base.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.Length;
-import org.hibernate.envers.Audited;
 
 /** Translation class. */
 @Data
@@ -24,12 +23,7 @@ import org.hibernate.envers.Audited;
     name = "translation",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"key", "language"})},
     indexes = {@Index(name = "idx_translation_language_active", columnList = "language, active")})
-@Audited
-public class Translation extends PanacheEntityBase {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  public Long id;
+public class Translation extends PanacheEntity {
 
   @Version private long version;
 
