@@ -34,6 +34,7 @@ public class ConfigDO {
   private ColorTheme colorTheme;
   private List<Image> images;
   private List<ExportTemplateDO> templates;
+  private boolean publicAvailable;
   private boolean multitenancyEnabled;
   private List<String> tenants;
 }

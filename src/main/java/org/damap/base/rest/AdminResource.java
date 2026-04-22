@@ -8,11 +8,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
-import org.damap.base.domain.ColorTheme;
-import org.damap.base.domain.ExportTemplate;
-import org.damap.base.domain.Image;
-import org.damap.base.domain.RecommendedRepository;
+import org.damap.base.domain.*;
 import org.damap.base.rest.admin.domain.BannerDO;
+import org.damap.base.rest.admin.domain.InstanceConfigDO;
 import org.damap.base.rest.admin.domain.RecommendedRepositoryDO;
 import org.damap.base.rest.admin.service.AdminService;
 import org.damap.base.rest.admin.service.RecommendedRepositoryService;
@@ -153,5 +151,21 @@ public class AdminResource {
   @RolesAllowed("${damap.auth.admin-role-name}")
   public void deleteTemplate(@RestPath Long id) {
     this.exportTemplateService.deleteTemplate(id);
+  }
+
+  @GET
+  @Path("/instance-config")
+  public InstanceConfigDO getInstanceConfig() {
+    log.info("Retrieving instance config");
+    return this.adminService.getInstanceConfig();
+  }
+
+  @PUT
+  @Path("/instance-config")
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public InstanceConfigDO updateInstanceConfig(InstanceConfigDO instanceConfig) {
+    log.info("Updating instance config");
+    log.info(instanceConfig);
+    return this.adminService.updateInstanceConfig(instanceConfig);
   }
 }

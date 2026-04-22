@@ -13,6 +13,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.ColorTheme;
 import org.damap.base.domain.ExportTemplate;
 import org.damap.base.domain.Image;
+import org.damap.base.repo.InstanceConfigRepo;
 import org.damap.base.rest.admin.mapper.ExportTemplateDOMapper;
 import org.damap.base.rest.config.domain.*;
 import org.damap.base.rest.config.domain.ConfigDO;
@@ -75,6 +76,8 @@ public class ConfigResource {
 
   @Inject TenantConfigResolver tenantConfigResolver;
 
+  @Inject InstanceConfigRepo instanceConfigRepo;
+
   /**
    * config.
    *
@@ -115,6 +118,9 @@ public class ConfigResource {
 
     List<ExportTemplate> templateEntities = ExportTemplate.listAll();
     configDO.setTemplates(ExportTemplateDOMapper.mapEntityListToDOList(templateEntities));
+
+    boolean publicAvailable = instanceConfigRepo.getConfig().getPublicAvailable();
+    configDO.setPublicAvailable(publicAvailable);
 
     configDO.setMultitenancyEnabled(!tenantConfigResolver.isMultitenancyDisabled());
     configDO.setTenants(tenants.orElse(List.of()));
