@@ -855,6 +855,60 @@ databaseChangeLog:
             columns:
               - column:
                   name: key
+                  value: http.success.translations.update
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Successfully updated translation
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: http.success.translations.language.add
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Successfully added language
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: http.success.translations.language.delete
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Successfully removed language
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
                   value: admin.banner.action.create
               - column:
                   name: language
