@@ -35,6 +35,7 @@ public class ConfigDO {
   private List<Image> images;
   private List<ExportTemplateDO> templates;
   private boolean publicAvailable;
+  private boolean consentFormEnabled;
   private boolean multitenancyEnabled;
   private List<String> tenants;
 }

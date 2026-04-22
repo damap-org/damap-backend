@@ -20,6 +20,12 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
+              - column:
+                  name: consent_form_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
 
         - insert:
             tableName: instance_config
@@ -30,3 +36,6 @@ databaseChangeLog:
               - column:
                   name: public_available
                   valueBoolean: false
+              - column:
+                  name: consent_form_enabled
+                  valueBoolean: true

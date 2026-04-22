@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Banner;
 import org.damap.base.domain.InstanceConfig;
-import org.damap.base.repo.DamapUserRepo;
 import org.damap.base.repo.InstanceConfigRepo;
 import org.damap.base.rest.admin.domain.BannerDO;
 import org.damap.base.rest.admin.domain.InstanceConfigDO;
@@ -17,8 +16,7 @@ import org.damap.base.rest.admin.mapper.BannerDOMapper;
 @JBossLog
 public class AdminService {
 
-  @Inject
-  InstanceConfigRepo instanceConfigRepo;
+  @Inject InstanceConfigRepo instanceConfigRepo;
 
   public BannerDO getAppBanner() {
     Banner banner = Banner.findAll().firstResult();
@@ -70,9 +68,10 @@ public class AdminService {
       throw new IllegalStateException("There is no instance config in the database");
     }
 
-      return InstanceConfigDO.builder()
-            .publicAvailable(instanceConfig.getPublicAvailable())
-            .build();
+    return InstanceConfigDO.builder()
+        .publicAvailable(instanceConfig.getPublicAvailable())
+        .consentFormEnabled(instanceConfig.getConsentFormEnabled())
+        .build();
   }
 
   @Transactional
@@ -83,10 +82,11 @@ public class AdminService {
     }
 
     instanceConfig.setPublicAvailable(updatedInstanceConfig.isPublicAvailable());
-
+    instanceConfig.setConsentFormEnabled(updatedInstanceConfig.isConsentFormEnabled());
 
     return InstanceConfigDO.builder()
-            .publicAvailable(instanceConfig.getPublicAvailable())
-            .build();
+        .publicAvailable(instanceConfig.getPublicAvailable())
+        .consentFormEnabled(instanceConfig.getConsentFormEnabled())
+        .build();
   }
 }

@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class InstanceConfigDO {
 
-    private boolean publicAvailable;
+  private boolean publicAvailable;
+  private boolean consentFormEnabled;
 }

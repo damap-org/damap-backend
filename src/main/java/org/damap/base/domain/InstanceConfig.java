@@ -17,4 +17,7 @@ public class InstanceConfig extends PanacheEntity {
 
   @Column(name = "public_available", nullable = false)
   public Boolean publicAvailable;
+
+  @Column(name = "consent_form_enabled", nullable = false)
+  private Boolean consentFormEnabled;
 }
