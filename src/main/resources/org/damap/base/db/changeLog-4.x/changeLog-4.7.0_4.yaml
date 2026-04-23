@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 28
+      author: Vlad Dancea
+      comment: Create translation table for backend translation management
+      changes:
+        - createSequence:
+            sequenceName: translation_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createTable:
+            tableName: translation
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNext: translation_seq
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: VARCHAR(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_value
+                  type: CLOB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: CLOB
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: translation
+            columnNames: key, language
+            constraintName: uk_translation_key_language
+        - createIndex:
+            tableName: translation
+            indexName: idx_translation_language_active
+            columns:
+              - column:
+                  name: language
+              - column:
+                  name: active
+      rollback:
+        - dropTable:
+            tableName: translation
