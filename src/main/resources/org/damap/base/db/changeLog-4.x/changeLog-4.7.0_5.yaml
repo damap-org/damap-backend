@@ -12687,7 +12687,7 @@ databaseChangeLog:
                   value: en
               - column:
                   name: default_value
-                  value: 'This is the complete list of your personal data that we collect and that is necessary for the application to run. It is comprised of data entries used to manage your access to your DMPs, as well as entries made when you are referenced as Contributor an a DMP.'
+                  value: 'This is the complete list of your personal data that we collect and that is necessary for the application to run. It is comprised of data entries used to manage your access to your DMPs, as well as entries made when you are referenced as Contributor in a DMP.'
               - column:
                   name: active
                   valueBoolean: true
@@ -12706,6 +12706,78 @@ databaseChangeLog:
               - column:
                   name: default_value
                   value: GDPR
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: gdpr.user-info.title
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Personal Information
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: gdpr.user-info.name
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Name
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: gdpr.user-info.email
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Email
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: gdpr.user-info.id
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: User ID
               - column:
                   name: active
                   valueBoolean: true
