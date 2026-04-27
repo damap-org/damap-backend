@@ -31,6 +31,13 @@ public class CustomTenantResolver implements TenantResolver {
 
   @Override
   public String resolveTenantId() {
+    // catches case of user logging into multitenant setup without a valid affiliation to check out
+    // the system
+    // would throw 401 otherwise - and those users shouldnt get their information stored
+    if (!securityService.doesUserHaveValidAffiliation()) {
+      System.out.println("catch!!");
+      return getDefaultTenantId();
+    }
     String tenantId = securityService.getAffiliation();
     if (tenantId == null) {
       return getDefaultTenantId();

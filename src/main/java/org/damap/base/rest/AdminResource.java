@@ -10,7 +10,6 @@ import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.*;
 import org.damap.base.rest.admin.domain.BannerDO;
-import org.damap.base.rest.admin.domain.InstanceConfigDO;
 import org.damap.base.rest.admin.domain.RecommendedRepositoryDO;
 import org.damap.base.rest.admin.service.AdminService;
 import org.damap.base.rest.admin.service.RecommendedRepositoryService;
@@ -155,7 +154,8 @@ public class AdminResource {
 
   @GET
   @Path("/instance-config")
-  public InstanceConfigDO getInstanceConfig() {
+  @RolesAllowed("${damap.auth.admin-role-name}")
+  public InstanceConfig getInstanceConfig() {
     log.info("Retrieving instance config");
     return this.adminService.getInstanceConfig();
   }
@@ -163,9 +163,8 @@ public class AdminResource {
   @PUT
   @Path("/instance-config")
   @RolesAllowed("${damap.auth.admin-role-name}")
-  public InstanceConfigDO updateInstanceConfig(InstanceConfigDO instanceConfig) {
+  public InstanceConfig updateInstanceConfig(InstanceConfig instanceConfig) {
     log.info("Updating instance config");
-    log.info(instanceConfig);
     return this.adminService.updateInstanceConfig(instanceConfig);
   }
 }

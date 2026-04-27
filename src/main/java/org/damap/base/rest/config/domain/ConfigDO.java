@@ -27,7 +27,6 @@ public class ConfigDO {
   private String env;
   private List<ServiceConfigDO> personSearchServiceConfigs;
   private String projectSearchServiceConfig;
-  private boolean fitsServiceAvailable;
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
   private String appTitle;

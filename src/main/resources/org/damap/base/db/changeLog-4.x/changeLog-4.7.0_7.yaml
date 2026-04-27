@@ -2,7 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: 31
       author: Geoffrey Karnbach
-      comment: Insert en translations
+      comment: Insert en translations for the public available and consent form admin panels https://github.com/damap-org/damap-frontend/pull/540
       changes:
         - insert:
             tableName: translation
@@ -195,7 +195,7 @@ databaseChangeLog:
                   value: en
               - column:
                   name: default_value
-                  value: Please try again later or contact the instance administrator for more information.
+                  value: Please try again later or contact your instance administrator for more information.
               - column:
                   name: active
                   valueBoolean: true
@@ -242,4 +242,40 @@ databaseChangeLog:
       rollback:
         - delete:
             tableName: translation
-            where: language = 'en'
+            where: key = 'admin.instance-config.title'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled-off'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled-on'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available-disabled'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available-enabled'
+        - delete:
+            tableName: translation
+            where: key = 'http.error.admin.instance-config.load'
+        - delete:
+            tableName: translation
+            where: key = 'http.error.admin.instance-config.update'
+        - delete:
+            tableName: translation
+            where: key = 'http.success.instance-config.update'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.description'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.subtitle'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.title'

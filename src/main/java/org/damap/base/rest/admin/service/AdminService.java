@@ -9,7 +9,6 @@ import org.damap.base.domain.Banner;
 import org.damap.base.domain.InstanceConfig;
 import org.damap.base.repo.InstanceConfigRepo;
 import org.damap.base.rest.admin.domain.BannerDO;
-import org.damap.base.rest.admin.domain.InstanceConfigDO;
 import org.damap.base.rest.admin.mapper.BannerDOMapper;
 
 @ApplicationScoped
@@ -62,31 +61,24 @@ public class AdminService {
     banner.delete();
   }
 
-  public InstanceConfigDO getInstanceConfig() {
+  public InstanceConfig getInstanceConfig() {
     InstanceConfig instanceConfig = this.instanceConfigRepo.getConfig();
     if (instanceConfig == null) {
       throw new IllegalStateException("There is no instance config in the database");
     }
-
-    return InstanceConfigDO.builder()
-        .publicAvailable(instanceConfig.getPublicAvailable())
-        .consentFormEnabled(instanceConfig.getConsentFormEnabled())
-        .build();
+    return instanceConfig;
   }
 
   @Transactional
-  public InstanceConfigDO updateInstanceConfig(@Valid InstanceConfigDO updatedInstanceConfig) {
+  public InstanceConfig updateInstanceConfig(@Valid InstanceConfig updatedInstanceConfig) {
     InstanceConfig instanceConfig = this.instanceConfigRepo.getConfig();
     if (instanceConfig == null) {
       throw new IllegalStateException("There is no instance config in the database");
     }
 
-    instanceConfig.setPublicAvailable(updatedInstanceConfig.isPublicAvailable());
-    instanceConfig.setConsentFormEnabled(updatedInstanceConfig.isConsentFormEnabled());
+    instanceConfig.setPublicAvailable(updatedInstanceConfig.getPublicAvailable());
+    instanceConfig.setConsentFormEnabled(updatedInstanceConfig.getConsentFormEnabled());
 
-    return InstanceConfigDO.builder()
-        .publicAvailable(instanceConfig.getPublicAvailable())
-        .consentFormEnabled(instanceConfig.getConsentFormEnabled())
-        .build();
+    return instanceConfig;
   }
 }

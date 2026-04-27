@@ -185,6 +185,21 @@ public class SecurityService {
   }
 
   /**
+   * Returns true if the user has a valid affiliation, false otherwise. Tightly linked witht he
+   * getAffiliation implementation, should be refactored in the future.
+   *
+   * @return a boolean representing the tenants' affiliation validity
+   */
+  public boolean doesUserHaveValidAffiliation() {
+    try {
+      this.getAffiliation();
+    } catch (UnauthorizedException e) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Validates a JWT token from the X-Auth header.
    *
    * @param headers HttpHeaders containing the Authorization token.
