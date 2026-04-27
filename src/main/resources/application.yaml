@@ -121,6 +121,16 @@ quarkus:
         initial-capacity: 100
         maximum-size: 1000
         expire-after-write: 12H
+      "pure-recommended":
+        expire-after-write: 1H
+      "pure-search-projects":
+        expire-after-write: 1H
+      "pure-read-project":
+        expire-after-write: 1H
+      "pure-read-person":
+        expire-after-write: 1H
+      "pure-search-persons":
+        expire-after-write: 1H
 
   liquibase:
     migrate-at-start: true

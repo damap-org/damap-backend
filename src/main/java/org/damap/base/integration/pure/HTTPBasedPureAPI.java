@@ -39,6 +39,36 @@ interface HTTPBasedPureAPI extends PureAPI {
       @QueryParam("size") Long size, @QueryParam("offset") Long offset);
 
   /**
+   * Search projects via {@code POST /projects/search}.
+   *
+   * @param query the search query body.
+   * @return the response containing the matching projects on that page.
+   */
+  @POST
+  @Path("/projects/search")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Fallback(fallbackMethod = "searchProjectsPostFallback", skipOn = DamapApiException.class)
+  PureAPIPaginatedProjectsResponse searchProjectsPost(PureAPIProjectsQuery query);
+
+  /**
+   * Search projects using pagination. Delegates to {@link #searchProjectsPost} with a {@link
+   * PureAPIProjectsQuery} body.
+   *
+   * @param q query string, passed to Pure API {@code searchString} parameter
+   * @param size the size of the page.
+   * @param offset the offset to start at.
+   * @return the response containing the projects on that page.
+   */
+  @Override
+  default PureAPIPaginatedProjectsResponse searchProjects(String q, Long size, Long offset) {
+    PureAPIProjectsQuery body = new PureAPIProjectsQuery();
+    body.setSearchString(q);
+    if (size != null) body.setSize(size.intValue());
+    if (offset != null) body.setOffset(offset.intValue());
+    return searchProjectsPost(body);
+  }
+
+  /**
    * Retrieve a project with a specific ID.
    *
    * @param uuid the ID of the project.
@@ -104,6 +134,10 @@ interface HTTPBasedPureAPI extends PureAPI {
   }
 
   default PureAPIPaginatedProjectsResponse listAllProjectsFallback(Long size, Long offset) {
+    throw fallback();
+  }
+
+  default PureAPIPaginatedProjectsResponse searchProjectsPostFallback(PureAPIProjectsQuery query) {
     throw fallback();
   }
 

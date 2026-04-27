@@ -1,5 +1,6 @@
 package org.damap.base.integration.pure;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.*;
@@ -56,7 +57,9 @@ public class PureProjectService implements ProjectServiceProvider {
         contributor.setLastName(external.name.lastName);
       }
       convertContributorRoles(participantAssociation, contributor);
-      contributor.setUniversityId(external.externalPerson.uuid);
+      if (external.externalPerson != null) {
+        contributor.setUniversityId(external.externalPerson.uuid);
+      }
       return contributor;
     }
     return null;
@@ -108,11 +111,21 @@ public class PureProjectService implements ProjectServiceProvider {
   }
 
   @Override
+  // the cache key generator function uses the method name - take care when renaming
+  @CacheResult(cacheName = "pure-recommended", keyGenerator = PureCacheKeyGenerator.class)
   public ResultList<ProjectDO> getRecommended(Search search) {
     ResultList<ProjectDO> res = new ResultList<>();
     res.setSearch(search);
-    res.setItems(
+
+    String userId = securityService.getUserId();
+    if (userId == null) {
+      res.setItems(new ArrayList<>());
+      return res;
+    }
+
+    List<ProjectDO> matchingProjects =
         pureAPI.listAllProjects().stream()
+            .filter(project -> project.participants != null)
             .filter(
                 project ->
                     project.participants.stream()
@@ -122,20 +135,28 @@ public class PureProjectService implements ProjectServiceProvider {
                             participant ->
                                 participant instanceof PureAPIInternalParticipantAssociation)
                         .anyMatch(
-                            participant ->
-                                ((PureAPIInternalParticipantAssociation) participant)
-                                    .person.uuid.equals(securityService.getUserId())))
+                            participant -> {
+                              PureAPIInternalParticipantAssociation internal =
+                                  (PureAPIInternalParticipantAssociation) participant;
+                              return internal.person != null
+                                  && internal.person.uuid != null
+                                  && internal.person.uuid.equals(userId);
+                            }))
             .map(
                 project ->
                     project.toProjectDO(
                         tenantConfigResolver
                             .getTenantAwareConfig()
                             .elsevierPureDescriptionClassification()))
-            .toList());
+            .toList();
+
+    res.setItems(matchingProjects);
+
     return res;
   }
 
   @Override
+  @CacheResult(cacheName = "pure-read-project", keyGenerator = PureCacheKeyGenerator.class)
   public ProjectDO read(String id) {
     PureAPIProject project = pureAPI.getProject(id);
     if (project == null || project.participants == null) {
@@ -146,12 +167,13 @@ public class PureProjectService implements ProjectServiceProvider {
   }
 
   @Override
+  @CacheResult(cacheName = "pure-search-projects", keyGenerator = PureCacheKeyGenerator.class)
   public ResultList<ProjectDO> search(Search query) {
+    System.out.println("muahhh");
     ResultList<ProjectDO> res = new ResultList<>();
     res.setSearch(query);
     res.setItems(
-        pureAPI.listAllProjects().stream()
-            .filter(project -> project.titleContains(query.getQuery()))
+        pureAPI.searchAllProjects(query.getQuery()).stream()
             .map(
                 project ->
                     project.toProjectDO(
