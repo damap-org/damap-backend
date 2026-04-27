@@ -1,0 +1,281 @@
+databaseChangeLog:
+  - changeSet:
+      id: 31
+      author: Geoffrey Karnbach
+      comment: Insert en translations for the public available and consent form admin panels https://github.com/damap-org/damap-frontend/pull/540
+      changes:
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.title'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Instance configuration
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.consent-form-enabled'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Consent form enabled
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.consent-form-enabled-off'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: The consent form is currently disabled.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.consent-form-enabled-on'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Users can see and use the consent form.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.public-available'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Instance publicly available
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.public-available-disabled'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'The instance is currently locked for non-admin users.'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'admin.instance-config.public-available-enabled'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: The instance is currently accessible to all users.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'http.error.admin.instance-config.load'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Could not load instance configuration.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'http.error.admin.instance-config.update'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Could not update instance configuration.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'http.success.instance-config.update'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Instance configuration updated successfully.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'instance-lock.description'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Please try again later or contact your instance administrator for more information.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'instance-lock.subtitle'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: This instance is currently being configured and is temporarily restricted to administrators.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: key
+                  value: 'instance-lock.title'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: DAMAP is not publicly available yet
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+      rollback:
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.title'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled-off'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.consent-form-enabled-on'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available-disabled'
+        - delete:
+            tableName: translation
+            where: key = 'admin.instance-config.public-available-enabled'
+        - delete:
+            tableName: translation
+            where: key = 'http.error.admin.instance-config.load'
+        - delete:
+            tableName: translation
+            where: key = 'http.error.admin.instance-config.update'
+        - delete:
+            tableName: translation
+            where: key = 'http.success.instance-config.update'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.description'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.subtitle'
+        - delete:
+            tableName: translation
+            where: key = 'instance-lock.title'
