@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 32
+      author: Valentin Futterer
+      comment: Update data retention duration text in consent banner
+      changes:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Personal data that is collected for registration is stored indefinitely as part of your user account.'
+            where: "\"KEY\" = 'consent-popup.dataRetention.duration' AND language = 'en'"
+      rollback:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Personal data that is collected for registration is generally only stored for the duration of the service made available, unless a longer retention period is mandated by statutory regulations.'
+            where: "\"KEY\" = 'consent-popup.dataRetention.duration' AND language = 'en'"
