@@ -1,8 +1,13 @@
 package org.damap.base.rda.dmpcommonstandard;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.damap.base.enums.EDataKind;
+import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
 
@@ -85,18 +90,30 @@ public final class DMPMapper extends AbstractMapper {
 
   private DMPData convertData(DmpDO dmp) {
     DMPData result = new DMPData();
-    result.setCreated(OffsetDateTime.from(dmp.getCreated().toInstant()));
-    result.setModified(OffsetDateTime.from(dmp.getModified().toInstant()));
-    result.setLanguage(LanguageID.ENG);
+    result.setTitle(dmp.getTitle() != null ? dmp.getTitle() : "Untitled DMP");
+    result.setDescription(dmp.getDescription());
+    if (dmp.getCreated() != null) {
+      result.setCreated(OffsetDateTime.ofInstant(dmp.getCreated().toInstant(), ZoneOffset.UTC));
+    }
+    if (dmp.getModified() != null) {
+      result.setModified(OffsetDateTime.ofInstant(dmp.getModified().toInstant(), ZoneOffset.UTC));
+    }
+    result.setLanguage(LanguageCode.ENG);
+    result.setDmpId(new DMPID().type("other").identifier(String.valueOf(dmp.getId())));
+
     ProjectDO project = dmp.getProject();
     if (project != null) {
-      result.setDmpId(new DMPID().type(DMPIDType.OTHER).identifier(project.getUniversityId()));
-      result.dmpId(
-          new DMPID().identifier(dmp.getProject().getUniversityId()).type(DMPIDType.OTHER));
-
       result.project(List.of(projectMapper.convert(project)));
     }
-    result.setContact(contributorMapper.convertToContact(dmp.getContact()));
+    if (dmp.getContact() != null) {
+      result.setContact(contributorMapper.convertToContact(dmp.getContact()));
+    } else {
+      Contact placeholderContact = new Contact();
+      placeholderContact.setName("Contact Not Provided");
+      placeholderContact.setMbox("no-reply@example.com");
+      placeholderContact.setContactId(new ContactID().identifier("not-provided").type("other"));
+      result.setContact(placeholderContact);
+    }
     var contributors = dmp.getContributors();
     if (contributors != null) {
       result.setContributor(
@@ -107,7 +124,11 @@ public final class DMPMapper extends AbstractMapper {
       result.setCost(costs.stream().map(costsMapper::convert).collect(Collectors.toList()));
     }
 
-    result.setDataset(dmp.getDatasets().stream().map(datasetMapper::convert).toList());
+    if (dmp.getDatasets() != null) {
+      result.setDataset(dmp.getDatasets().stream().map(datasetMapper::convert).toList());
+    } else {
+      result.setDataset(new ArrayList<>());
+    }
 
     var ethicalIssuesExist = dmp.getEthicalIssuesExist();
     if (ethicalIssuesExist != null) {
@@ -124,32 +145,54 @@ public final class DMPMapper extends AbstractMapper {
   }
 
   private void convertData(DMPData data, DmpDO target) {
+    target.setTitle(data.getTitle());
+    target.setDescription(data.getDescription());
     var projects = data.getProject();
     if (projects != null) {
       if (projects.size() > 1 && strict) {
         throw new CommonStandardCompatibilityException("more than one project present");
       }
+      String dmpIdString = data.getDmpId() != null ? data.getDmpId().getIdentifier() : null;
       for (var project : projects) {
-        target.setProject(projectMapper.convert(project, data.getDmpId().getIdentifier()));
+        target.setProject(projectMapper.convert(project, dmpIdString));
       }
     }
+    List<ContributorDO> damapContributors = new ArrayList<>();
     var contact = data.getContact();
-    // TODO what do you do with the drunken contact?
+    if (contact != null) {
+      ContributorDO contactDO = contributorMapper.convertToContributor(contact);
+      contactDO.setContact(true); // Flag this person as primary contact
+      damapContributors.add(contactDO);
+    }
 
     var contributors = data.getContributor();
     if (contributors != null) {
-      target.setContributors(
-          contributors.stream().map(contributorMapper::convert).collect(Collectors.toList()));
+      damapContributors.addAll(
+              contributors.stream().map(contributorMapper::convert).collect(Collectors.toList())
+      );
     }
-    if (data.getLanguage() != LanguageID.ENG && strict) {
+
+    target.setContributors(damapContributors);
+
+    if (data.getLanguage() != LanguageCode.ENG && strict) {
       throw new CommonStandardCompatibilityException(
-          "DAMAP does not support importing non-English DMPs");
+              "DAMAP does not support importing non-English DMPs");
     }
     var costs = data.getCost();
     if (costs != null) {
       target.setCosts(costs.stream().map(costsMapper::convert).toList());
     }
-    target.setDatasets(data.getDataset().stream().map(datasetMapper::convert).toList());
+    var datasets = data.getDataset();
+
+    if (!datasets.isEmpty()) {
+      target.setDatasets(datasets.stream().map(datasetMapper::convert).toList());
+      target.setDataKind(EDataKind.SPECIFY);
+      target.setReusedDataKind(EDataKind.NONE);
+    } else {
+      target.setDatasets(List.of());
+      target.setDataKind(EDataKind.NONE);
+      target.setReusedDataKind(EDataKind.NONE);
+    }
     if (data.getEthicalIssuesDescription() != null
         && !data.getEthicalIssuesDescription().isEmpty()
         && strict) {
@@ -163,11 +206,5 @@ public final class DMPMapper extends AbstractMapper {
           case UNKNOWN -> null;
         });
     target.setEthicalIssuesReport(data.getEthicalIssuesReport());
-    if (data.getEthicalIssuesDescription() != null
-        && !data.getEthicalIssuesDescription().isEmpty()
-        && strict) {
-      throw new CommonStandardCompatibilityException(
-          "DAMAP does not support the ethical_issues_description field");
-    }
   }
 }

@@ -5,6 +5,9 @@ import org.damap.base.rest.dmp.domain.IdentifierDO;
 
 class IdentifierMapper {
   public static IdentifierDO getIdentifierDO(String id) {
+    if (id == null || id.isBlank()) {
+      return null;
+    }
     var result = new IdentifierDO();
     result.setType(EIdentifierType.OTHER);
     result.setIdentifier(id);

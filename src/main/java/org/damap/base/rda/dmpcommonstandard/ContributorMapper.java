@@ -1,5 +1,6 @@
 package org.damap.base.rda.dmpcommonstandard;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,10 +43,27 @@ public class ContributorMapper extends AbstractMapper {
     result.setFirstName(nameParts[0]);
     result.setLastName(nameParts[1]);
     result.setRoles(convertRoles(contributor.getRole()));
+
+    if (contributor.getAffiliation() != null && !contributor.getAffiliation().isEmpty()) {
+      var rdaAffiliation = contributor.getAffiliation().get(0);
+      result.setAffiliation(rdaAffiliation.getName());
+
+      if (rdaAffiliation.getAffiliationId() != null) {
+        var damapAffiliationId = new IdentifierDO();
+        damapAffiliationId.setIdentifier(rdaAffiliation.getAffiliationId().getIdentifier());
+        if (rdaAffiliation.getAffiliationId().getType() != null) {
+          damapAffiliationId.setType(IdentifierMapper.getIdentifierDO(rdaAffiliation.getAffiliationId().getType()).getType());
+        } else {
+          damapAffiliationId.setType(EIdentifierType.OTHER);
+        }
+        result.setAffiliationId(damapAffiliationId);
+      }
+    }
     return result;
   }
 
   private Set<EContributorRole> convertRoles(Set<String> roles) {
+    if (roles == null) return new java.util.HashSet<>();
     return roles.stream()
         .map(this::convertRole)
         .filter(Objects::nonNull)
@@ -76,15 +94,47 @@ public class ContributorMapper extends AbstractMapper {
     result.setContributorId(convertContributorID(contributorDO.getPersonId()));
     result.setMbox(contributorDO.getMbox());
     result.setName(convertName(contributorDO));
-    result.setRole(contributorDO.getRoles().stream().map(Enum::name).collect(Collectors.toSet()));
+    if (contributorDO.getRoles() != null && !contributorDO.getRoles().isEmpty()) {
+      result.setRole(contributorDO.getRoles().stream().map(Enum::name).collect(Collectors.toSet()));
+    } else {
+      result.setRole(Set.of("Other"));
+    }
+
+    if (contributorDO.getAffiliation() != null && !contributorDO.getAffiliation().isEmpty()) {
+      var rdaAffiliation = new Affiliation();
+      rdaAffiliation.setName(contributorDO.getAffiliation());
+
+      var rdaAffiliationId = new AffiliationID();
+
+      if (contributorDO.getAffiliationId() != null && contributorDO.getAffiliationId().getIdentifier() != null) {
+        rdaAffiliationId.setIdentifier(contributorDO.getAffiliationId().getIdentifier());
+        if (contributorDO.getAffiliationId().getType() != null) {
+          rdaAffiliationId.setType(contributorDO.getAffiliationId().getType().toString().toLowerCase());
+        } else {
+          rdaAffiliationId.setType("other");
+        }
+      }
+      else {
+        rdaAffiliationId.setIdentifier("not-provided");
+        rdaAffiliationId.setType("other");
+      }
+      rdaAffiliation.setAffiliationId(rdaAffiliationId);
+      result.setAffiliation(List.of(rdaAffiliation));
+    }
     return result;
   }
 
   public Contact convertToContact(ContributorDO contributorDO) {
     var result = new Contact();
-    result.setContactId(convertContactID(contributorDO.getPersonId()));
-    result.setMbox(contributorDO.getMbox());
-    result.setName(convertName(contributorDO));
+    String name = convertName(contributorDO);
+    result.setName(name == null || name.isBlank() ? "Unknown Contact" : name);
+    String mbox = contributorDO.getMbox();
+    result.setMbox(mbox == null || mbox.isBlank() ? "no-reply@example.com" : mbox);
+    if (contributorDO.getPersonId() != null && contributorDO.getPersonId().getIdentifier() != null) {
+      result.setContactId(convertContactID(contributorDO.getPersonId()));
+    } else {
+      result.setContactId(new ContactID().identifier("0").type("other"));
+    }
     return result;
   }
 
@@ -130,130 +180,54 @@ public class ContributorMapper extends AbstractMapper {
   }
 
   private ContributorID convertContributorID(IdentifierDO contributorId) {
-    if (contributorId == null) {
-      return null;
+    if (contributorId == null) return null;
+    var result = new ContributorID();
+    result.setIdentifier(contributorId.getIdentifier());
+    // Map the DAMAP Enum to a lowercase String for RDA
+    if (contributorId.getType() != null) {
+      result.setType(contributorId.getType().toString().toLowerCase());
+    } else {
+      result.setType("other");
     }
-    return switch (contributorId.getType()) {
-      case ISNI -> {
-        var result = new ContributorID();
-        result.setType(ContributorIDType.ISNI);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      case ORCID -> {
-        var result = new ContributorID();
-        result.setType(ContributorIDType.ORCID);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      case OPENID -> {
-        var result = new ContributorID();
-        result.setType(ContributorIDType.OPENID);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      default -> {
-        var result = new ContributorID();
-        result.setType(ContributorIDType.OTHER);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-    };
+    return result;
   }
 
   private IdentifierDO convertContributorID(ContributorID contributorId) {
-    if (contributorId == null) {
-      return null;
-    }
-    return switch (contributorId.getType()) {
-      case ISNI -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.ISNI);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      case ORCID -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.ORCID);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      case OPENID -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.OPENID);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-      case OTHER -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.OTHER);
-        result.setIdentifier(contributorId.getIdentifier());
-        yield result;
-      }
-    };
+    if (contributorId == null || contributorId.getType() == null) return null;
+    var result = new IdentifierDO();
+    result.setIdentifier(contributorId.getIdentifier());
+    // Switch on the lowercase String from RDA to get DAMAP Enum
+    result.setType(switch (contributorId.getType().toLowerCase()) {
+      case "isni" -> EIdentifierType.ISNI;
+      case "orcid" -> EIdentifierType.ORCID;
+      case "openid" -> EIdentifierType.OPENID;
+      default -> EIdentifierType.OTHER;
+    });
+    return result;
   }
 
   private ContactID convertContactID(IdentifierDO contactID) {
-    if (contactID == null) {
-      return null;
+    if (contactID == null) return null;
+    var result = new ContactID();
+    result.setIdentifier(contactID.getIdentifier());
+    if (contactID.getType() != null) {
+      result.setType(contactID.getType().toString().toLowerCase());
+    } else {
+      result.setType("other");
     }
-    return switch (contactID.getType()) {
-      case ISNI -> {
-        var result = new ContactID();
-        result.setType(ContactIDType.ISNI);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      case ORCID -> {
-        var result = new ContactID();
-        result.setType(ContactIDType.ORCID);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      case OPENID -> {
-        var result = new ContactID();
-        result.setType(ContactIDType.OPENID);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      default -> {
-        var result = new ContactID();
-        result.setType(ContactIDType.OTHER);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-    };
+    return result;
   }
 
   private IdentifierDO convertContactID(ContactID contactID) {
-    if (contactID == null) {
-      return null;
-    }
-    return switch (contactID.getType()) {
-      case ISNI -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.ISNI);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      case ORCID -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.ORCID);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      case OPENID -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.OPENID);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-      case OTHER -> {
-        var result = new IdentifierDO();
-        result.setType(EIdentifierType.OTHER);
-        result.setIdentifier(contactID.getIdentifier());
-        yield result;
-      }
-    };
+    if (contactID == null || contactID.getType() == null) return null;
+    var result = new IdentifierDO();
+    result.setIdentifier(contactID.getIdentifier());
+    result.setType(switch (contactID.getType().toLowerCase()) {
+      case "isni" -> EIdentifierType.ISNI;
+      case "orcid" -> EIdentifierType.ORCID;
+      case "openid" -> EIdentifierType.OPENID;
+      default -> EIdentifierType.OTHER;
+    });
+    return result;
   }
 }

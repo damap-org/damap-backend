@@ -69,7 +69,9 @@ public final class ProjectMapper {
   }
 
   private void convertInto(ProjectDO project, Project result) {
-    result.setTitle(project.getTitle());
+    result.setTitle(project.getTitle() != null && !project.getTitle().isBlank()
+            ? project.getTitle()
+            : "Untitled Project");
     result.setDescription(project.getDescription());
     if (project.getStart() != null) {
       result.setStart(LocalDate.ofInstant(project.getStart().toInstant(), ZoneId.systemDefault()));
@@ -77,7 +79,18 @@ public final class ProjectMapper {
     if (project.getEnd() != null) {
       result.setEnd(LocalDate.ofInstant(project.getEnd().toInstant(), ZoneId.systemDefault()));
     }
-    result.setFunding(List.of(fundingMapper.convert(project.getFunding())));
+    if (project.getFunding() != null) {
+      var rdaFunding = fundingMapper.convert(project.getFunding());
+      if (rdaFunding != null) {
+        result.setFunding(List.of(rdaFunding));
+      }
+    }
+    if (project.getUniversityId() != null && !project.getUniversityId().isBlank()) {
+      ProjectID rdaProjectId = new ProjectID();
+      rdaProjectId.setIdentifier(project.getUniversityId());
+      rdaProjectId.setType("other");
+      result.setProjectId(List.of(rdaProjectId));
+    }
   }
 
   public DAMAPProject convertToDAMAPProject(ProjectDO project) {
@@ -100,7 +113,11 @@ public final class ProjectMapper {
    */
   public ProjectDO convert(Project project, String projectId) {
     var result = new ProjectDO();
-    result.setUniversityId(projectId);
+    if (project.getProjectId() != null && !project.getProjectId().isEmpty()) {
+      result.setUniversityId(project.getProjectId().get(0).getIdentifier());
+    } else {
+      result.setUniversityId(projectId);
+    }
     result.setTitle(project.getTitle());
     result.setDescription(project.getDescription());
     var start = project.getStart();
@@ -117,9 +134,7 @@ public final class ProjectMapper {
         throw new CommonStandardCompatibilityException(
             "more than one funding present for project " + project.getTitle());
       }
-      for (var funding : fundings) {
-        result.setFunding(fundingMapper.convert(funding));
-      }
+      result.setFunding(fundingMapper.convert(fundings.get(0)));
     }
     return result;
   }
