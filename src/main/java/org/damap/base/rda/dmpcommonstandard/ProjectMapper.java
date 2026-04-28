@@ -100,7 +100,11 @@ public final class ProjectMapper {
    */
   public ProjectDO convert(Project project, String projectId) {
     var result = new ProjectDO();
-    result.setUniversityId(projectId);
+    if (project.getProjectId() != null && !project.getProjectId().isEmpty()) {
+      result.setUniversityId(project.getProjectId().get(0).getIdentifier());
+    } else {
+      result.setUniversityId(projectId);
+    }
     result.setTitle(project.getTitle());
     result.setDescription(project.getDescription());
     var start = project.getStart();
@@ -117,9 +121,7 @@ public final class ProjectMapper {
         throw new CommonStandardCompatibilityException(
             "more than one funding present for project " + project.getTitle());
       }
-      for (var funding : fundings) {
-        result.setFunding(fundingMapper.convert(funding));
-      }
+      result.setFunding(fundingMapper.convert(fundings.get(0)));
     }
     return result;
   }

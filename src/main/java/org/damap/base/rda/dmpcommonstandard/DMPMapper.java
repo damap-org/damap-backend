@@ -85,18 +85,21 @@ public final class DMPMapper extends AbstractMapper {
 
   private DMPData convertData(DmpDO dmp) {
     DMPData result = new DMPData();
-    result.setCreated(OffsetDateTime.from(dmp.getCreated().toInstant()));
-    result.setModified(OffsetDateTime.from(dmp.getModified().toInstant()));
-    result.setLanguage(LanguageID.ENG);
+    if (dmp.getCreated() != null) {
+      result.setCreated(OffsetDateTime.ofInstant(dmp.getCreated().toInstant(), ZoneOffset.UTC));
+    }
+    if (dmp.getModified() != null) {
+      result.setModified(OffsetDateTime.ofInstant(dmp.getModified().toInstant(), ZoneOffset.UTC));
+    }
+    result.setLanguage(LanguageCode.ENG);
     ProjectDO project = dmp.getProject();
     if (project != null) {
-      result.setDmpId(new DMPID().type(DMPIDType.OTHER).identifier(project.getUniversityId()));
-      result.dmpId(
-          new DMPID().identifier(dmp.getProject().getUniversityId()).type(DMPIDType.OTHER));
-
+      result.setDmpId(new DMPID().type("other").identifier(project.getUniversityId()));
       result.project(List.of(projectMapper.convert(project)));
     }
-    result.setContact(contributorMapper.convertToContact(dmp.getContact()));
+    if (dmp.getContact() != null) {
+      result.setContact(contributorMapper.convertToContact(dmp.getContact()));
+    }
     var contributors = dmp.getContributors();
     if (contributors != null) {
       result.setContributor(
@@ -107,7 +110,11 @@ public final class DMPMapper extends AbstractMapper {
       result.setCost(costs.stream().map(costsMapper::convert).collect(Collectors.toList()));
     }
 
-    result.setDataset(dmp.getDatasets().stream().map(datasetMapper::convert).toList());
+    if (dmp.getDatasets() != null) {
+      result.setDataset(dmp.getDatasets().stream().map(datasetMapper::convert).toList());
+    } else {
+      result.setDataset(new ArrayList<>());
+    }
 
     var ethicalIssuesExist = dmp.getEthicalIssuesExist();
     if (ethicalIssuesExist != null) {
@@ -141,9 +148,9 @@ public final class DMPMapper extends AbstractMapper {
       target.setContributors(
           contributors.stream().map(contributorMapper::convert).collect(Collectors.toList()));
     }
-    if (data.getLanguage() != LanguageID.ENG && strict) {
+    if (data.getLanguage() != LanguageCode.ENG && strict) {
       throw new CommonStandardCompatibilityException(
-          "DAMAP does not support importing non-English DMPs");
+              "DAMAP does not support importing non-English DMPs");
     }
     var costs = data.getCost();
     if (costs != null) {

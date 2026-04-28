@@ -40,20 +40,12 @@ public class DatasetMapper extends AbstractMapper {
 
     var datasetId = datasetDO.getDatasetId();
     if (datasetId != null) {
-      result.setDatasetId(
-          new DatasetID()
+      result.setDatasetId(new DatasetID()
               .identifier(datasetId.getIdentifier())
-              .type(
-                  switch (datasetId.getType()) {
-                    case ARK -> DatasetIDType.ARK;
-                    case HANDLE -> DatasetIDType.HANDLE;
-                    case DOI -> DatasetIDType.DOI;
-                    case URL -> DatasetIDType.URL;
-                    default -> DatasetIDType.OTHER;
-                  }));
+              .type(datasetId.getType().toString().toLowerCase()));
     } else {
       result.setDatasetId(
-          new DatasetID().type(DatasetIDType.OTHER).identifier(String.valueOf(datasetDO.getId())));
+          new DatasetID().type("other").identifier(String.valueOf(datasetDO.getId())));
     }
 
     result.setTitle(datasetDO.getTitle());
@@ -142,14 +134,18 @@ public class DatasetMapper extends AbstractMapper {
 
     var datasetId = new IdentifierDO();
     datasetId.setIdentifier(dataset.getDatasetId().getIdentifier());
-    datasetId.setType(
-        switch (dataset.getDatasetId().getType()) {
-          case ARK -> EIdentifierType.ARK;
-          case DOI -> EIdentifierType.DOI;
-          case URL -> EIdentifierType.URL;
-          case HANDLE -> EIdentifierType.HANDLE;
+    if (dataset.getDatasetId().getType() != null) {
+      datasetId.setType(
+        switch (dataset.getDatasetId().getType().toLowerCase()) {
+          case "ark" -> EIdentifierType.ARK;
+          case "doi" -> EIdentifierType.DOI;
+          case "url" -> EIdentifierType.URL;
+          case "handle" -> EIdentifierType.HANDLE;
           default -> EIdentifierType.OTHER;
-        });
+          });
+    } else {
+      datasetId.setType(EIdentifierType.OTHER);
+    }
     result.setDatasetId(datasetId);
 
     result.setDescription(dataset.getDescription());

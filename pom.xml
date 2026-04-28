@@ -262,7 +262,29 @@
               <generatorName>java</generatorName>
               <output>${project.build.directory}/generated-sources/rda-dmp-common-standard</output>
               <generateApis>false</generateApis>
+              <openapiNormalizer>KEEP_ONLY_FIRST_ONEOF=true,SIMPLIFY_ONEOF_ANYOF=true,REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true</openapiNormalizer>
+              <schemaMappings>
+                <schemaMapping>Contributor_contributor_id=ContributorID</schemaMapping>
+                <schemaMapping>Contact_contact_id=ContactID</schemaMapping>
+                <schemaMapping>Creator_creator_id=ContributorID</schemaMapping>
+                <schemaMapping>Metadata_metadata_standard_id=MetadataStandardID</schemaMapping>
+                <schemaMapping>Project_project_id=ProjectID</schemaMapping>
+              </schemaMappings>
+              <importMappings>
+                <importMapping>Affiliation=org.damap.base.rda.dmpcommonstandard.Affiliation</importMapping>
+                <importMapping>ContributorID=org.damap.base.rda.dmpcommonstandard.ContributorID</importMapping>
+                <importMapping>ContactID=org.damap.base.rda.dmpcommonstandard.ContactID</importMapping>
+                <importMapping>DatasetID=org.damap.base.rda.dmpcommonstandard.DatasetID</importMapping>
+                <importMapping>FunderID=org.damap.base.rda.dmpcommonstandard.FunderID</importMapping>
+                <importMapping>GrantID=org.damap.base.rda.dmpcommonstandard.GrantID</importMapping>
+                <importMapping>Identifier=org.damap.base.rda.dmpcommonstandard.Identifier</importMapping>
+                <importMapping>DMPID=org.damap.base.rda.dmpcommonstandard.DMPID</importMapping>
+              </importMappings>
               <configOptions>
+                <useOneOfInterfaces>false</useOneOfInterfaces>
+                <useComposedSchema>false</useComposedSchema>
+                <addOneOfInterfaceImports>true</addOneOfInterfaceImports>
+                <legacyDiscriminatorBehavior>false</legacyDiscriminatorBehavior>
                 <sourceFolder>src/java/main</sourceFolder>
                 <useJakartaEe>true</useJakartaEe>
                 <library>native</library>
@@ -293,7 +315,7 @@
               <output>${project.build.directory}/generated-sources/integration-generic</output>
 
               <!-- This is needed to make the ProjectWithID inherit from Project properly: -->
-              <openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true</openapiNormalizer>
+              <openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true,KEEP_ONLY_FIRST_ONEOF=true,SIMPLIFY_ONEOF_ANYOF=true,REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true</openapiNormalizer>
 
               <!--region Name mappings -->
               <!--
@@ -302,13 +324,31 @@
               <schemaMappings>
                 <schemaMapping>Project=org.damap.base.rda.dmpcommonstandard.Project</schemaMapping>
                 <schemaMapping>Funding=org.damap.base.rda.dmpcommonstandard.Funding</schemaMapping>
-                <schemaMapping>ContributorID=org.damap.base.rda.dmpcommonstandard.ContributorID</schemaMapping>
                 <schemaMapping>Contributor=org.damap.base.rda.dmpcommonstandard.Contributor</schemaMapping>
+                <schemaMapping>Contact=org.damap.base.rda.dmpcommonstandard.Contact</schemaMapping>
+                <schemaMapping>Dataset=org.damap.base.rda.dmpcommonstandard.Dataset</schemaMapping>
+                <schemaMapping>Cost=org.damap.base.rda.dmpcommonstandard.Cost</schemaMapping>
+
+                <schemaMapping>Affiliation=org.damap.base.rda.dmpcommonstandard.Affiliation</schemaMapping>
+                <schemaMapping>ContributorID=org.damap.base.rda.dmpcommonstandard.ContributorID</schemaMapping>
+                <schemaMapping>ContactID=org.damap.base.rda.dmpcommonstandard.ContactID</schemaMapping>
+                <schemaMapping>ProjectID=org.damap.base.rda.dmpcommonstandard.ProjectID</schemaMapping>
+                <schemaMapping>DatasetID=org.damap.base.rda.dmpcommonstandard.DatasetID</schemaMapping>
                 <schemaMapping>FunderID=org.damap.base.rda.dmpcommonstandard.FunderID</schemaMapping>
                 <schemaMapping>GrantID=org.damap.base.rda.dmpcommonstandard.GrantID</schemaMapping>
-                <schemaMapping>ContactID=org.damap.base.rda.dmpcommonstandard.ContactID</schemaMapping>
-                <schemaMapping>Contact=org.damap.base.rda.dmpcommonstandard.Contact</schemaMapping>
+                <schemaMapping>DMPID=org.damap.base.rda.dmpcommonstandard.DMPID</schemaMapping>
+                <schemaMapping>Identifier=org.damap.base.rda.dmpcommonstandard.Identifier</schemaMapping>
+
+                <!-- Internal Normalizer Fixes -->
+                <schemaMapping>Contributor_contributor_id=org.damap.base.rda.dmpcommonstandard.ContributorID</schemaMapping>
+                <schemaMapping>Contact_contact_id=org.damap.base.rda.dmpcommonstandard.ContactID</schemaMapping>
+                <schemaMapping>Creator_creator_id=org.damap.base.rda.dmpcommonstandard.ContributorID</schemaMapping>
+                <schemaMapping>Metadata_metadata_standard_id=org.damap.base.rda.dmpcommonstandard.MetadataStandardID</schemaMapping>
+
               </schemaMappings>
+              <importMappings>
+                <importMapping>ProjectID=org.damap.base.rda.dmpcommonstandard.ProjectID</importMapping>
+              </importMappings>
               <!--
               The following mappings are needed because the OpenAPI generator ignores the object names from an
               externally referenced OpenAPI schema and generates arbitrary names for them:
@@ -325,6 +365,9 @@
               <!--endregion-->
 
               <configOptions>
+                <useOneOfInterfaces>false</useOneOfInterfaces>
+                <useComposedSchema>false</useComposedSchema>
+                <legacyDiscriminatorBehavior>false</legacyDiscriminatorBehavior>
                 <sourceFolder>src/java/main</sourceFolder>
                 <useJakartaEe>true</useJakartaEe>
                 <library>native</library>

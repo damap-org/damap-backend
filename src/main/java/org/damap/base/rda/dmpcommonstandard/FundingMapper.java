@@ -49,56 +49,25 @@ public final class FundingMapper extends AbstractMapper {
   }
 
   private IdentifierDO convertFunderId(FunderID funderId) {
-    if (funderId == null) {
-      return null;
-    }
-    if (funderId.getType() == FunderIDType.FUNDREF) {
+    if (funderId == null) return null;
+    if ("fundref".equalsIgnoreCase(funderId.getType())) {
       var result = new IdentifierDO();
       result.setIdentifier(funderId.getIdentifier());
       result.setType(EIdentifierType.FUNDREF);
       return result;
-      // We map these by auto-detecting the type:
-      // - URL
-      // - OTHER
     }
-
     return IdentifierMapper.getIdentifierDO(funderId.getIdentifier());
   }
 
   private FunderID convertFunderId(IdentifierDO identifier) {
-    if (identifier == null) {
-      return null;
+    if (identifier == null) return null;
+    var result = new FunderID();
+    result.setIdentifier(identifier.getIdentifier());
+    result.setType(identifier.getType() == EIdentifierType.FUNDREF ? "fundref" : "other");
+    if (identifier.getType() == EIdentifierType.DOI || identifier.getType() == EIdentifierType.ORCID) {
+      result.setType("url");
     }
-    return switch (identifier.getType()) {
-      case FUNDREF ->
-          new FunderID().type(FunderIDType.FUNDREF).identifier(identifier.getIdentifier());
-      case DOI -> {
-        if (identifier.getIdentifier().startsWith("doi:")) {
-          yield new FunderID()
-              .type(FunderIDType.URL)
-              .identifier("https://doi.org/" + identifier.getIdentifier());
-        }
-        yield new FunderID().type(FunderIDType.URL).identifier(identifier.getIdentifier());
-      }
-      case ORCID -> {
-        if (identifier.getIdentifier().startsWith("https://orcid.org/")) {
-          yield new FunderID().type(FunderIDType.URL).identifier(identifier.getIdentifier());
-        }
-        yield new FunderID()
-            .type(FunderIDType.URL)
-            .identifier("https://orcid.org/" + identifier.getIdentifier());
-      }
-      case OTHER -> new FunderID().type(FunderIDType.OTHER).identifier(identifier.getIdentifier());
-      default ->
-          //noinspection HttpUrlsUsage
-          new FunderID()
-              .type(
-                  identifier.getIdentifier().startsWith("http://")
-                          || identifier.getIdentifier().startsWith("https://")
-                      ? FunderIDType.URL
-                      : FunderIDType.OTHER)
-              .identifier(identifier.getIdentifier());
-    };
+    return result;
   }
 
   private FundingStatus convertFundingStatus(EFundingState fundingState) {
@@ -127,36 +96,11 @@ public final class FundingMapper extends AbstractMapper {
   }
 
   private GrantID convertGrantId(IdentifierDO identifier) {
-    if (identifier == null) {
-      return null;
-    }
-    return switch (identifier.getType()) {
-      case DOI -> {
-        if (identifier.getIdentifier().startsWith("doi:")) {
-          yield new GrantID()
-              .type(GrantIDType.URL)
-              .identifier("https://doi.org/" + identifier.getIdentifier());
-        }
-        yield new GrantID().type(GrantIDType.URL).identifier(identifier.getIdentifier());
-      }
-      case ORCID -> {
-        if (identifier.getIdentifier().startsWith("https://orcid.org/")) {
-          yield new GrantID().type(GrantIDType.URL).identifier(identifier.getIdentifier());
-        }
-        yield new GrantID()
-            .type(GrantIDType.URL)
-            .identifier("https://orcid.org/" + identifier.getIdentifier());
-      }
-      case OTHER -> new GrantID().type(GrantIDType.OTHER).identifier(identifier.getIdentifier());
-      default -> //noinspection HttpUrlsUsage
-          new GrantID()
-              .type(
-                  identifier.getIdentifier().startsWith("http://")
-                          || identifier.getIdentifier().startsWith("https://")
-                      ? GrantIDType.URL
-                      : GrantIDType.OTHER)
-              .identifier(identifier.getIdentifier());
-    };
+    if (identifier == null) return null;
+    var result = new GrantID();
+    result.setIdentifier(identifier.getIdentifier());
+    result.setType(identifier.getType().toString().toLowerCase());
+    return result;
   }
 
   private IdentifierDO convertGrantId(GrantID identifier) {
