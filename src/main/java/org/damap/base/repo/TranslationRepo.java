@@ -20,7 +20,7 @@ public class TranslationRepo implements PanacheRepository<Translation> {
    * @return a {@link java.util.List} object
    */
   public List<Translation> findByLanguageAndActive(String language, Boolean active) {
-    return list("language = ?1 and active = ?2", Sort.by("key"), language, active);
+    return list("language = ?1 and active = ?2", Sort.by("translationKey"), language, active);
   }
 
   /**
@@ -30,7 +30,7 @@ public class TranslationRepo implements PanacheRepository<Translation> {
    * @return a {@link java.util.List} object
    */
   public List<Translation> findByLanguage(String language) {
-    return list("language = ?1", Sort.by("key"), language);
+    return list("language = ?1", Sort.by("translationKey"), language);
   }
 
   /**
@@ -41,7 +41,7 @@ public class TranslationRepo implements PanacheRepository<Translation> {
    * @return an {@link java.util.Optional} object
    */
   public Optional<Translation> findByKeyAndLanguage(String key, String language) {
-    return find("key = ?1 and language = ?2", key, language).firstResultOptional();
+    return find("translationKey = ?1 and language = ?2", key, language).firstResultOptional();
   }
 
   /**

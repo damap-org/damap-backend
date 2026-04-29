@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 32
+      author: Valentin Futterer
+      comment: Rename key column to translation_key, since key is a protected keyword in H2 database
+      changes:
+        - renameColumn:
+            tableName: translation
+            oldColumnName: key
+            newColumnName: translation_key
+
+      rollback:
+        - renameColumn:
+            tableName: translation
+            oldColumnName: translation_key
+            newColumnName: key
