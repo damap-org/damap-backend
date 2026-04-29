@@ -27,10 +27,10 @@ public class Translation extends PanacheEntity {
 
   @Version private long version;
 
-  @Column(name = "key", nullable = false, length = 255)
+  @Column(name = "translation_key", nullable = false, length = 255)
   @NotEmpty
   @Size(max = 255)
-  private String key;
+  private String translationKey;
 
   @Column(name = "language", nullable = false, length = 2)
   @NotEmpty

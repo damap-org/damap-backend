@@ -42,7 +42,7 @@ public class TranslationService {
     for (Translation englishTranslation : englishTranslations) {
       Translation newTranslation =
           Translation.builder()
-              .key(englishTranslation.getKey())
+              .translationKey(englishTranslation.getTranslationKey())
               .language(newLanguage)
               .defaultValue(englishTranslation.getDefaultValue())
               .value(null)
