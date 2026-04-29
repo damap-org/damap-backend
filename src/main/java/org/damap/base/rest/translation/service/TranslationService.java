@@ -10,6 +10,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
 import org.damap.base.repo.TranslationRepo;
 import org.damap.base.rest.TranslationResource.PatchTranslationRequest;
+import org.damap.base.rest.translation.domain.LanguageSummary;
 
 /** TranslationService class. */
 @ApplicationScoped
@@ -62,6 +63,27 @@ public class TranslationService {
   public List<String> getAllLanguages() {
     log.infov("Getting all languages");
     return translationRepo.findAllLanguages();
+  }
+
+  /**
+   * getActiveLanguages.
+   *
+   * @return a {@link java.util.List} of language codes
+   */
+  public List<String> getActiveLanguages() {
+    log.infov("Getting active languages");
+    return translationRepo.findActiveLanguages();
+  }
+
+  /**
+   * getAllLanguageSummaries.
+   *
+   * @return a {@link java.util.List} of {@link LanguageSummary} for every language code, including
+   *     whether the language is active
+   */
+  public List<LanguageSummary> getAllLanguageSummaries() {
+    log.infov("Getting all language summaries");
+    return translationRepo.findAllLanguageSummaries();
   }
 
   /**

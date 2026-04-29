@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.damap.base.domain.Translation;
+import org.damap.base.rest.translation.domain.LanguageSummary;
 
 /** TranslationRepo class. */
 @ApplicationScoped
@@ -56,6 +57,25 @@ public class TranslationRepo implements PanacheRepository<Translation> {
     return getEntityManager()
         .createQuery(
             "SELECT DISTINCT t.language FROM Translation t ORDER BY t.language", String.class)
+        .getResultList();
+  }
+
+  /**
+   * findAllLanguageSummaries.
+   *
+   * <p>Returns a {@link LanguageSummary} for each distinct language code. A language is considered
+   * active if any translation row for that language is active.
+   *
+   * @return a {@link java.util.List} of language summaries ordered by language code
+   */
+  public List<LanguageSummary> findAllLanguageSummaries() {
+    return getEntityManager()
+        .createQuery(
+            "SELECT new org.damap.base.rest.translation.domain.LanguageSummary("
+                + "t.language, CASE WHEN MAX(CASE WHEN t.active = TRUE THEN 1 ELSE 0 END) = 1"
+                + " THEN TRUE ELSE FALSE END) "
+                + "FROM Translation t GROUP BY t.language ORDER BY t.language",
+            LanguageSummary.class)
         .getResultList();
   }
 
