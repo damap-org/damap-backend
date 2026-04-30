@@ -32,7 +32,7 @@ public class TranslationResource {
     return translationService.getAllLanguages();
   }
 
-  @GET()
+  @GET
   @Path("/active")
   public List<String> getActiveLanguages() {
     return translationService.getActiveLanguages();

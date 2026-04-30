@@ -4,7 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
@@ -83,7 +86,10 @@ public class TranslationService {
    */
   public List<LanguageSummary> getAllLanguageSummaries() {
     log.infov("Getting all language summaries");
-    return translationRepo.findAllLanguageSummaries();
+    Set<String> activeLanguages = new HashSet<>(translationRepo.findActiveLanguages());
+    return translationRepo.findAllLanguages().stream()
+        .map(language -> new LanguageSummary(language, activeLanguages.contains(language)))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -92,12 +98,21 @@ public class TranslationService {
    * @param language a {@link java.lang.String} language code
    * @param active a {@link java.lang.Boolean} activation flag
    * @return a {@link java.util.List} of Translation objects related to the language code
+   * @throws {@link jakarta.ws.rs.BadRequestException} if trying to deactivate the last active
+   *     language
    */
   @Transactional
   public List<Translation> activateLanguage(String language, Boolean active) {
     List<Translation> translations = translationRepo.findByLanguage(language);
     if (translations.isEmpty()) {
       throw new NotFoundException("No translations found for language: " + language);
+    }
+
+    if (!active) {
+      List<String> activeLanguages = translationRepo.findActiveLanguages();
+      if (activeLanguages.size() <= 1 && activeLanguages.contains(language)) {
+        throw new BadRequestException("Cannot deactivate the last active language");
+      }
     }
 
     log.infov("Setting language active state: {0} -> {1}", language, active);
@@ -153,9 +168,6 @@ public class TranslationService {
    *
    * <p>WARNING: This is a destructive operation. All translations for the given language will be
    * permanently removed from the database.
-   *
-   * <p>Deleting the English ("en") language is not allowed and will throw a {@link
-   * jakarta.ws.rs.BadRequestException}.
    *
    * @param language a {@link java.lang.String} language code
    * @throws jakarta.ws.rs.BadRequestException if the language is "en"
