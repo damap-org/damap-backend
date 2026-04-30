@@ -93,7 +93,9 @@ spec:
               value: "true"
             {{- end }}
             - name: KC_HOSTNAME
-              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}"
+              value: "{{ .Values.keycloak.protocol }}://{{ .Values.keycloak.hostname }}/auth"
+            - name: KC_HTTP_RELATIVE_PATH
+              value: "{{ include "keycloakPath" . | trim }}"
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
