@@ -2361,7 +2361,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "password",
+          "value": "tenant1-user",
           "temporary": false
         }
       ]
@@ -2386,7 +2386,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "password",
+          "value": "tenant1-admin",
           "temporary": false
         }
       ]
@@ -2411,7 +2411,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "password",
+          "value": "tenant2-user",
           "temporary": false
         }
       ]
@@ -2436,7 +2436,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "password",
+          "value": "tenant2-admin",
           "temporary": false
         }
       ]

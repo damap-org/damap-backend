@@ -29,19 +29,23 @@ Edit `tenants.yaml` and replace the datasource section with:
 ```yaml
 datasource:
   tenant_1:
-    db-kind: postgresql
-    username: damap
-    password: pw4damap
     jdbc:
       url: jdbc:postgresql://localhost:8088/tenant_1
-
+      driver: ${quarkus.datasource.jdbc.driver}
+    db-kind: ${quarkus.datasource.db-kind}
+    username: ${quarkus.datasource.username}
+    password: ${quarkus.datasource.password}
   tenant_2:
-    db-kind: postgresql
-    username: damap
-    password: pw4damap
     jdbc:
       url: jdbc:postgresql://localhost:8088/tenant_2
+      driver: ${quarkus.datasource.jdbc.driver}
+    db-kind: ${quarkus.datasource.db-kind}
+    username: ${quarkus.datasource.username}
+    password: ${quarkus.datasource.password}
 ```
+
+You can also change tenant-specific configs by playing around with the `tenant-configs:` section. This can be useful if
+you e.g. want to configure pure services for one tenant.
 
 ---
 
@@ -71,19 +75,19 @@ mvn quarkus:dev -Dquarkus.profile=dev,multitenant
 ```
 tenant_1 user:
   username: tenant1-user
-  password: password
+  password: tenant1-user
 
 tenant_2 user:
   username: tenant2-user
-  password: password
+  password: tenant2-user
 
 tenant_1 admin:
-  username: tenant_1_admin
-  password: password
+  username: tenant1_admin
+  password: tenant1_admin
 
 tenant_2 admin:
   username: tenant_2_admin
-  password: password
+  password: tenant2_admin
 ```
 
 ---

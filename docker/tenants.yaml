@@ -29,14 +29,14 @@ damap:
         title: Tenant 2 DAMAP Tool
         fields:
           ethical-report-enabled: false
-        project-service: disabled
+        project-service: default
         elsevier-pure-description-classification: /dk/atira/pure/projectdescription
         elsevier-pure-contributor-role-classifications:
           - pure-role-uri: /dk/atira/pure/member
             contributor-role: PROJECT_MEMBER
         elsevier-pure-project-lead-role-classification: /dk/atira/pure/projectlead
         elsevier-pure-backend: http
-        elsevier-pure-endpoint-url: "https://your-tenant2-pure-instance.elsevierpure.com/ws/api/GRAZ"
+        elsevier-pure-endpoint-url: "https://your-tenant2-pure-instance.elsevierpure.com/ws/api"
         elsevier-pure-api-key: "your API key here"
         elsevier-pure-projects-file: "file:///path/to/projects.json"
         elsevier-pure-persons-file: "file:///path/to/persons.json"
@@ -44,9 +44,9 @@ damap:
           - display-text: 'ORCID'
             query-value: 'ORCID'
             class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
-          - display-text: 'Pure'
-            query-value: 'PURE'
-            class-name: 'org.damap.base.integration.pure.PurePersonService'
+          - display-text: 'University'
+            query-value: 'UNIVERSITY'
+            class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
 
 "%multitenant":
   quarkus:
@@ -54,9 +54,17 @@ damap:
       tenant_1:
         jdbc:
           url: jdbc:postgresql://damap-db:5432/tenant_1
+          driver: ${quarkus.datasource.jdbc.driver}
+        db-kind: ${quarkus.datasource.db-kind}
+        username: ${quarkus.datasource.username}
+        password: ${quarkus.datasource.password}
       tenant_2:
         jdbc:
           url: jdbc:postgresql://damap-db:5432/tenant_2
+          driver: ${quarkus.datasource.jdbc.driver}
+        db-kind: ${quarkus.datasource.db-kind}
+        username: ${quarkus.datasource.username}
+        password: ${quarkus.datasource.password}
 
     liquibase:
       tenant_1:
