@@ -1,0 +1,281 @@
+databaseChangeLog:
+  - changeSet:
+      id: 34
+      author: Vlad Dancea
+      comment: Insert en translations for language activation toggle and irreversible delete warning
+      changes:
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.activateLanguage
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Activate language
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.deactivateLanguage
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Deactivate language
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.removeLanguageWarningIrreversible
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "WARNING: Removing this language will permanently delete ALL of its translations. This action cannot be undone."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.removeLanguageWarning'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.success.translations.language.activate
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Language activated successfully.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.success.translations.language.deactivate
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Language deactivated successfully.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.translations.language.activate
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Failed to activate the language.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.translations.language.deactivate
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Failed to deactivate the language.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.deactivateLanguageDisabledLastActive
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: At least one language must remain active.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.removeLanguageDisabledEnglish
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: The English language is the default and cannot be removed.
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.keyLabel
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Key
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.defaultValueLabel
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Default value
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.revertToDefault
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: Revert to default
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+      rollback:
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.activateLanguage'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.deactivateLanguage'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.removeLanguageWarningIrreversible'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: admin.appTranslations.removeLanguageWarning
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "WARNING: Removing this language will permanently delete ALL custom translations for this language. This action cannot be undone."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.success.translations.language.activate'
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.success.translations.language.deactivate'
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.error.translations.language.activate'
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.error.translations.language.deactivate'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.deactivateLanguageDisabledLastActive'
+        - delete:
+            tableName: translation
+            where: translation_key = 'The English language is the default and cannot be removed.'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.keyLabel'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.defaultValueLabel'
+        - delete:
+            tableName: translation
+            where: translation_key = 'admin.appTranslations.revertToDefault'
