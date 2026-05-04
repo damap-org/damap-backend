@@ -98,8 +98,7 @@ public class TranslationService {
    * @param language a {@link java.lang.String} language code
    * @param active a {@link java.lang.Boolean} activation flag
    * @return a {@link java.util.List} of Translation objects related to the language code
-   * @throws {@link jakarta.ws.rs.BadRequestException} if trying to deactivate the last active
-   *     language
+   * @throws jakarta.ws.rs.BadRequestException if trying to deactivate the last active language
    */
   @Transactional
   public List<Translation> activateLanguage(String language, Boolean active) {
