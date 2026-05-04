@@ -939,6 +939,21 @@
             "claim.name": "personID",
             "jsonType.label": "String"
           }
+        },
+        {
+          "name": "affiliation",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "affiliation",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "affiliation",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
         }
       ]
     },
@@ -2324,6 +2339,106 @@
       "realmRoles": [
         "Damap Admin",
         "default-roles-damap"
+      ]
+    },
+    {
+      "username": "tenant1-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tenant",
+      "lastName": "One User",
+      "email": "tenant1-user@example.com",
+      "realmRoles": [
+        "offline_access"
+      ],
+      "attributes": {
+        "personID": ["tenant1-user"],
+        "affiliation": [
+          "member@tenant_1",
+          "student@tenant_1"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "tenant1-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tenant",
+      "lastName": "One Admin",
+      "email": "tenant1-admin@example.com",
+      "attributes": {
+        "personID": ["tenant1-admin"],
+        "affiliation": [
+          "member@tenant_1"
+        ]
+      },
+      "realmRoles": [
+        "Damap Admin",
+        "offline_access"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "tenant2-user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tenant",
+      "lastName": "Two User",
+      "email": "tenant2-user@example.com",
+      "realmRoles": [
+        "offline_access"
+      ],
+      "attributes": {
+        "personID": ["tenant2-user"],
+        "affiliation": [
+          "member@tenant_2",
+          "student@tenant_2"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "tenant2-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tenant",
+      "lastName": "Two Admin",
+      "email": "tenant2-admin@example.com",
+      "attributes": {
+        "personID": ["tenant2-admin"],
+        "affiliation": [
+          "member@tenant_2"
+        ]
+      },
+      "realmRoles": [
+        "offline_access",
+        "Damap Admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
       ]
     }
   ]
