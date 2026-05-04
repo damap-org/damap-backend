@@ -1,0 +1,600 @@
+databaseChangeLog:
+  - changeSet:
+      id: 33
+      author: Valentin Futterer
+      comment: Update translation keys to make them more structured at the top level
+      changes:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Personal data that is collected for registration is stored indefinitely as part of your user account.'
+            where: translation_key = 'consent-popup.dataRetention.duration' AND language = 'en'
+
+        # simplification since before they used separate yes/no keys and better key naming
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.legal.info.cris.yes'
+              - column:
+                  name: default_value
+                  value: 'Option currently selected in the CRIS system: Yes.'
+            where: translation_key = 'info.cris'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.legal.info.cris.no'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Option currently selected in the CRIS system: No.'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        # unused
+        - delete:
+            tableName: translation
+            where: translation_key = 'or'
+
+        # bad naming and missing prefix
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'actions-bar.buttons.version'
+            where: translation_key = 'button.version'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'actions-bar.mobile.title'
+            where: translation_key = 'button.actions'
+
+        # duplicate key with slightly different verbiage
+        - delete:
+            tableName: translation
+            where: translation_key = 'env.text'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'This application instance is for development and testing purposes only. Content may be deleted at any point in time without prior notification.'
+            where: translation_key = 'environment-banner.text'
+
+        # unused
+        - delete:
+            tableName: translation
+            where: translation_key = 'fair'
+
+        # keys were not added
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.data.reuse.question.short.restrictedDataAccess'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Explanation access to restricted data'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.data.reuse.question.long.restrictedDataAccess'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'For the following datasets restricted access was selected, explain how others will get access to the data:'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # unused
+        - delete:
+            tableName: translation
+            where: translation_key = 'false'
+        - delete:
+            tableName: translation
+            where: translation_key = 'true'
+
+        # missing keys for yes/no
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.legal.question.answer.yes'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Yes'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.legal.question.answer.no'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'No'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # keys missing
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.versions.view.legal-ethical.yes'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Yes'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.versions.view.legal-ethical.no'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'No'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # wrong key was used for this before
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.repositories.filter.cancel'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Cancel'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # removed unnecessary keys and renamed one
+        - delete:
+            tableName: translation
+            where: translation_key = 'treeselect.filter'
+        - delete:
+            tableName: translation
+            where: translation_key = 'treeselect.toggle'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.repositories.filter.options'
+            where: translation_key = 'treeselect.options'
+
+        # added missing keys
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'license-wizard.answer.yes'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Yes'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'license-wizard.answer.no'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'No'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # rename key to be clearer
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'sidebar.header.title'
+            where: translation_key = 'title'
+
+        # rename for clarity and consistency
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'admin.dashboard.greeting'
+            where: translation_key = 'admin.dashboard.title'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'layout.section-intro'
+            where: translation_key = 'dashboard.home.section-intro'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'layout.logo.link'
+            where: translation_key = 'info.how-to-create.tool.link'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'sidebar.navigation.logout'
+            where: translation_key = 'layout.logout'
+
+        # missing section dmp.steps.repositories.languages
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.repositories.languages'
+            where: translation_key = 'languages'
+
+        # move into the correct section dmp.steps.data.specify.file-upload.dropzone.hint
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.data.specify.file-upload.dropzone.hint'
+            where: translation_key = 'file-upload.dropzone.hint'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dmp.steps.data.specify.file-upload.button.choose'
+            where: translation_key = 'file-upload.button.choose'
+
+      rollback:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Personal data that is collected for registration is generally only stored for the duration of the service made available, unless a longer retention period is mandated by statutory regulations.'
+            where: translation_key = 'consent-popup.dataRetention.duration' AND language = 'en'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'info.cris'
+              - column:
+                  name: default_value
+                  value: 'Option currently selected in the CRIS system: {{value}}.'
+            where: translation_key = 'dmp.steps.legal.info.cris.yes'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.legal.info.cris.no'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'or'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'or'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'button.version'
+            where: translation_key = 'actions-bar.buttons.version'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'button.actions'
+            where: translation_key = 'actions-bar.mobile.title'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'env.text'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'This application instance is for development and testing purposes only. Content may be deleted at any point in time without prior notification.'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'This instance is used for developing and testing the web application. Contents may be changed or deleted at any time without prior notice'
+            where: translation_key = 'environment-banner.text
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'fair'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'FAIR'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.data.reuse.question.short.restrictedDataAccess'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.data.reuse.question.long.restrictedDataAccess'
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'false'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'false'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'true'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'true'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.legal.question.answer.yes'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.legal.question.answer.no'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.versions.view.legal-ethical.yes'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.versions.view.legal-ethical.no'
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.repositories.filter.cancel'
+
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'treeselect.filter'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Filter selection'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'treeselect.toggle'
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Toggle {{value}}'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'treeselect.options'
+            where: translation_key = 'dmp.steps.repositories.filter.options'
+        - delete:
+            tableName: translation
+            where: translation_key = 'license-wizard.answer.yes'
+        - delete:
+            tableName: translation
+            where: translation_key = 'license-wizard.answer.no'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'title'
+            where: translation_key = 'sidebar.header.title'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'admin.dashboard.title'
+            where: translation_key = 'admin.dashboard.greeting'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'dashboard.home.section-intro'
+            where: translation_key = 'layout.section-intro'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'info.how-to-create.tool.link'
+            where: translation_key = 'layout.logo.link'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'layout.logout'
+            where: translation_key = 'sidebar.navigation.logout'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'languages'
+            where: translation_key = 'dmp.steps.repositories.languages'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'file-upload.dropzone.hint'
+            where: translation_key = 'dmp.steps.data.specify.file-upload.dropzone.hint'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'file-upload.button.choose'
+            where: translation_key = 'dmp.steps.data.specify.file-upload.button.choose'
+
