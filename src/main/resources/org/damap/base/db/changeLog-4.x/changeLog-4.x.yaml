@@ -47,3 +47,5 @@ databaseChangeLog:
       file: org/damap/base/db/changeLog-4.x/changeLog-4.7.0_8.yaml
   - include:
       file: org/damap/base/db/changeLog-4.x/changeLog-4.7.0_9.yaml
+  - include:
+      file: org/damap/base/db/changeLog-4.x/changeLog-4.7.0_10.yaml

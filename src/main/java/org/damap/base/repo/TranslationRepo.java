@@ -60,6 +60,22 @@ public class TranslationRepo implements PanacheRepository<Translation> {
   }
 
   /**
+   * findActiveLanguages.
+   *
+   * <p>Returns all distinct language codes that have at least one active translation row.
+   *
+   * @return a {@link java.util.List} of distinct active language code strings
+   */
+  public List<String> findActiveLanguages() {
+    return getEntityManager()
+        .createQuery(
+            "SELECT DISTINCT t.language FROM Translation t WHERE t.active = TRUE"
+                + " ORDER BY t.language",
+            String.class)
+        .getResultList();
+  }
+
+  /**
    * deleteByLanguage.
    *
    * <p>WARNING: This is a destructive operation. It permanently deletes ALL translation entries for

@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
+import org.damap.base.rest.translation.domain.LanguageSummary;
 import org.damap.base.rest.translation.service.TranslationService;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -29,6 +30,18 @@ public class TranslationResource {
   @GET
   public List<String> getAllLanguages() {
     return translationService.getAllLanguages();
+  }
+
+  @GET
+  @Path("/active")
+  public List<String> getActiveLanguages() {
+    return translationService.getActiveLanguages();
+  }
+
+  @GET
+  @Path("/details")
+  public List<LanguageSummary> getAllLanguageDetails() {
+    return translationService.getAllLanguageSummaries();
   }
 
   @GET
