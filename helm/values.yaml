@@ -14,7 +14,7 @@ customBuild:
     repo: https://github.com/damap-org/damap-frontend
 
 damap:
-  backendVersion: 5.0.0-dev.4_17e1eaf
+  backendVersion: 5.0.0-rc.2
   customDomain: false
   dbName: damap
   # NOTE: When db_password is empty, Helm will try to reuse the existing Secret if present.
@@ -23,7 +23,7 @@ damap:
   # This mismatch can cause DB/service failures. Use a fixed password or pre-created Secret to ensure stability.
   dbPassword: "damap_pass" # Empty defaults to auto-generate.
   dbUser: damap
-  frontendVersion: 5.0.0-rc.1
+  frontendVersion: 5.0.0-rc.2
   # Host folder to persist data for demo / small scale deployments.
   # NOTE: Do not use for production!
   hostFolder: /tmp/damap
@@ -84,8 +84,10 @@ damap:
   projectService: elsevier-pure
   protocol: http
   storageClassName: ""
+  storageSize: 5Gi
   tlsClusterIssuer: ""
   useExistingSecret: false
+  useHostFolder: true # use host folder for persistence (only for demo/small scale deployments, not for production)
 
 frontend:
   # Set this to true to provide your logo in SVG format (base64-encoded) here. Note that
@@ -112,8 +114,10 @@ keycloak:
   persistData: false
   protocol: http
   storageClassName: ""
+  storageSize: 5Gi
   tlsClusterIssuer: ""
   useExistingSecret: false
+  useHostFolder: true # use host folder for persistence (only for demo/small scale deployments, not for production)
 
 oidc:
   # Role name used to identify DAMAP super admins

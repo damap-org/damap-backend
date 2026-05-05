@@ -1,6 +1,6 @@
 {{- if .Values.keycloak.deploy }}
 {{- if .Values.keycloak.persistData }}
-{{- if not .Values.openshift }}
+{{- if and .Values.keycloak.useHostFolder (not .Values.openshift) }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -8,12 +8,12 @@ metadata:
   name: keycloak-db
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: "{{ .Values.keycloak.storageClassName }}"
+  storageClassName: ""
   claimRef:
     namespace: "{{ .Release.Namespace }}"
     name: keycloak-db
   capacity:
-    storage: 5G
+    storage: {{ .Values.keycloak.storageSize }}
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
@@ -31,8 +31,15 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5G
+      storage: {{ .Values.keycloak.storageSize }}
+
+  {{/* uses cluster default StorageClass if any of the conditions are not met */}}
+  {{- if .Values.keycloak.useHostFolder }}
+  storageClassName: ""
+  {{- else if .Values.keycloak.storageClassName }}
   storageClassName: "{{ .Values.keycloak.storageClassName }}"
+  {{- end }}
+  
   volumeMode: Filesystem
 {{- end }}
 ---

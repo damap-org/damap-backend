@@ -1,5 +1,5 @@
 {{- if .Values.damap.persistData }}
-{{- if not .Values.openshift }}
+{{- if and .Values.damap.useHostFolder (not .Values.openshift) }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -7,17 +7,17 @@ metadata:
   name: damap-db
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: "{{ .Values.damap.storageClassName }}"
+  storageClassName: ""
   claimRef:
     namespace: "{{ .Release.Namespace }}"
     name: damap-db
   capacity:
-    storage: 5G
+    storage: {{ .Values.damap.storageSize }}
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   hostPath:
-    path: "{{ .Values.damap.hostFolder }}"
+    path: {{ .Values.damap.hostFolder }}
 {{- end }}
 ---
 apiVersion: v1
@@ -30,8 +30,15 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5G
+      storage: {{ .Values.damap.storageSize }}
+
+  {{- /* uses cluster default StorageClass if any of the conditions are not met */}}
+  {{- if .Values.damap.useHostFolder }}
+  storageClassName: ""
+  {{- else if .Values.damap.storageClassName }}
   storageClassName: "{{ .Values.damap.storageClassName }}"
+  {{- end }}
+
   volumeMode: Filesystem
 {{- end }}
 ---

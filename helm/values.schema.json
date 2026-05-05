@@ -136,7 +136,7 @@
         },
         "hostFolder": {
           "title": "Host folder",
-          "description": "Host folder when creating a PV.",
+          "description": "Host folder for persistence (only for demo/small scale deployments, not for production)",
           "type": "string"
         },
         "hostname": {
@@ -207,6 +207,13 @@
           "description": "Name for the storage class to use for allocating PVs.",
           "type": "string"
         },
+        "storageSize": {
+          "title": "Storage size",
+          "description": "Storage size for the Persistent Volume Claim if persistData is true.",
+          "type": "string",
+          "pattern": "^[0-9]+(Gi|Mi)$",
+          "default": "5Gi"
+        },
         "tlsClusterIssuer": {
           "title": "TLS cluster issuer",
           "description": "Cluster issuer to use for TLS certificates.",
@@ -217,6 +224,12 @@
           "description": "Use an existing Kubernetes secret for the database credentials instead of creating a new one. This is useful if you want to use Sealed Secrets or manage the secret manually.",
           "type": "boolean",
           "default": false
+        },
+        "useHostFolder": {
+          "title": "Use host folder",
+          "description": "Use a host folder for persistence (only for demo/small scale deployments, not for production)",
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -305,7 +318,7 @@
         },
         "hostFolder": {
           "title": "Host folder",
-          "description": "Host folder when creating a PV.",
+          "description": "Host folder for persistence (only for demo/small scale deployments, not for production)",
           "type": "string"
         },
         "hostname": {
@@ -336,6 +349,13 @@
           "description": "Name for the storage class to use for allocating PVs.",
           "type": "string"
         },
+        "storageSize": {
+          "title": "Storage size",
+          "description": "Storage size for the Persistent Volume Claim if persistData is true.",
+          "type": "string",
+          "pattern": "^[0-9]+(Gi|Mi)$",
+          "default": "5Gi"
+        },
         "tlsClusterIssuer": {
           "title": "TLS cluster issuer",
           "description": "Cluster issuer to use for TLS certificates.",
@@ -346,6 +366,12 @@
           "description": "Use an existing Kubernetes secret for the database credentials instead of creating a new one. This is useful if you want to use Sealed Secrets or manage the secret manually.",
           "type": "boolean",
           "default": false
+        },
+        "useHostFolder": {
+          "title": "Use host folder",
+          "description": "Use a host folder for persistence (only for demo/small scale deployments, not for production)",
+          "type": "boolean",
+          "default": true
         }
       }
     },
