@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 35
+      author: Valentin Futterer
+      comment: Rename value column to custom, since value is a protected keyword in H2 database
+      changes:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'admin.appTranslations.customColumn'
+            where: translation_key = 'admin.appTranslations.valueColumn'
+        - renameColumn:
+            tableName: translation
+            oldColumnName: value
+            newColumnName: custom
+
+      rollback:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: 'admin.appTranslations.valueColumn'
+            where: translation_key = 'admin.appTranslations.customColumn'
+        - renameColumn:
+            tableName: translation
+            oldColumnName: custom
+            newColumnName: value

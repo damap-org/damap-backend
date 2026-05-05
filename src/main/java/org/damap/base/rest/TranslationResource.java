@@ -79,5 +79,5 @@ public class TranslationResource {
 
   private record ActivateLanguageRequest(@NotNull Boolean active) {}
 
-  public record PatchTranslationRequest(String value, @NotNull Boolean active) {}
+  public record PatchTranslationRequest(String custom, @NotNull Boolean active) {}
 }
