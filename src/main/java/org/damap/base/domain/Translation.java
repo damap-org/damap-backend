@@ -42,9 +42,9 @@ public class Translation extends PanacheEntity {
   @Size(max = Length.LONG32)
   private String defaultValue;
 
-  @Column(name = "value", length = Length.LONG32)
+  @Column(name = "custom", length = Length.LONG32)
   @Size(max = Length.LONG32)
-  private String value;
+  private String custom;
 
   @Column(name = "active", nullable = false)
   @NotNull private Boolean active = true;

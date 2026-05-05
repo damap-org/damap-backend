@@ -49,7 +49,7 @@ public class TranslationService {
               .translationKey(englishTranslation.getTranslationKey())
               .language(newLanguage)
               .defaultValue(englishTranslation.getDefaultValue())
-              .value(null)
+              .custom(null)
               .active(true)
               .build();
 
@@ -156,7 +156,7 @@ public class TranslationService {
 
     log.infov("Updating translation {0} for language {1}", key, language);
 
-    existing.setValue(request.value());
+    existing.setCustom(request.custom());
     existing.setActive(request.active());
 
     return existing;
