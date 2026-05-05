@@ -3,8 +3,8 @@ name: damap-chart
 description: A tool to create machine-actionable data management plans.
 type: application
 
-version: 0.1.0-dev.8
-appVersion: "5.0.0-dev.4"
+version: 0.1.0-dev.9
+appVersion: "5.0.0-rc.2"
 
 kubeVersion: ">=1.25.0"
 
@@ -32,7 +32,13 @@ icon: https://damap.org/logo.svg
 annotations:
   artifacthub.io/prerelease: "true"
   artifacthub.io/changes: |
+    - kind: added
+      description: Introduce configurable storage size for database persistence.
+    - kind: added
+      description: Introduce hostPath based persistence mode for local development deployments
     - kind: changed
-      description: Bump DAMAP backend version to 5.0.0-dev.4
+      description: Bump DAMAP backend version to 5.0.0-rc.2
+    - kind: changed
+      description: Bump DAMAP frontend version to 5.0.0-rc.2
     - kind: fixed
-      description: Fix routing when keycloak is deployed on the same domain as the frontend.
+      description: Fix persistence behavior for PVC and StorageClass handling (hostPath vs dynamic provisioning).
