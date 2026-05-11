@@ -35,7 +35,6 @@ public class CustomTenantResolver implements TenantResolver {
     // the system
     // would throw 401 otherwise - and those users shouldnt get their information stored
     if (!securityService.doesUserHaveValidAffiliation()) {
-      System.out.println("catch!!");
       return getDefaultTenantId();
     }
     String tenantId = securityService.getAffiliation();
