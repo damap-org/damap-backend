@@ -20,6 +20,8 @@ Update `application.yaml` (multitenant profile):
     locations: /tenants.yaml
 ```
 
+Take care not to commit this change after testing or use the CLI flag `Dquarkus.config.locations=classpath:tenants.yaml`.
+
 ---
 
 ## 3. Configure Tenant Datasources
@@ -74,19 +76,19 @@ mvn quarkus:dev -Dquarkus.profile=dev,multitenant
 
 ```
 tenant_1 user:
-  username: tenant1-user
-  password: tenant1-user
+  username: tenant1_user
+  password: tenant1_user
 
 tenant_2 user:
-  username: tenant2-user
-  password: tenant2-user
+  username: tenant2_user
+  password: tenant2_user
 
 tenant_1 admin:
   username: tenant1_admin
   password: tenant1_admin
 
 tenant_2 admin:
-  username: tenant_2_admin
+  username: tenant2_admin
   password: tenant2_admin
 ```
 

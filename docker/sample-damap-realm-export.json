@@ -2342,7 +2342,7 @@
       ]
     },
     {
-      "username": "tenant1-user",
+      "username": "tenant1_user",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Tenant",
@@ -2352,7 +2352,7 @@
         "offline_access"
       ],
       "attributes": {
-        "personID": ["tenant1-user"],
+        "personID": ["tenant1_user"],
         "affiliation": [
           "member@tenant_1",
           "student@tenant_1"
@@ -2361,20 +2361,20 @@
       "credentials": [
         {
           "type": "password",
-          "value": "tenant1-user",
+          "value": "tenant1_user",
           "temporary": false
         }
       ]
     },
     {
-      "username": "tenant1-admin",
+      "username": "tenant1_admin",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Tenant",
       "lastName": "One Admin",
       "email": "tenant1-admin@example.com",
       "attributes": {
-        "personID": ["tenant1-admin"],
+        "personID": ["tenant1_admin"],
         "affiliation": [
           "member@tenant_1"
         ]
@@ -2386,13 +2386,13 @@
       "credentials": [
         {
           "type": "password",
-          "value": "tenant1-admin",
+          "value": "tenant1_admin",
           "temporary": false
         }
       ]
     },
     {
-      "username": "tenant2-user",
+      "username": "tenant2_user",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Tenant",
@@ -2402,7 +2402,7 @@
         "offline_access"
       ],
       "attributes": {
-        "personID": ["tenant2-user"],
+        "personID": ["tenant2_user"],
         "affiliation": [
           "member@tenant_2",
           "student@tenant_2"
@@ -2411,20 +2411,20 @@
       "credentials": [
         {
           "type": "password",
-          "value": "tenant2-user",
+          "value": "tenant2_user",
           "temporary": false
         }
       ]
     },
     {
-      "username": "tenant2-admin",
+      "username": "tenant2_admin",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Tenant",
       "lastName": "Two Admin",
       "email": "tenant2-admin@example.com",
       "attributes": {
-        "personID": ["tenant2-admin"],
+        "personID": ["tenant2_admin"],
         "affiliation": [
           "member@tenant_2"
         ]
@@ -2436,7 +2436,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "tenant2-admin",
+          "value": "tenant2_admin",
           "temporary": false
         }
       ]
