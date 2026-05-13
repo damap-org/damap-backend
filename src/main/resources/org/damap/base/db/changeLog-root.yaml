@@ -1,22 +1,3 @@
-# To increase readability and make it more customizable, changes are going to be split into different files.
-# As an id, consecutive integers are used.
-# Each main version X has its own folder named changeLog-X.x (the x here is not to be substituted!!!).
-# Inside are the changesets.
-
-# For each major version, one change log is created which imports all change logs for this version. This helps to keep the root change log smaller.
-# File name looks like changeLog-X.x.yaml - where X is the major version and x is a placeholder (not to be substituted).
-# Each changeset has its own file named changeLog-X.Y_Z_i, where X is the version of the current
-# folder, Y is the minor version and Z the fix version the change belongs to. i is the running index of the changes for the same release.
-# For example "changeLog-3.0.0_1.yaml". If two changes occur in the same minor version, use "changeLog-3.0.0_2.yaml" to distinguish between them.
-# Please stick to these naming guidelines, to avoid conflicts.
-#
-# When creating a change log, adding a the rollback attribute helps to easier test and rollback database changes.
-# The rollback attribute should be provided wherever possible!
-#
-# To include a new changeset, generate a new version folder (if not already there) and then create your changeset - follow
-# the naming guidelines. Then append an include statement below, including your new changeset.
-# Important - keep in mind the id - check which one your predecessor used.
-
 databaseChangeLog:
   - include:
       file: org/damap/base/db/changeLog.yaml # legacy changelog
