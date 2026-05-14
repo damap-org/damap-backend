@@ -1,19 +1,14 @@
 # DAMAP
-
-DAMAP is a tool that is currently being developed by TU Wien and TU Graz as part of the 
-[FAIR Data Austria](https://forschungsdaten.at/fda/) project. 
-It is based on the idea of machine actionable data management plans (maDMPs) and aims to facilitate the 
-creation of data management plans (DMPs) for researchers. 
-The tool aims to be closely integrated into the institutional environment, collecting information from 
-various established systems, in order to perceive project information, research data and personnel data 
-from existing systems.
-This saves DMP authors from having to enter the same data several times. 
-Finally DAMAP delivers both a DMP that can be read and edited as a Word document, and an maDMP whose 
-information can be used at machine level. The current content of DAMAP is based on 
-[Science Europe’s Practical Guide to the International Alignment of Research Data Management](https://www.tuwien.at/fileadmin/Assets/forschung/Zentrum_Forschungsdatenmanagement/pdf-Sammlung/se_rdm_practical_guide_extended_final_2021.pdf)
-and is compatible with the [RDA recommendation on machine actionable DMPs](https://zenodo.org/record/4036060#.Yk20vjWxVaR).
-
-For a showcase of some of the tools functions see the [demo video](https://youtu.be/IxQzqy26ZO4).
+ 
+DAMAP is an open source tool co-developed by TU Wien and TU Graz that supports researchers in managing both data and code along the research data lifecycle. It is based on the concept of machine-actionable data management plans (maDMPs) and aims to simplify the creation of data management plans (DMPs) for researchers.
+ 
+The tool integrates with an institution's existing databases — such as project management and HR systems (CRIS applications) — to automatically pull relevant information into a DMP, increasing accuracy and reducing the effort required to complete one. This saves DMP authors from having to enter the same data multiple times.
+ 
+DAMAP guides users through all sections of a DMP in ten steps by asking questions, suggesting text, and providing helpful information. It exports a pre-filled DMP as a Word document that can be customized and submitted to European and national research funders. Supported export templates include FWF, Horizon Europe, and Science Europe. Additionally, DAMAP is compatible with the [RDA recommendation on machine-actionable DMPs](https://doi.org/10.15497/rda00039) and offers a JSON export.
+ 
+The content and structure of DAMAP is based on [Science Europe's Core Requirements for Data Management Plans](https://doi.org/10.5281/zenodo.4915861).
+ 
+DAMAP is available under the MIT license and can be self-hosted by any institution. Alternatively, TU Wien offers a cloud-hosted version of DAMAP, allowing institutions to get started without running their own infrastructure. For more information on both options, visit [damap.org](https://damap.org/).
 
 ## Components
 
@@ -54,22 +49,10 @@ To make use of the powers of DAMAP, customisations should be added to integrate 
 Before contributing code, please carefully read the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) 
 file.
 
-## Authors
-
-* [Zeno Casellato](https://github.com/ZenoLC)
-* [Clara Schuster](https://github.com/clarascu)
-* [Hardani Maulana](https://github.com/hardanimaulana)
-* [Florin Hillebrand](https://github.com/flozzone)
-* [Luca Maestri](https://github.com/casualtimer)
-* [David Eckhard](https://github.com/rekt-hard)
-* [Laura Thaci](https://github.com/lpandath)
-* [Valentin Futterer](https://github.com/ValentinFutterer)
-
 ## License
 
 The project is licensed under the MIT license. See [LICENSE](LICENSE) file for further information.
 
-## Screenshots
-
-|![Add researcher data step](doc/screenshots/step.png)|![End step](doc/screenshots/end_step.png)|![Responive design](doc/screenshots/responsive.png)|
-|:---:|:---:|:---:|
+## Funding
+ 
+DAMAP has received funding from [FAIR Data Austria](https://forschungsdaten.at/fda/), [SharedRDM](https://forschung-daten.at/shared-rdm/), and the EC project [OSTrails](https://ostrails.eu/).
