@@ -156,6 +156,7 @@ rest:
   openaire/mp-rest/url: http://api.openaire.eu/search/
   orcid:
     search/mp-rest/url: https://pub.orcid.org
+  evaluation/mp-rest/url: https://ostrails-dmp-evaluation.arisnet.ac.at
 
 "%dev":
   damap:

@@ -1,0 +1,294 @@
+databaseChangeLog:
+  - changeSet:
+      id: 36
+      author: Vlad Dancea
+      comment: Insert en translations for DMP evaluation feature
+      changes:
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.title
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "DMP Evaluation"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.subtitle
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Evaluate this maDMP against funder requirements via OSTrails"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.benchmark.select
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Select Benchmark"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.details.reason
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Reason"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.button.assess
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Assess DMP"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.button.reassess
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Re-assess"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.benchmarks.error
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Benchmarks could not be loaded. Please try again later."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.warning.unsaved
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Please save your DMP before running an evaluation."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.verdict.fail
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "This maDMP does not currently meet the requirements"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.verdict.pass
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "This maDMP meets the requirements"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.stats.passed
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Requirements passed"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.stats.failed
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Requirements failed"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.stats.warnings
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Warnings"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: dmp.steps.summary.evaluation.error
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "The evaluation could not be completed. Please try again."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.evaluation.benchmarks.load
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "Could not load evaluation benchmarks."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.evaluation.assess
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "The DMP evaluation failed."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
