@@ -2,7 +2,7 @@
 
 ## 1. Copy Tenant Configuration
 
-Copy the tenant configuration file from `/docker` into your application resources:
+Copy the sample tenant configuration file from `/docker` into your application resources:
 
 ```bash
 cp docker/tenants.yaml src/main/resources/tenants.yaml
@@ -12,7 +12,7 @@ cp docker/tenants.yaml src/main/resources/tenants.yaml
 
 ## 2. Configure Application
 
-Update `application.yaml` (multitenant profile):
+Update `application.yaml` (multitenant profile) and set location to the new location of your `tenants.yaml` config file:
 
 ```yaml
 "%multitenant":
@@ -72,7 +72,7 @@ mvn quarkus:dev -Dquarkus.profile=dev,multitenant
 
 ---
 
-## 6. Test Users
+## 6. Test Users in Keycloak
 
 ```
 tenant_1 user:

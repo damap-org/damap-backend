@@ -18,36 +18,36 @@ residing in separate source code repositories.
 1. **[damap-backend](https://github.com/damap-org/damap-backend):** maDMPs backend project
 2. **[damap-frontend](https://github.com/damap-org/damap-frontend):** maDMPs frontend project
 
-Also there are some components that you should already have at your institution that you can integrate with damap,
+Also there are some components that you should already have at your institution that you can integrate with DAMAP,
 in order to make this tool your own:
 
 1. Authentication service with OpenID support (e.g. [Keycloak](https://www.keycloak.org/))
 2. [CRIS](https://en.wikipedia.org/wiki/Current_research_information_system) system (system managing research projects)
 3. System managing researcher data
 
-The actively supported database is [Postgres](https://www.postgresql.org/). Other databases could be used as well,
-but they may not be tested.
-
-## Documentation
-
-Once documentation is ready, it will be available from this repository in the `doc` folder at 
-[Documentation](doc/index.md).
+The actively supported database is [Postgres](https://www.postgresql.org/) and to a lesser extent Oracle.
+Other databases could be used as well, but they may not be tested.
 
 ## Installation
 
-DAMAP can be installed in several ways, but since it is composed out of multiple different applications, running DAMAP
-as containers seems to be the most straight forward way. You can find detailed installation instructions in the 
-[INSTALLATION.md](INSTALLATION.md) file.
+DAMAP supports deployment both in Docker-based containerized environments and on Kubernetes clusters.
+It can be deployed either as a standalone installation for a single institution or in a multitenant setup
+where one instance serves multiple universities or organizations.
+You can find detailed installation instructions in the [Reference Manual](https://damap.org/manual/) on our website.
+
+For instructions on how to run the project locally, read the development guidelines in the [DEVELOPMENT.md](docs/DEVELOPMENT.md) file.
 
 ## Customisation
 
 To make use of the powers of DAMAP, customisations should be added to integrate it in your system environment.
-[CUSTOMISING.md](CUSTOMISING.md) documents the steps needed in order to adapt DAMAP to your needs.
+Common customisations include CRIS systems to get up-to-date person and project data, color theme of the interface and
+DMP templates.
+Our [Reference Manual](https://damap.org/manual) documents the steps needed in order to adapt DAMAP to your needs.
 
 ## Contributing
 
 Before contributing code, please carefully read the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) 
-file.
+file and the developer documentation in the [DEVELOPMENT.md](docs/DEVELOPMENT.md) file.
 
 ## License
 
