@@ -290,7 +290,7 @@ configs:
             },
             "systemName": "Project",
             "title": {
-              "en_GB": "Horizon Europe Sample Project"
+              "en_GB": "No Funding Sample Project"
             },
             "typeDiscriminator": "AwardManagementProject",
             "uuid": "proj-uuid-003"
@@ -352,7 +352,7 @@ configs:
             },
             "systemName": "Project",
             "title": {
-              "en_GB": "Horizon Europe Sample Project"
+              "en_GB": "Unknown Funding Sample Project"
             },
             "typeDiscriminator": "AwardManagementProject",
             "uuid": "proj-uuid-004"
