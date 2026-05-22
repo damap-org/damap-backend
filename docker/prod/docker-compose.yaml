@@ -13,7 +13,8 @@ services:
     restart: unless-stopped
     environment:
       DAMAP_ENV: PROD
-      DAMAP_TITLE: ${DAMAP_TITLE:-DAMAP Tool}
+      DAMAP_TENANT_AWARE_TITLE: ${DAMAP_TENANT_AWARE_TITLE:-DAMAP Tool}
+
       # --- Database settings --- #
       # Optional database configuration values, can be overridden by environment variables.
       # This is useful in case the database host/port/name are different from the defaults.
@@ -24,37 +25,54 @@ services:
       QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_QUARKUS_DATASOURCE_DB_KIND:-postgresql}
       QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
       QUARKUS_DATASOURCE_JDBC_PASSWORD: "${DAMAP_DB_PASSWORD?The DAMAP database password is required}"
+
       # --- OIDC / Auth settings --- #
       QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
       QUARKUS_OIDC_AUTH_SERVER_URL: "${DAMAP_QUARKUS_OIDC_AUTH_SERVER_URL?The OIDC AUTH SERVER URL is required}"
-      QUARKUS_OIDC_TOKEN_ISSUER: "${DAMAP_QUARKUS_OIDC_TOKEN_ISSUER?The OIDC TOKEN ISSUER URL is required}"
       QUARKUS_OIDC_CLIENT_ID: "${DAMAP_QUARKUS_OIDC_CLIENT_ID?The OIDC CLIENT ID is required}"
       QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH: "${DAMAP_QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH?The OIDC ROLE CLAIM PATH is required}"
+      QUARKUS_OIDC_TOKEN_ISSUER: "${DAMAP_QUARKUS_OIDC_TOKEN_ISSUER?The OIDC TOKEN ISSUER URL is required}"
+
+      # --- Settings for Person and Project services that DAMAP will connect to --- #
+      # TODO: These should ideally be refactored to be more flexible and extensible,
+      # e.g. by allowing to specify an arbitrary number of person services via a JSON array or similar.
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__DISPLAY_TEXT: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__DISPLAY_TEXT:-Pure}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__QUERY_VALUE: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__QUERY_VALUE:-PURE}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__CLASS_NAME:-org.damap.base.integration.pure.PurePersonService}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__DISPLAY_TEXT: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__DISPLAY_TEXT:-ORCID}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__QUERY_VALUE: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__QUERY_VALUE:-ORCID}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME:-org.damap.base.integration.orcid.ORCIDPersonServiceImpl}
+      DAMAP_TENANT_AWARE_PROJECT_SERVICE: ${DAMAP_PROJECT_SERVICE:-elsevier-pure}
+
+      # --- Fields settings --- #
+      DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED: ${DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED:-true}
+
       # --- DAMAP PURE integration defaults --- #
-      DAMAP_ELSEVIER_PURE_BACKEND: ${DAMAP_ELSEVIER_PURE_BACKEND:-file}
-      DAMAP_ELSEVIER_PURE_ENABLED: ${DAMAP_ELSEVIER_PURE_ENABLED:-true}
-      DAMAP_ELSEVIER_PURE_ENDPOINT_URL: ${DAMAP_ELSEVIER_PURE_ENDPOINT_URL:-""}
-      DAMAP_ELSEVIER_PURE_PERSONS_FILE: ${DAMAP_ELSEVIER_PURE_PERSONS_FILE:-file:////opt/damap/config/pure-persons-data.json}
-      DAMAP_ELSEVIER_PURE_PROJECTS_FILE: ${DAMAP_ELSEVIER_PURE_PROJECTS_FILE:-file:////opt/damap/config/pure-projects-data.json}
-      # --- Settings needed for DAMAP to use the Person and Projects services --- #
-      DAMAP_PERSON_SERVICES: ${DAMAP_PERSON_SERVICES:-[{"display-text":"Pure","query-value":"PURE","class-name":"org.damap.base.integration.pure.PurePersonService"},{"display-text":"ORCID","query-value":"ORCID","class-name":"org.damap.base.integration.orcid.ORCIDPersonServiceImpl"}]}
-      DAMAP_PROJECTS_SERVICE: ${DAMAP_PROJECTS_SERVICE:-elsevier-pure}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY:-""}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND:-file}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI:-/dk/atira/pure/member}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE:-PROJECT_MEMBER}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION:-/dk/atira/pure/projectdescription}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL:-""}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE:-file:////opt/damap/config/pure-persons-data.json}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION:-/dk/atira/pure/projectlead}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE:-file:////opt/damap/config/pure-projects-data.json}
     volumes:
       - ../tenants.yaml:/opt/damap/tenants.yaml:ro
     expose:
       - 8080
     configs:
       - source: pure-persons-data
-        target: ${DAMAP_ELSEVIER_PURE_PERSONS_FILE:-/opt/damap/config/pure-persons-data.json}
+        target: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE:-/opt/damap/config/pure-persons-data.json}
       - source: pure-projects-data
-        target: ${DAMAP_ELSEVIER_PURE_PROJECTS_FILE:-/opt/damap/config/pure-projects-data.json}
+        target: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE:-/opt/damap/config/pure-projects-data.json}
     depends_on:
       postgres-db:
         condition: service_healthy
-        required: false # We don't require this since the DB only exists when the with_db profile is enabled.
+        required: false # Not required since the DB only exists when the with_db profile is enabled.
       keycloak:
         condition: service_healthy
-        required: false # We don't require this since the DB only exists when the with_keycloak profile is enabled.
+        required: false # Not required since the DB only exists when the with_keycloak profile is enabled.
       gotenberg:
         condition: service_started
     networks:
