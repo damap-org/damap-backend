@@ -63,7 +63,7 @@ services:
     # and tag it as ghcr.io/damap-org/damap-frontend:next, instead of pulling it.
     # This assumes that the frontend is checked out alogside the backend.
     build:
-      context: ../../damap-frontend
+      context: ../../../damap-frontend
     restart: unless-stopped
     depends_on:
       - backend
