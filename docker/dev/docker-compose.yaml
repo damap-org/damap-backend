@@ -19,11 +19,11 @@ services:
       # This is useful in case the database host/port/name are different from the defaults.
       # Prefixed with DAMAP_ (not Quarkus-specific), used to build the full JDBC URL.
       DAMAP_DB_HOST: ${DAMAP_DB_HOST:-}
-      DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
       DAMAP_DB_NAME: ${DAMAP_DB_NAME:-}
+      DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
       QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_DB_KIND:-postgresql}
-      QUARKUS_DATASOURCE_USERNAME: ${DAMAP_DB_USERNAME:-damap}
       QUARKUS_DATASOURCE_PASSWORD: ${DAMAP_DB_PASSWORD:-pw4damap}
+      QUARKUS_DATASOURCE_USERNAME: ${DAMAP_DB_USERNAME:-damap}
       QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
       QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT_AUTH__LEVEL: DEBUG
       QUARKUS_LOG_CATEGORY__IO_SMALLRYE_JWT__LEVEL: DEBUG

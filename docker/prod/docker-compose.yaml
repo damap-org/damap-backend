@@ -12,8 +12,11 @@ services:
     image: ghcr.io/damap-org/damap-backend:${DAMAP_VERSION:-next}
     restart: unless-stopped
     environment:
+      # --- General settings --- #
       DAMAP_ENV: PROD
       DAMAP_TENANT_AWARE_TITLE: ${DAMAP_TENANT_AWARE_TITLE:-DAMAP Tool}
+      QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
+      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
 
       # --- Database settings --- #
       # Optional database configuration values, can be overridden by environment variables.
@@ -27,10 +30,17 @@ services:
       QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
 
       # --- OIDC / Auth settings --- #
-      QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
+      DAMAP_AUTH_ADMIN_ROLE_NAME: ${DAMAP_AUTH_ADMIN_ROLE_NAME:-Damap Admin}
+      DAMAP_AUTH_AFFILIATIONS_CLAIM: ${DAMAP_AUTH_AFFILIATIONS_CLAIM:-affiliation}
+      DAMAP_AUTH_EMAIL_CLAIM: ${DAMAP_AUTH_EMAIL_CLAIM:-email}
+      DAMAP_AUTH_FAMILY_NAME_CLAIM: ${DAMAP_AUTH_FAMILY_NAME_CLAIM:-family_name}
+      DAMAP_AUTH_GIVEN_NAME_CLAIM: ${DAMAP_AUTH_GIVEN_NAME_CLAIM:-given_name}
+      DAMAP_AUTH_NAME_CLAIM: ${DAMAP_AUTH_NAME_CLAIM:-name}
+      DAMAP_AUTH_SCOPE: ${DAMAP_AUTH_SCOPE:-openid profile email offline_access microprofile-jwt roles personID}
+      DAMAP_AUTH_USER_ID_CLAIM: ${DAMAP_AUTH_USER_ID_CLAIM:-personID}
+      DAMAP_AUTH_USER_ROLES_CLAIM_PATH: ${DAMAP_AUTH_USER_ROLES_CLAIM_PATH:?The DAMAP AUTH USER ROLES CLAIM PATH is required}
       QUARKUS_OIDC_AUTH_SERVER_URL: "${DAMAP_QUARKUS_OIDC_AUTH_SERVER_URL?The OIDC AUTH SERVER URL is required}"
       QUARKUS_OIDC_CLIENT_ID: "${DAMAP_QUARKUS_OIDC_CLIENT_ID?The OIDC CLIENT ID is required}"
-      QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH: "${DAMAP_QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH?The OIDC ROLE CLAIM PATH is required}"
       QUARKUS_OIDC_TOKEN_ISSUER: "${DAMAP_QUARKUS_OIDC_TOKEN_ISSUER?The OIDC TOKEN ISSUER URL is required}"
 
       # --- Settings for Person and Project services that DAMAP will connect to --- #
@@ -44,13 +54,13 @@ services:
       DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME:-org.damap.base.integration.orcid.ORCIDPersonServiceImpl}
       DAMAP_TENANT_AWARE_PROJECT_SERVICE: ${DAMAP_PROJECT_SERVICE:-elsevier-pure}
 
-      # --- Settings for external services DAMAP connects to --- #
+      # --- Settings for REST services DAMAP connects to --- #
       DAMAP_REST_GOTENBERG_MP_REST_URL: ${DAMAP_REST_GOTENBERG_MP_REST_URL:-http://gotenberg:3000}
 
       # --- Fields settings --- #
       DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED: ${DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED:-true}
 
-      # --- DAMAP PURE integration defaults --- #
+      # --- DAMAP PURE integration settings --- #
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY:-""}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND:-file}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE:-PROJECT_MEMBER}
