@@ -8,7 +8,7 @@ services:
       - with_keycloak
     command:
       - start
-      - --hostname=https://${DAMAP_HOSTNAME?Please provide a hostname for Keycloak}
+      - --hostname=https://${DAMAP_HOSTNAME?The DAMAP hostname for Keycloak is required}
       - --hostname-backchannel-dynamic
       - "true"
       - --http-enabled=true
@@ -16,13 +16,15 @@ services:
       - xforwarded
       - --import-realm
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: "${KC_BOOTSTRAP_ADMIN_USERNAME?Please provide an admin user for Keycloak}"
-      KC_BOOTSTRAP_ADMIN_PASSWORD: "${KC_BOOTSTRAP_ADMIN_PASSWORD?Please provide an admin password for Keycloak}"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "${KC_ADMIN_PASSWORD?The Keycloak admin password is required}"
+      KC_BOOTSTRAP_ADMIN_USERNAME: "${KC_ADMIN_USERNAME?The Keycloak admin user is required}"
       KC_DB: postgres
-      KC_DB_URL: "jdbc:postgresql://${KC_DB_URL_HOST:-keycloak-db}:5432/${KC_DB_URL_DATABASE?The Keycloak database name is required}"
-      KC_DB_USERNAME: "${KC_DB_USERNAME?Please provide a Keycloak database user}"
-      KC_DB_PASSWORD: "${KC_DB_PASSWORD?Please provide a Keycloak database user}"
-      KC_HOSTNAME: "${DAMAP_HOSTNAME?Please provide a hostname for DAMAP}"
+      KC_DB_PASSWORD: "${KC_DB_PASSWORD?The Keycloak database password is required}"
+      KC_DB_URL_DATABASE: "${KC_DB_URL_DATABASE?The Keycloak database name is required}"
+      KC_DB_URL_HOST: "${KC_DB_URL_HOST:-keycloak-db}"
+      KC_DB_URL_PORT: "${KC_DB_URL_PORT:-5432}"
+      KC_DB_USERNAME: "${KC_DB_USERNAME?The Keycloak database user is required}"
+      KC_HOSTNAME: "${DAMAP_HOSTNAME?The DAMAP hostname for Keycloak is required}"
     configs:
       - source: damap-realm-import
         target: /opt/keycloak/data/import/damap-realm-import.json
@@ -57,7 +59,7 @@ services:
       POSTGRES_PASSWORD: ${KC_DB_PASSWORD?The Keycloak datasource password is required}
       POSTGRES_DB: ${KC_DB_URL_DATABASE?The Keycloak database name is required}
     volumes:
-      - ${KC_DB_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
+      - ${KC_DB_DATA_HOST_PATH?Please specify a path for the Keycloak database data.}:/var/lib/postgresql/data
     networks:
       damap-internal:
         aliases:

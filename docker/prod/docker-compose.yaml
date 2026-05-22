@@ -19,12 +19,12 @@ services:
       # Optional database configuration values, can be overridden by environment variables.
       # This is useful in case the database host/port/name are different from the defaults.
       # Prefixed with DAMAP_ (not Quarkus-specific), used to build the full JDBC URL.
-      DAMAP_DB_HOST: ${DAMAP_DB_HOST:-}
+      DAMAP_DB_HOST: ${DAMAP_DB_HOST:?The DAMAP database host is required}
+      DAMAP_DB_NAME: ${DAMAP_DB_NAME:-?The DAMAP database name is required}
       DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
-      DAMAP_DB_NAME: ${DAMAP_DB_NAME:-}
-      QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_QUARKUS_DATASOURCE_DB_KIND:-postgresql}
-      QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
+      QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_DB_KIND:-postgresql}
       QUARKUS_DATASOURCE_JDBC_PASSWORD: "${DAMAP_DB_PASSWORD?The DAMAP database password is required}"
+      QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
 
       # --- OIDC / Auth settings --- #
       QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
@@ -44,14 +44,17 @@ services:
       DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME:-org.damap.base.integration.orcid.ORCIDPersonServiceImpl}
       DAMAP_TENANT_AWARE_PROJECT_SERVICE: ${DAMAP_PROJECT_SERVICE:-elsevier-pure}
 
+      # --- Settings for external services DAMAP connects to --- #
+      DAMAP_REST_GOTENBERG_MP_REST_URL: ${DAMAP_REST_GOTENBERG_MP_REST_URL:-http://gotenberg:3000}
+
       # --- Fields settings --- #
       DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED: ${DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED:-true}
 
       # --- DAMAP PURE integration defaults --- #
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY:-""}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND:-file}
-      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI:-/dk/atira/pure/member}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE:-PROJECT_MEMBER}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI:-/dk/atira/pure/member}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION:-/dk/atira/pure/projectdescription}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL:-""}
       DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE:-file:////opt/damap/config/pure-persons-data.json}
@@ -98,7 +101,7 @@ services:
       POSTGRES_PASSWORD: ${DAMAP_DB_PASSWORD?The DAMAP database password is required}
       POSTGRES_DB: ${DAMAP_DB_NAME?The DAMAP database name is required}
     volumes:
-      - ${DAMAP_DATABASE_HOST_PATH?Please specify a path for the database.}:/var/lib/postgresql/data
+      - ${DAMAP_DB_DATA_HOST_PATH?Please specify a path for the DAMAP database data.}:/var/lib/postgresql/data
     networks:
       damap-internal:
         aliases:
