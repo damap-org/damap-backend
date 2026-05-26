@@ -69,6 +69,7 @@ public final class ProjectMapper {
   }
 
   private void convertInto(ProjectDO project, Project result) {
+    result.setAcronym(project.getAcronym());
     result.setTitle(project.getTitle() != null && !project.getTitle().isBlank()
             ? project.getTitle()
             : "Untitled Project");
@@ -113,6 +114,7 @@ public final class ProjectMapper {
    */
   public ProjectDO convert(Project project, String projectId) {
     var result = new ProjectDO();
+    result.setAcronym(project.getAcronym());
     if (project.getProjectId() != null && !project.getProjectId().isEmpty()) {
       result.setUniversityId(project.getProjectId().get(0).getIdentifier());
     } else {

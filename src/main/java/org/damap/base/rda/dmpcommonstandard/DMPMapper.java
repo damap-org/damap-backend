@@ -92,6 +92,7 @@ public final class DMPMapper extends AbstractMapper {
     DMPData result = new DMPData();
     result.setTitle(dmp.getTitle() != null ? dmp.getTitle() : "Untitled DMP");
     result.setDescription(dmp.getDescription());
+    result.setRights(dmp.getDataRightsAndAccessControl());
     if (dmp.getCreated() != null) {
       result.setCreated(OffsetDateTime.ofInstant(dmp.getCreated().toInstant(), ZoneOffset.UTC));
     } else if (dmp.getModified() != null) {
@@ -156,6 +157,7 @@ public final class DMPMapper extends AbstractMapper {
   private void convertData(DMPData data, DmpDO target) {
     target.setTitle(data.getTitle());
     target.setDescription(data.getDescription());
+    target.setDataRightsAndAccessControl(data.getRights());
     var projects = data.getProject();
     if (projects != null) {
       if (projects.size() > 1 && strict) {

@@ -35,6 +35,15 @@ public class CostsMapper extends AbstractMapper {
       return null;
     }
     var result = new CostDO();
+    if (cost.getType() != null) {
+      try {
+        result.setType(ECostType.valueOf(cost.getType().toUpperCase()));
+      } catch (IllegalArgumentException e) {
+        result.setType(ECostType.OTHER);
+      }
+    } else {
+      result.setType(ECostType.OTHER);
+    }
     result.setDescription(cost.getDescription());
     result.setTitle(cost.getTitle());
     var value = cost.getValue();
@@ -54,6 +63,9 @@ public class CostsMapper extends AbstractMapper {
     result.setDescription(costDO.getDescription());
     result.setTitle(costDO.getTitle() != null && !costDO.getTitle().isBlank() ? costDO.getTitle() : "Cost item");
     var currencyCode = costDO.getCurrencyCode();
+    if (costDO.getType() != null) {
+      result.setType(costDO.getType().toString());
+    }
     if (currencyCode != null) {
       result.setCurrencyCode(CurrencyCode.valueOf(currencyCode));
     }

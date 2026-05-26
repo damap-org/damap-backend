@@ -980,6 +980,14 @@ components:
           description: Title of a cost
           examples:
             - Storage and Backup
+        type:
+          type: string
+          title: Type
+          description: Type of the cost (e.g., personnel, storage, processing).
+        unit:
+          type: string
+          title: Unit
+          description: Unit of the cost (e.g., PM, MHR, EUR).
         value:
           type: number
           title: Value
@@ -1530,6 +1538,10 @@ components:
           description: To provide technical information on a specific instance of data.
           items:
             $ref: "#/components/schemas/Distribution"
+        documentation:
+          type: string
+          title: Documentation
+          description: Comments about documentation for the dataset.
         is_reused:
           type: boolean
           title: The Dataset Is Reused Schema
@@ -1562,6 +1574,14 @@ components:
           description: To describe metadata standards used.
           items:
             $ref: "#/components/schemas/Metadata"
+        methodology:
+          type: string
+          title: Methodology
+          description: A description of the methods used to collect, process, or analyze the data.
+        naming_convention:
+          type: string
+          title: Naming Convention
+          description: A description of an approach to naming datasets.
         personal_data:
           type: string
           enum:
@@ -1622,6 +1642,10 @@ components:
             unknown"
           examples:
             - unknown
+        target_audience:
+          type: string
+          title: Target Audience
+          description: Information about the intended audience for the dataset.
         technical_resource:
           $ref: "#/components/schemas/TechnicalResources"
         title:
@@ -1701,6 +1725,8 @@ components:
             - "2019-03-13T13:13:00Z"
         dataset:
           $ref: "#/components/schemas/Datasets"
+        data_access:
+          $ref: "#/components/schemas/DataAccess"
         description:
           type: string
           title: Description
@@ -1733,6 +1759,8 @@ components:
             - http://report.location
         language:
           $ref: "#/components/schemas/LanguageCode"
+        license:
+          $ref: "#/components/schemas/License"
         modified:
           type: string
           format: date-time
@@ -1753,12 +1781,20 @@ components:
           items:
             $ref: "#/components/schemas/RelatedIdentifier"
           minItems: 0
+        rights:
+          type: string
+          title: Rights
+          description: A general field to capture any rights information related to the DMP.
         title:
           type: string
           title: Title
           description: Title of a DMP
           examples:
             - DMP for our new project
+        version:
+          type: string
+          title: Version
+          description: Version tag of the DMP, marking its iteration or update status
       required:
         - contact
         - created
@@ -1791,6 +1827,10 @@ components:
       type: object
       title: Distribution
       properties:
+        access_methods:
+          type: string
+          title: Access Methods
+          description: A description of the methods used to access the distribution.
         access_url:
           type: string
           title: Access URL
@@ -1812,6 +1852,12 @@ components:
           description: Size in bytes.
           examples:
             - 690000
+        conforms_to:
+          type: array
+          items:
+            type: string
+          title: Conforms To
+          description: A list of standards, formats, or specifications that the distribution adheres to.
         data_access:
           $ref: "#/components/schemas/DataAccess"
         description:
@@ -1839,6 +1885,10 @@ components:
             appropriate, otherwise use the common name for this format."
           items:
             $ref: "#/components/schemas/MIMEType"
+        format_justification:
+          type: string
+          title: Format Justification
+          description: Justification for the chosen format of the distribution.
         host:
           $ref: "#/components/schemas/Host"
         issued:
@@ -1851,6 +1901,10 @@ components:
             - "2019-06-30"
         license:
           $ref: "#/components/schemas/Licenses"
+        restriction_explanation:
+          type: string
+          title: Restriction Explanation
+          description: Explanation for any restrictions placed on the distribution.
         title:
           type: string
           title: Title
@@ -2322,6 +2376,10 @@ components:
       type: object
       title: Project
       properties:
+        acronym:
+          type: string
+          title: Acronym
+          description: A short, memorable identifier for the project associated with the DMP.
         description:
           type: string
           title: Description
