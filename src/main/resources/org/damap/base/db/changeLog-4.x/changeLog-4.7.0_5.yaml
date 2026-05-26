@@ -1005,7 +1005,7 @@ databaseChangeLog:
                   value: en
               - column:
                   name: default_value
-                  value: Edit
+                  value: Save
               - column:
                   name: active
                   valueBoolean: true
