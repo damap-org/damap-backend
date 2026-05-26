@@ -244,7 +244,7 @@ public class DatasetMapper extends AbstractMapper {
                 switch (dataAccess) {
                   case OPEN -> EDataAccessType.OPEN;
                   case CLOSED -> EDataAccessType.CLOSED;
-                  case SHARED -> EDataAccessType.RESTRICTED; // TODO: check if this is valid
+                  case SHARED -> EDataAccessType.RESTRICTED;
                 });
       }
     }

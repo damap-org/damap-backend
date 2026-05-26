@@ -276,4 +276,19 @@ public class RdaDmpResource {
                 .entity(jsonError)
                 .build();
     }
+
+    @ServerExceptionMapper
+    public Response mapBadRequestException(jakarta.ws.rs.BadRequestException exception) {
+        String errorMessage = exception.getMessage() != null ? exception.getMessage() : "Bad Request";
+
+        String jsonError = String.format(
+                "{\"error_code\": \"dmp_invalid\", \"error_message\": \"%s\"}",
+                errorMessage.replace("\"", "'")
+        );
+
+        return Response.status(Response.Status.BAD_REQUEST)
+                .header("Content-Type", "application/json")
+                .entity(jsonError)
+                .build();
+    }
 }

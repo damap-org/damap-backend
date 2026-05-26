@@ -258,7 +258,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src\main\resources\org\damap\base\dmpcommonstandard\openapi.yaml</inputSpec>
+              <inputSpec>src/main/resources/org/damap/base/dmpcommonstandard/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
               <output>${project.build.directory}/generated-sources/rda-dmp-common-standard</output>
               <generateApis>false</generateApis>
