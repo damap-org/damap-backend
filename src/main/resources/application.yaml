@@ -1,6 +1,8 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
+  generic-cris-endpoint-url: ${GENERIC_CRIS_URL:http://localhost:8888/}
+  generic-cris-api-key: ${GENERIC_CRIS_API_KEY:api-key-here}
   env: DEV # override in your custom project with PROD for production deployment
   auth:
     # Scopes to request during login:
@@ -144,6 +146,7 @@ quarkus:
     oauth-client-id: ${quarkus.oidc.client-id}
 
 rest:
+  generic-cris/mp-rest/url: ${damap.generic-cris-endpoint-url}
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80
   gotenberg/mp-rest/url: http://gotenberg:3000
@@ -157,6 +160,8 @@ rest:
 "%dev":
   damap:
     title: "DAMAP (Development)"
+    generic-cris-endpoint-url: ${GENERIC_CRIS_URL:http://localhost:8888/}
+    generic-cris-api-key: ${GENERIC_CRIS_API_KEY:api-key-here}
 
   quarkus:
     http:
@@ -187,6 +192,8 @@ rest:
 "%test":
   damap:
     title: "DAMAP (Testing)"
+    generic-cris-endpoint-url: ${GENERIC_CRIS_URL:http://localhost:8888/}
+    generic-cris-api-key: ${GENERIC_CRIS_API_KEY:api-key-here}
     repositories:
       recommendation: ['r3d100010468'] # Re3Data id(s)
     elsevier-pure-endpoint-url: "http://localhost:9999/fake-pure-api"

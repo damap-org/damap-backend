@@ -8,7 +8,7 @@ import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory;
 @ApplicationScoped
 class ClientHeaderFactory implements ClientHeadersFactory {
 
-  @ConfigProperty(name = "damap.generic-cris-api-key")
+  @ConfigProperty(name = "damap.generic-cris-api-key", defaultValue = "")
   String apikey;
 
   @Override
