@@ -91,7 +91,11 @@ public class ContributorMapper extends AbstractMapper {
 
   public Contributor convert(ContributorDO contributorDO) {
     var result = new Contributor();
-    result.setContributorId(convertContributorID(contributorDO.getPersonId()));
+    if (contributorDO.getPersonId() != null && contributorDO.getPersonId().getIdentifier() != null) {
+      result.setContributorId(convertContributorID(contributorDO.getPersonId()));
+    } else {
+      result.setContributorId(new ContributorID().identifier("not-provided").type("other"));
+    }
     result.setMbox(contributorDO.getMbox());
     result.setName(convertName(contributorDO));
     if (contributorDO.getRoles() != null && !contributorDO.getRoles().isEmpty()) {

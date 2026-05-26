@@ -12,6 +12,7 @@ public record RdaDmpSearchParams(
         OffsetDateTime createdAfter,
         OffsetDateTime modifiedBefore,
         OffsetDateTime modifiedAfter,
+        List<String> languages,
         List<String> contactIds,
         List<String> contributorIds,
         List<String> datasetIds,
@@ -20,5 +21,7 @@ public record RdaDmpSearchParams(
         List<String> funderIds,
         List<String> grantIds,
         String query,
-        Booleanish ethicalIssuesExist
+        Booleanish ethicalIssuesExist,
+        String embargoBefore,
+        String embargoAfter
 ) {}

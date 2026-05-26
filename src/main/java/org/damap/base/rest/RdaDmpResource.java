@@ -105,6 +105,7 @@ public class RdaDmpResource {
                         createdAfter,
                         modifiedBefore,
                         modifiedAfter,
+                        mergeLists(languages, languagesPlain),
                         mergeLists(contactIds, contactIdsPlain),
                         mergeLists(contributorIds, contributorIdsPlain),
                         mergeLists(datasetIds, datasetIdsPlain),
@@ -113,7 +114,9 @@ public class RdaDmpResource {
                         mergeLists(funderIds, funderIdsPlain),
                         mergeLists(grantIds, grantIdsPlain),
                         query,
-                        ethicalIssuesExist);
+                        ethicalIssuesExist,
+                        embargoBefore,
+                        embargoAfter);
 
         return Response.ok(rdaDmpService.listDMPs(params))
                 .type(resolveResponseType(headers))

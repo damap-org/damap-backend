@@ -55,6 +55,7 @@ public class RdaDmpService {
             String createdAfter,
             String modifiedBefore,
             String modifiedAfter,
+            List<String> languages,
             List<String> contactIds,
             List<String> contributorIds,
             List<String> datasetIds,
@@ -63,7 +64,9 @@ public class RdaDmpService {
             List<String> funderIds,
             List<String> grantIds,
             String query,
-            String ethicalIssuesExist
+            String ethicalIssuesExist,
+            String embargoBefore,
+            String embargoAfter
     ) {
         return new RdaDmpSearchParams(
                 offset,
@@ -73,6 +76,7 @@ public class RdaDmpService {
                 parseDateTime(createdAfter, "created_after"),
                 parseDateTime(modifiedBefore, "modified_before"),
                 parseDateTime(modifiedAfter, "modified_after"),
+                cleanList(languages),
                 cleanList(contactIds),
                 cleanList(contributorIds),
                 cleanList(datasetIds),
@@ -81,7 +85,9 @@ public class RdaDmpService {
                 cleanList(funderIds),
                 cleanList(grantIds),
                 cleanString(query),
-                parseBooleanish(ethicalIssuesExist)
+                parseBooleanish(ethicalIssuesExist),
+                cleanString(embargoBefore),
+                cleanString(embargoAfter)
         );
     }
 
@@ -105,6 +111,11 @@ public class RdaDmpService {
                         .filter(dmp -> matchesContactIds(dmp, params.contactIds()))
                         .filter(dmp -> matchesContributorIds(dmp, params.contributorIds()))
                         .filter(dmp -> matchesMetadataStandardIds(dmp, params.metadataStandardIds()))
+                        .filter(dmp -> matchesLanguages(dmp, params.languages()))
+                        .filter(dmp -> matchesFunderIds(dmp, params.funderIds()))
+                        .filter(dmp -> matchesGrantIds(dmp, params.grantIds()))
+                        .filter(dmp -> matchesEmbargoBefore(dmp, params.embargoBefore()))
+                        .filter(dmp -> matchesEmbargoAfter(dmp, params.embargoAfter()))
                         .toList();
 
         // TODO: Take care of funder ID and grant ID?
@@ -683,4 +694,64 @@ public class RdaDmpService {
     }
 
     public record RdaDmpResult(DMPWithID body, String lastModified) {}
+
+    private boolean matchesLanguages(DmpDO dmp, List<String> languages) {
+        if (languages == null || languages.isEmpty()) {
+            return true;
+        }
+        return languages.stream()
+                .anyMatch(lang -> "eng".equalsIgnoreCase(lang) || "en".equalsIgnoreCase(lang));
+    }
+
+    private boolean matchesFunderIds(DmpDO dmp, List<String> funderIds) {
+        if (funderIds == null || funderIds.isEmpty()) {
+            return true;
+        }
+        if (dmp.getProject() == null || dmp.getProject().getFunding() == null) {
+            return false;
+        }
+        var funderId = dmp.getProject().getFunding().getFunderId();
+        if (funderId == null || funderId.getIdentifier() == null) {
+            return false;
+        }
+        return funderIds.stream().anyMatch(id -> equalsIgnoreCase(id, funderId.getIdentifier()));
+    }
+
+    private boolean matchesGrantIds(DmpDO dmp, List<String> grantIds) {
+        if (grantIds == null || grantIds.isEmpty()) {
+            return true;
+        }
+        if (dmp.getProject() == null || dmp.getProject().getFunding() == null) {
+            return false;
+        }
+        var grantId = dmp.getProject().getFunding().getGrantId();
+        if (grantId == null || grantId.getIdentifier() == null) {
+            return false;
+        }
+        return grantIds.stream().anyMatch(id -> equalsIgnoreCase(id, grantId.getIdentifier()));
+    }
+
+    private boolean matchesEmbargoBefore(DmpDO dmp, String embargoBeforeStr) {
+        if (embargoBeforeStr == null || embargoBeforeStr.isBlank()) {
+            return true;
+        }
+        OffsetDateTime boundary = parseDateTime(embargoBeforeStr, "embargo_before");
+        if (dmp.getDatasets() == null) {
+            return false;
+        }
+        return dmp.getDatasets().stream()
+                .anyMatch(dataset -> isOnOrBefore(dataset.getStartDate(), boundary));
+    }
+
+    private boolean matchesEmbargoAfter(DmpDO dmp, String embargoAfterStr) {
+        if (embargoAfterStr == null || embargoAfterStr.isBlank()) {
+            return true;
+        }
+        OffsetDateTime boundary = parseDateTime(embargoAfterStr, "embargo_after");
+        if (dmp.getDatasets() == null) {
+            return false;
+        }
+        return dmp.getDatasets().stream()
+                .anyMatch(dataset -> isOnOrAfter(dataset.getStartDate(), boundary));
+    }
 }

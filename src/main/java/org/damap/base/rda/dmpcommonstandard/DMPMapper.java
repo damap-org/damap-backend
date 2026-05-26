@@ -94,9 +94,18 @@ public final class DMPMapper extends AbstractMapper {
     result.setDescription(dmp.getDescription());
     if (dmp.getCreated() != null) {
       result.setCreated(OffsetDateTime.ofInstant(dmp.getCreated().toInstant(), ZoneOffset.UTC));
+    } else if (dmp.getModified() != null) {
+      result.setCreated(OffsetDateTime.ofInstant(dmp.getModified().toInstant(), ZoneOffset.UTC));
+    } else {
+      result.setCreated(OffsetDateTime.now(ZoneOffset.UTC));
     }
+
     if (dmp.getModified() != null) {
       result.setModified(OffsetDateTime.ofInstant(dmp.getModified().toInstant(), ZoneOffset.UTC));
+    } else if (dmp.getCreated() != null) {
+      result.setModified(OffsetDateTime.ofInstant(dmp.getCreated().toInstant(), ZoneOffset.UTC));
+    } else {
+      result.setModified(OffsetDateTime.now(ZoneOffset.UTC));
     }
     result.setLanguage(LanguageCode.ENG);
     result.setDmpId(new DMPID().type("other").identifier(String.valueOf(dmp.getId())));
