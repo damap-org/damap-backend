@@ -1,0 +1,8 @@
+# This file contains a development setup of DAMAP as a Docker Compose file.
+# It is a shortcut for the development setup in docker/dev/docker-compose.yaml.
+# NOTE: This is NOT intended for production use!
+
+name: damap-dev
+
+include:
+  - docker/dev/docker-compose.yaml

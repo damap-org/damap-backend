@@ -1,0 +1,80 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    pull_policy: always
+    restart: unless-stopped
+    command:
+      - start
+      - --http-enabled=true
+      - --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USERNAME:-admin}
+      KC_DB: postgres
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KC_DB_URL_DATABASE: ${KC_DB_DATABASE:-keycloak}
+      KC_DB_URL_HOST: ${KC_DB_HOST:-keycloak-db}
+      KC_DB_URL_PORT: ${KC_DB_PORT:-5432}
+      KC_DB_USERNAME: ${KC_DB_USERNAME:-keycloak}
+      KC_HOSTNAME: ${KC_HOSTNAME:-http://localhost:8087}
+      # Only needed if hostname is localhost
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: ${KC_HOSTNAME_BACKCHANNEL_DYNAMIC:-true}
+    ports:
+      - "8087:8080"
+    volumes:
+      - ./keycloak/sample-damap-realm-export.json:/opt/keycloak/data/import/damap-realm-import.json
+    depends_on:
+      - keycloak-db
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "/bin/bash"
+        - "-c"
+        - |
+          exec 3<>/dev/tcp/localhost/8080
+          echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\nconnection: close\n\n" >&3
+          test "$(cat <&3 | grep -m 1 'HTTP/1.1 ')" = "HTTP/1.1 200 OK"
+          exec 3<&-
+          exec 3>&-
+          exit $?
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  keycloak-db:
+    image: postgres:16
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+      DB_VENDOR: postgres
+
+  api-mock:
+    image: clue/json-server
+    pull_policy: always
+    restart: unless-stopped
+    command: db.json --routes routes.json
+    volumes:
+      - ./api-mock/db.json:/data/db.json
+      - ./api-mock/routes.json:/data/routes.json
+    ports:
+      - "8091:80"
+    networks:
+      default:
+        aliases:
+          - api-mock
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8091/" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "3000:3000"

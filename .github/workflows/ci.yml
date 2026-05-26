@@ -1,4 +1,4 @@
-name: CI Checks
+name: CI
 
 on:
   push:
@@ -11,22 +11,32 @@ permissions:
   contents: read
 
 jobs:
-  # This job builds the Docker images and runs a health check to ensure the
-  # backend service is up and running. It uses 2 databases: Oracle and Postgres.
+  # This job builds the Docker backend image and runs a health check to ensure it is up and running.
+  # It uses 2 databases: Oracle and PostgreSQL.
   test-docker:
+    name: test-docker (${{ matrix.database }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        database: [oracle, postgres]
+        include:
+          - database: postgres
+            profile: with_postgres
+            db_kind: postgresql
+
+          - database: oracle
+            profile: with_oracle
+            db_kind: oracle
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Build backend image
-        run: docker compose -f docker/docker-compose.${{ matrix.database }}.yaml build damap-be
+        run: docker compose build backend
 
       - name: Start containers
-        run: docker compose -f docker/docker-compose.${{ matrix.database }}.yaml up -d --no-build
+        env:
+          DAMAP_DB_KIND: ${{ matrix.db_kind }}
+        run: docker compose --profile ${{ matrix.profile }} up -d
 
       - name: Run health check
         run: |
@@ -49,8 +59,8 @@ jobs:
           fi
 
   # This job runs Maven tests against different databases.
-  # It uses 3 databases: H2 (in-memory), Postgres, and Oracle.
-  # The Postgres and Oracle databases are started using Docker Compose files.
+  # It uses 3 databases: H2 (in-memory), PostgreSQL, and Oracle.
+  # The Oracle and PostgreSQL databases are started using Docker Compose profiles.
   # The H2 database is used by default and does not require a Docker container.
   test-maven:
     name: test-maven (${{ matrix.database }})
@@ -60,34 +70,30 @@ jobs:
       matrix:
         include:
           - database: h2
-            url: jdbc:h2:mem:testdb
-            db_kind: h2
-            driver: org.h2.Driver
-            compose: ""
 
           - database: postgres
-            url: jdbc:postgresql://127.0.0.1:8088/damap
             db_kind: postgresql
             dialect: org.hibernate.dialect.PostgreSQLDialect
             driver: org.postgresql.Driver
-            compose: docker/docker-compose.postgres.yaml
+            url: jdbc:postgresql://127.0.0.1:8088/damap
+            profile: with_postgres
 
           - database: oracle
-            url: jdbc:oracle:thin:@127.0.0.1:8088/FREEPDB1
             db_kind: oracle
             dialect: org.hibernate.dialect.OracleDialect
             driver: oracle.jdbc.driver.OracleDriver
-            compose: docker/docker-compose.oracle.yaml
+            url: jdbc:oracle:thin:@127.0.0.1:8088/FREEPDB1
+            profile: with_oracle
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Start dockerized database
-        if: ${{ matrix.compose != '' }}
-        run: docker compose -f ${{ matrix.compose }} up -d damap-db
+        if: ${{ matrix.database != 'h2' }}
+        run: docker compose --profile ${{ matrix.profile }} up -d ${{ matrix.database }}-db
 
       - name: Wait for DB healthcheck
-        if: ${{ matrix.compose != '' }}
+        if: ${{ matrix.database != 'h2' }}
         run: |
           set -e
           # Wait for the database to accept connections.
@@ -121,7 +127,7 @@ jobs:
 
       - name: Run Maven tests
         run: |
-          if [ "${{ matrix.db_kind }}" = "h2" ]; then
+          if [ "${{ matrix.database }}" = "h2" ]; then
             mvn -B clean install
           else
             mvn -B clean install \

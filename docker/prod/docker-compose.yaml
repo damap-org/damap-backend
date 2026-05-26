@@ -1,0 +1,205 @@
+## This file contains a production-grade setup of DAMAP as a Docker Compose file.
+# NOTE: You should still review the security aspects of the setup before using it in production!
+
+name: damap
+
+include:
+  - docker-compose.auxiliary.yaml
+  - docker-compose.configs.yaml
+
+services:
+  backend:
+    image: ghcr.io/damap-org/damap-backend:${DAMAP_VERSION:-next}
+    restart: unless-stopped
+    environment:
+      # --- General settings --- #
+      DAMAP_ENV: PROD
+      DAMAP_TENANT_AWARE_TITLE: ${DAMAP_TENANT_AWARE_TITLE:-DAMAP Tool}
+      QUARKUS_HTTP_CORS_ORIGINS: "${DAMAP_QUARKUS_HTTP_CORS_ORIGINS?The DAMAP origins setting is required}"
+      QUARKUS_PROFILE: ${DAMAP_QUARKUS_PROFILE:-}
+
+      # --- Database settings --- #
+      # Optional database configuration values, can be overridden by environment variables.
+      # This is useful in case the database host/port/name are different from the defaults.
+      # Prefixed with DAMAP_ (not Quarkus-specific), used to build the full JDBC URL.
+      DAMAP_DB_HOST: ${DAMAP_DB_HOST:?The DAMAP database host is required}
+      DAMAP_DB_NAME: ${DAMAP_DB_NAME:-?The DAMAP database name is required}
+      DAMAP_DB_PORT: ${DAMAP_DB_PORT:-}
+      QUARKUS_DATASOURCE_DB_KIND: ${DAMAP_DB_KIND:-postgresql}
+      QUARKUS_DATASOURCE_JDBC_PASSWORD: "${DAMAP_DB_PASSWORD?The DAMAP database password is required}"
+      QUARKUS_DATASOURCE_JDBC_USERNAME: "${DAMAP_DB_USERNAME?The DAMAP database username is required}"
+
+      # --- OIDC / Auth settings --- #
+      DAMAP_AUTH_ADMIN_ROLE_NAME: ${DAMAP_AUTH_ADMIN_ROLE_NAME:-Damap Admin}
+      DAMAP_AUTH_AFFILIATIONS_CLAIM: ${DAMAP_AUTH_AFFILIATIONS_CLAIM:-affiliation}
+      DAMAP_AUTH_EMAIL_CLAIM: ${DAMAP_AUTH_EMAIL_CLAIM:-email}
+      DAMAP_AUTH_FAMILY_NAME_CLAIM: ${DAMAP_AUTH_FAMILY_NAME_CLAIM:-family_name}
+      DAMAP_AUTH_GIVEN_NAME_CLAIM: ${DAMAP_AUTH_GIVEN_NAME_CLAIM:-given_name}
+      DAMAP_AUTH_NAME_CLAIM: ${DAMAP_AUTH_NAME_CLAIM:-name}
+      DAMAP_AUTH_SCOPE: ${DAMAP_AUTH_SCOPE:-openid profile email offline_access microprofile-jwt roles personID}
+      DAMAP_AUTH_USER_ID_CLAIM: ${DAMAP_AUTH_USER_ID_CLAIM:-personID}
+      DAMAP_AUTH_USER_ROLES_CLAIM_PATH: ${DAMAP_AUTH_USER_ROLES_CLAIM_PATH:?The DAMAP AUTH USER ROLES CLAIM PATH is required}
+      QUARKUS_OIDC_AUTH_SERVER_URL: "${DAMAP_QUARKUS_OIDC_AUTH_SERVER_URL?The OIDC AUTH SERVER URL is required}"
+      QUARKUS_OIDC_CLIENT_ID: "${DAMAP_QUARKUS_OIDC_CLIENT_ID?The OIDC CLIENT ID is required}"
+      QUARKUS_OIDC_TOKEN_ISSUER: "${DAMAP_QUARKUS_OIDC_TOKEN_ISSUER?The OIDC TOKEN ISSUER URL is required}"
+
+      # --- Settings for Person and Project services that DAMAP will connect to --- #
+      # TODO: These should ideally be refactored to be more flexible and extensible,
+      # e.g. by allowing to specify an arbitrary number of person services via a JSON array or similar.
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__DISPLAY_TEXT: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__DISPLAY_TEXT:-Pure}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__QUERY_VALUE: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__QUERY_VALUE:-PURE}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_0__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_0__CLASS_NAME:-org.damap.base.integration.pure.PurePersonService}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__DISPLAY_TEXT: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__DISPLAY_TEXT:-ORCID}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__QUERY_VALUE: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__QUERY_VALUE:-ORCID}
+      DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME: ${DAMAP_TENANT_AWARE_PERSON_SERVICES_1__CLASS_NAME:-org.damap.base.integration.orcid.ORCIDPersonServiceImpl}
+      DAMAP_TENANT_AWARE_PROJECT_SERVICE: ${DAMAP_TENANT_AWARE_PROJECT_SERVICE:-elsevier-pure}
+
+      # --- Settings for REST services DAMAP connects to --- #
+      DAMAP_REST_GOTENBERG_MP_REST_URL: ${DAMAP_REST_GOTENBERG_MP_REST_URL:-http://gotenberg:3000}
+
+      # --- Fields settings --- #
+      DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED: ${DAMAP_TENANT_AWARE_FIELDS_ETHICAL_REPORT_ENABLED:-true}
+
+      # --- DAMAP PURE integration settings --- #
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_API_KEY:-""}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_BACKEND:-file}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__CONTRIBUTOR_ROLE:-PROJECT_MEMBER}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_CONTRIBUTOR_ROLE_CLASSIFICATIONS_0__PURE_ROLE_URI:-/dk/atira/pure/member}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_DESCRIPTION_CLASSIFICATION:-/dk/atira/pure/projectdescription}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_ENDPOINT_URL:-""}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE:-file:////opt/damap/config/pure-persons-data.json}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECT_LEAD_ROLE_CLASSIFICATION:-/dk/atira/pure/projectlead}
+      DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE:-file:////opt/damap/config/pure-projects-data.json}
+    volumes:
+      - ../tenants.yaml:/opt/damap/tenants.yaml:ro
+    expose:
+      - 8080
+    configs:
+      - source: pure-persons-data
+        target: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PERSONS_FILE:-/opt/damap/config/pure-persons-data.json}
+      - source: pure-projects-data
+        target: ${DAMAP_TENANT_AWARE_ELSEVIER_PURE_PROJECTS_FILE:-/opt/damap/config/pure-projects-data.json}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+        required: false # Not required since the DB only exists when the with_db profile is enabled.
+      keycloak:
+        condition: service_healthy
+        required: false # Not required since the DB only exists when the with_keycloak profile is enabled.
+      gotenberg:
+        condition: service_started
+    networks:
+      damap-internal:
+        aliases:
+          - damap-be
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  postgres-db:
+    image: postgres:16
+    pull_policy: always
+    restart: unless-stopped
+    profiles:
+      - with_db
+    environment:
+      PGDATA: /var/lib/postgresql/data/damap-db
+      POSTGRES_USER: ${DAMAP_DB_USERNAME?The DAMAP database username is required}
+      POSTGRES_PASSWORD: ${DAMAP_DB_PASSWORD?The DAMAP database password is required}
+      POSTGRES_DB: ${DAMAP_DB_NAME?The DAMAP database name is required}
+    volumes:
+      - ${DAMAP_DB_DATA_HOST_PATH?Please specify a path for the DAMAP database data.}:/var/lib/postgresql/data
+    networks:
+      damap-internal:
+        aliases:
+          - damap-db
+    healthcheck:
+      test: [ "CMD", "/bin/sh", "-c", "/usr/bin/pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
+      interval: 5s
+      start_period: 5s
+      timeout: 15s
+      retries: 5
+
+  frontend:
+    image: ghcr.io/damap-org/damap-frontend:${DAMAP_VERSION:-next}
+    restart: unless-stopped
+    expose:
+      - 8080
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      damap-internal:
+        aliases:
+          - damap-fe
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  proxy:
+    image: nginx:1
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./scripts/generate-keycloak-conf.sh:/docker-entrypoint.d/99-keycloak-routes.sh:ro
+      - logs:/var/log
+    configs:
+      - source: nginx
+        target: /etc/nginx/nginx.conf
+    secrets:
+      - certificate
+      - private_key
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      damap-internal:
+      damap-external:
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80/q/health/live" ]
+      start_period: 120s
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      damap-internal:
+
+secrets:
+  certificate:
+    file: ./tls/bundle.crt
+  private_key:
+    file: ./tls/private.pem
+
+volumes:
+  logs:
+    name: logs
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "${PROXY_LOGS_HOST_PATH?Please specify a logs path.}"
+
+networks:
+  damap-external:
+    name: damap-external
+  damap-internal:
+    name: damap-internal
+    internal: true
