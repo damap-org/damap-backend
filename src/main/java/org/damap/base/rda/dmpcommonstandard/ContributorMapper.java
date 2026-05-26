@@ -97,7 +97,8 @@ public class ContributorMapper extends AbstractMapper {
       result.setContributorId(new ContributorID().identifier("not-provided").type("other"));
     }
     result.setMbox(contributorDO.getMbox());
-    result.setName(convertName(contributorDO));
+    String name = convertName(contributorDO);
+    result.setName(name == null || name.isBlank() ? "Unknown Contributor" : name);
     if (contributorDO.getRoles() != null && !contributorDO.getRoles().isEmpty()) {
       result.setRole(contributorDO.getRoles().stream().map(Enum::name).collect(Collectors.toSet()));
     } else {
