@@ -288,9 +288,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/org/damap/base/integration/rest/openapi.yaml</inputSpec>
+              <inputSpec>src/main/resources/org/damap/base/integration/generic/openapi.yaml</inputSpec>
               <generatorName>java</generatorName>
-              <output>${project.build.directory}/generated-sources/integration-rest</output>
+              <output>${project.build.directory}/generated-sources/integration-generic</output>
 
               <!-- This is needed to make the ProjectWithID inherit from Project properly: -->
               <openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true</openapiNormalizer>
@@ -332,13 +332,13 @@
                 <serializationLibrary>jackson</serializationLibrary>
                 <dateLibrary>java8</dateLibrary>
                 <annotationLibrary>none</annotationLibrary>
-                <apiPackage>org.damap.base.integration.rest</apiPackage>
-                <modelPackage>org.damap.base.integration.rest</modelPackage>
-                <invokerPackage>org.damap.base.integration.rest</invokerPackage>
-                <configKey>rest-integration</configKey>
+                <apiPackage>org.damap.base.integration.generic</apiPackage>
+                <modelPackage>org.damap.base.integration.generic</modelPackage>
+                <invokerPackage>org.damap.base.integration.generic</invokerPackage>
+                <configKey>generic-integration</configKey>
                 <artifactUrl>https://damap.org/manual/cris/</artifactUrl>
                 <groupId>org.damap.integration</groupId>
-                <artifactId>rest</artifactId>
+                <artifactId>generic</artifactId>
                 <artifactVersion>1.0.0</artifactVersion>
                 <artifactDescription>Auto-generated sources for the DAMAP REST API for CRIS integration using the RDA DMP common standard</artifactDescription>
               </configOptions>
