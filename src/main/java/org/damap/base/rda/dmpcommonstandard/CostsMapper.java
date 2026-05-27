@@ -1,9 +1,7 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 import java.math.BigDecimal;
 import org.damap.base.enums.ECostType;
-import org.damap.base.integration.rest.Cost;
-import org.damap.base.integration.rest.CurrencyCode;
 import org.damap.base.rest.dmp.domain.CostDO;
 
 /**

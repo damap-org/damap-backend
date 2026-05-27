@@ -1,11 +1,10 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.damap.base.enums.EContributorRole;
 import org.damap.base.enums.EIdentifierType;
-import org.damap.base.integration.rest.*;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 
@@ -86,6 +85,16 @@ public class ContributorMapper extends AbstractMapper {
     result.setContactId(convertContactID(contributorDO.getPersonId()));
     result.setMbox(contributorDO.getMbox());
     result.setName(convertName(contributorDO));
+    return result;
+  }
+
+  public ContributorDO convertToContributor(Contact contact) {
+    var result = new ContributorDO();
+    result.setPersonId(convertContactID(contact.getContactId()));
+    result.setMbox(contact.getMbox());
+    var nameParts = parseName(contact.getName());
+    result.setFirstName(nameParts[0]);
+    result.setLastName(nameParts[1]);
     return result;
   }
 

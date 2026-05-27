@@ -3,7 +3,38 @@ info:
   title: DAMAP integration
   description: This API provides the standard integration endpoints for DAMAP.
   version: 1.0.0
+security:
+  - BearerAuth: []
 paths:
+  /persons:
+    get:
+      operationId: listPersons
+      parameters:
+        - $ref: "#/components/parameters/Query"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Count"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListPersonsResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+  /persons/{systemContactID}:
+    get:
+      operationId: getPerson
+      parameters:
+        - name: systemContactID
+          in: path
+          required: true
+          description: ID of the person to fetch.
+          schema:
+            $ref: "#/components/schemas/SystemContactID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPersonResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
   /projects:
     get:
       operationId: listProjects
@@ -12,8 +43,27 @@ paths:
         - $ref: "#/components/parameters/Offset"
         - $ref: "#/components/parameters/Count"
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/ListProjectsResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+  /persons/{systemProjectID}:
+    get:
+      operationId: getProject
+      parameters:
+        - name: systemProjectID
+          in: path
+          required: true
+          description: System project ID to fetch contributors for.
+          schema:
+            $ref: "#/components/schemas/SystemProjectID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetProjectResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
   /projects/{systemProjectID}/contributors:
     get:
       operationId: listProjectContributors
@@ -30,8 +80,38 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListProjectContributorsResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   responses:
+    ErrorResponse:
+      description: An error happened
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponseBody"
+    GetPersonResponse:
+      description: A single person
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DAMAPContact"
+    GetProjectResponse:
+      description: A single project
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DAMAPProject"
+    ListPersonsResponse:
+      description: A list of persons
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListPersonsResponseBody"
     ListProjectsResponse:
       description: A list of projects
       content:
@@ -75,6 +155,20 @@ components:
         minimum: 1
         maximum: 100
   schemas:
+    ErrorResponseBody:
+      type: object
+      required:
+        - error_code
+        - error_message
+      properties:
+        error_code:
+          type: string
+          enum:
+            - invalid_api_key
+            - project_not_found
+            - contact_not_found
+        error_message:
+          type: string
     ListProjectsResponseBody:
       type: object
       properties:
@@ -84,7 +178,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Project"
+            $ref: "#/components/schemas/DAMAPProject"
     ListProjectContributorsResponseBody:
       type: object
       properties:
@@ -94,48 +188,99 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Contributor"
+            $ref: "#/components/schemas/DAMAPContributor"
+    ListPersonsResponseBody:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          minimum: 0
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DAMAPContact"
     SystemID:
+      description: "System-dependent ID"
       type: string
       minLength: 1
       maxLength: 255
-    SystemContributorID:
-      description: "System-dependent ID for a contributor"
-      $ref: "#/components/schemas/SystemID"
+      x-parent: true
     SystemProjectID:
       description: "System-dependent ID for a project"
       $ref: "#/components/schemas/SystemID"
-    SystemFundingID:
-      description: "System-dependent ID for the funding"
+    SystemContactID:
+      description: "System-dependent ID for a contact"
       $ref: "#/components/schemas/SystemID"
-    Project:
+    DAMAPProject:
       allOf:
+        - $ref: "#/components/schemas/Project"
         - type: object
           required:
             - id
           properties:
             id:
               $ref: "#/components/schemas/SystemProjectID"
-            funding:
-              type: array
-              items:
-                $ref: "#/components/schemas/Funding"
-        - $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Project"
-    Funding:
+    Project:
+      x-parent: true
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Project"
+    Contact:
+      x-parent: true
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contact"
+    DAMAPContact:
       allOf:
+        - $ref: "#/components/schemas/Contact"
         - type: object
           required:
             - id
+            - role
           properties:
             id:
-              $ref: "#/components/schemas/SystemFundingID"
-        - $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Funding"
+              $ref: "#/components/schemas/SystemContactID"
+            role:
+              $ref: "#/components/schemas/DAMAPContributorRoles"
     Contributor:
+      x-parent: true
+      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contributor"
+    DAMAPContributor:
       allOf:
+        - $ref: "#/components/schemas/Contributor"
         - type: object
           required:
-            - id
+            - role
           properties:
-            id:
-              $ref: "#/components/schemas/SystemContributorID"
-        - $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/heads/main/openapi.yaml#/components/schemas/Contributor"
+            role:
+              $ref: "#/components/schemas/DAMAPContributorRoles"
+    DAMAPContributorRole:
+      type: string
+      title: Contributor role
+      examples:
+        - Data Collector
+        - Data Collector
+        - Data Curator
+        - Data Manager
+        - Distributor
+        - Editor
+        - Hosting Institution
+        - Producer
+        - Project Leader
+        - Project Manager
+        - Project Member
+        - Registration Agency
+        - Registration Authority
+        - Related Person
+        - Researcher
+        - Research Group
+        - Rights Holder
+        - Sponsor
+        - Supervisor
+        - Work Package Leader
+        - Principal Investigator
+        - Project Coordinator
+        - Other
+    DAMAPContributorRoles:
+      type: array
+      title: Contributor roles list
+      description: A list of roles the contributor holds.
+      items:
+        $ref: '#/components/schemas/DAMAPContributorRole'
+      uniqueItems: true

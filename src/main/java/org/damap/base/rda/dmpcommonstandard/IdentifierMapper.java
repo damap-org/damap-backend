@@ -1,4 +1,4 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 import org.damap.base.enums.EIdentifierType;
 import org.damap.base.rest.dmp.domain.IdentifierDO;

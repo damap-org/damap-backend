@@ -1,4 +1,4 @@
-package org.damap.base.integration.rda;
+package org.damap.base.rda.dmpcommonstandard;
 
 public class CommonStandardCompatibilityException extends RuntimeException {
   public CommonStandardCompatibilityException(String message) {
