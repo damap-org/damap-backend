@@ -292,3 +292,39 @@ databaseChangeLog:
               - column:
                   name: version
                   valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.errorCodes.EVALUATION_NOT_AVAILABLE
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "The evaluation service is currently unavailable. Please try again later."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.errorCodes.EVALUATION_UNEXPECTED_ERROR
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: "The evaluation service is currently unavailable due to an unexpected error. Please try again later."
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0

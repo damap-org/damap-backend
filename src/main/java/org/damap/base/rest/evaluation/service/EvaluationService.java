@@ -58,8 +58,6 @@ public class EvaluationService {
       String jsonMaDmp = mapper.writeValueAsString(schemaWrapper);
 
       log.info("Sending maDMP to evaluation service for DMP ID: " + dmpId);
-      // TODO: Remove
-      log.info("maDMP JSON payload: " + jsonMaDmp);
       EvaluationMultipartBodyDTO body = new EvaluationMultipartBodyDTO();
       body.maDMP = new ByteArrayInputStream(jsonMaDmp.getBytes(StandardCharsets.UTF_8));
       body.benchmark = benchmark;

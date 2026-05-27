@@ -19,7 +19,6 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.reactive.MultipartForm;
 
 /** EvaluationRemoteResource interface. */
 @RegisterRestClient(configKey = "rest.evaluation")
@@ -52,7 +51,7 @@ public interface EvaluationRemoteResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
   @Fallback(fallbackMethod = "assessBenchmarkFallback", skipOn = DamapApiException.class)
-  List<EvaluationResultDTO> assessBenchmark(@MultipartForm EvaluationMultipartBodyDTO data);
+  List<EvaluationResultDTO> assessBenchmark(EvaluationMultipartBodyDTO data);
 
   @ClientExceptionMapper
   static DamapApiException toException(Response response) {
