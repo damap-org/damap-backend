@@ -43,7 +43,7 @@ class InternalStorageResourceTest {
     validData.setActive(true);
 
     InternalStorageTranslationDO translation = new InternalStorageTranslationDO();
-    translation.setLanguageCode("eng");
+    translation.setLanguageCode("en");
     translation.setTitle("testStorageName");
     translation.setDescription("testStorageDescription");
     translation.setBackupFrequency("testBackupFrequency");

@@ -1,0 +1,35 @@
+databaseChangeLog:
+    - changeSet:
+          id: 38
+          author: Geoffrey Karnbach
+          changes:
+              - dropForeignKeyConstraint:
+                    baseTableName: inter_storage_translation
+                    constraintName: fk_inter_storage_trans_lang
+
+              - dropForeignKeyConstraint:
+                    baseTableName: inter_storage_translation_aud
+                    constraintName: fk_int_storage_tran_lang_aud
+
+              - sql: |
+                    UPDATE inter_storage_translation
+                    SET language_code = 'en'
+                    WHERE language_code = 'eng';
+
+              - sql: |
+                    UPDATE inter_storage_translation
+                    SET language_code = 'de'
+                    WHERE language_code = 'deu';
+
+              - sql: |
+                    UPDATE inter_storage_translation_aud
+                    SET language_code = 'en'
+                    WHERE language_code = 'eng';
+
+              - sql: |
+                    UPDATE inter_storage_translation_aud
+                    SET language_code = 'de'
+                    WHERE language_code = 'deu';
+
+              - dropTable:
+                    tableName: e_language

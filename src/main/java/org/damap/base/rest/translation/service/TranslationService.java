@@ -34,7 +34,9 @@ public class TranslationService {
    */
   @Transactional
   public List<Translation> createLanguage(String newLanguage) {
-    List<Translation> existing = translationRepo.findByLanguage(newLanguage);
+    String normalizedLanguage = normalizeAndValidateLanguage(newLanguage);
+
+    List<Translation> existing = translationRepo.findByLanguage(normalizedLanguage);
     if (!existing.isEmpty()) {
       return existing;
     }
@@ -182,5 +184,19 @@ public class TranslationService {
     if (translationRepo.deleteByLanguage(language) == 0) {
       throw new NotFoundException("No translations found for language: " + language);
     }
+  }
+
+  private String normalizeAndValidateLanguage(String language) {
+    if (language == null || language.isBlank()) {
+      throw new BadRequestException("Language code must not be empty");
+    }
+
+    String normalizedLanguage = language.trim().toLowerCase();
+
+    if (!LanguageCodeValidator.isValidIso6391Code(normalizedLanguage)) {
+      throw new BadRequestException("Invalid ISO 639-1 language code: " + language);
+    }
+
+    return normalizedLanguage;
   }
 }
