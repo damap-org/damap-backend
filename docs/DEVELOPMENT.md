@@ -9,8 +9,7 @@ DAMAP also requires extra external services to run properly, which are provided 
 
 To start the dockerized setup with PostgreSQL, please run the following commands:
 ```shell
-cd docker
-docker compose -f docker-compose.postgres.yaml up
+docker compose up -d
 ```
 
 By default, docker pulls back and frontend images from GitHub - the docker frontend can then be reached at
@@ -22,7 +21,7 @@ The containerized DAMAP instance is useful for testing the software and demonstr
 For development, we recommend running local instances of the frontend and backend instead of using the fully containerized setup.
 This has the advantage of enabling automatic live reload and removes to need to rebuild images after every code change.
 
-As a prequisite, the DAMAP backend requires the following:
+As a prerequisite, the DAMAP backend requires the following:
 - Java 17
 - Maven
 
@@ -32,7 +31,7 @@ The local backend can be started using maven with the following command:
    mvn compile quarkus:dev
 ```
 
-As a prequisite, the DAMAP frontend requires the following:
+As a prerequisite, the DAMAP frontend requires the following:
 - Angular ^19.2.0
 - Node.js ^18.19.1 || ^20.11.1 || ^22.0.0
 
@@ -54,11 +53,10 @@ The local instances automatically connect to the services provided by the docker
 
 ## Run with docker-compose
 
-In order to set up the whole system consisting of multiple components 3 `docker-compose` files have been prepared: 
+In order to set up the whole system consisting of multiple components 2 `docker-compose` files have been prepared: 
 
-- `docker-compose.oracle.yaml`
-- `docker-compose.postgres.yaml`
-- `docker-compose.common.yaml`.
+- [`docker-compose.yaml`](../docker-compose.yaml) (for develoment purposes)
+- [`docker-compose.prod.yaml`](../docker-compose.prod.yaml) (for production)
 
 The full system is comprised of the following containers
 
@@ -69,41 +67,12 @@ The full system is comprised of the following containers
 - Gotenberg (Creates PDF previews)
 - Proxy (Intermediate between external traffic and containers)
 
-To start up the cluster of components with PostgreSQL, you can use the following command:
-
+For development, you can just start up the application with:
 ```shell
-cd docker
-docker compose -f docker-compose.postgres.yaml up
+docker compose up -d
 ```
 
-Alternatively, if you wish you to start the dockerized setup with Oracle, the following commands will allow you to do so.
-Note that you need to modify the dev profile in the [application.yaml](../src/main/resources/application.yaml) file as suggested by the comments.
-
-Replace:
-```
-    datasource:
-      jdbc:
-        url: jdbc:postgresql://localhost:8088/damap
-        driver: org.postgresql.Driver
-      db-kind: postgresql
-```
-
-With:
-``` 
-    datasource:
-      jdbc:
-        url: jdbc:postgresql://localhost:8088/damap
-        driver: oracle.jdbc.OracleDriver
-      db-kind: oracle
-```
-
-```shell
-cd docker
-docker compose -f docker-compose.oracle.yaml up
-```
-
-See the documented sections in the [docker-compose.postgres.yaml](../docker/docker-compose.postgres.yaml) and in the [docker-compose.oracle.yaml](../docker/docker-compose.oracle.yaml) to make further
-configurations respectively.
+If you want to test out the dockerized production environment, refer to the [specific documentation](../docker/prod/README.md).
 
 ---
 
@@ -130,14 +99,14 @@ DAMAP is built to be customizable and allows for integration of CRIS systems, OI
 For a full on guide, view the [Reference Manual](https://damap.org/manual) on our website.
 For development, it's advised to apply changes to the [application.yaml](../src/main/resources/application.yaml) file directly
 if you wish to test something out.
-The [example.env](../docker/example.env) file holds all environemnt variables that can be passed into DAMAP - using them
+The [example.env](../example.env) file holds all environment variables that can be passed into DAMAP - using them
 makes it easy to find the corresponding config option in [application.yaml](../src/main/resources/application.yaml).
 
 ---
 
 ## Keycloak
 
-DAMPAP authenticates using an [OIDC server](https://openid.net/developers/how-connect-works/).
+DAMAP authenticates using an [OIDC server](https://openid.net/developers/how-connect-works/).
 For development, DAMAP comes with a preconfigured Keycloak, which acts as an OIDC server.
 Keycloak can be accessed through http://localhost:8087 and you can login as admin with
 
@@ -225,7 +194,7 @@ this.tenantConfigResolver.getTenantAwareConfig();
 We use template word files for the export. They contain placeholders structured like this `[placeholder]`.
 These placeholders are then replaced with information from the DMP and CRIS systems on export.
 Additionaly, we use [resource files](../src/main/resources/org/damap/base/template/FWFTemplate.resource) for predefined
-text phrases which are used in the relacement process.
+text phrases which are used in the replacement process.
 
 > [!IMPORTANT]
 > We also offer admins to create their own custom templates. 

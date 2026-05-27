@@ -1,6 +1,6 @@
 # Multitenancy
 
-One DAMAP instance can be configured to support multiple separate tenants (usually universities), which is most useful
+One DAMAP instance can be configured to support multiple separated tenants (usually universities), which is most useful
 in Kubernetes-based deployments. This works by assigning each new tenant their own separate database, and by checking
 authentication tokens to determine which organisation a user belongs to. Depending on affiliation, the correct database
 is used - this way user data stays completely separate between tenants.
@@ -22,8 +22,6 @@ Mapping an affiliation to the correct database takes place in the [CustomTenantR
 > [!IMPORTANT]
 > Every tenant database needs to exactly have the same name as the transformed affiliation, otherwise Quarkus cant map
 > tenant and database.
-
-Since DAMAP needs to run as a single and multitenant application
 
 Multitenancy is activated  by setting the `QUARKUS_PROFILE` environment variable in the .env file to `multitenant` in order to
 activate the multitenant quarkus profile.
@@ -157,7 +155,7 @@ quarkus bytecode without compiling sourcecode. This process then adds and enable
 
 The `tenant-configs:` in the tenants.yaml file in the above section need to be managed per tenant, which leads to
 config duplication.
-DAMAP uses [ConfigProperty](https://quarkus.io/guides/config-reference#configproperty) to laod most configs, which doesnt
+DAMAP uses [ConfigProperty](https://quarkus.io/guides/config-reference#configproperty) to load most configs, which doesnt
 work for multitenancy, since its loaded statically at buildtime.
 Thats why DAMAP uses [ConfigMapping](https://quarkus.io/guides/config-reference#configmapping), for configs with the
 `damap.tenant-aware` prefix.
