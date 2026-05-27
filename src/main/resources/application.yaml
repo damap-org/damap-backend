@@ -68,12 +68,12 @@ damap:
       # - display-text: 'Pure'
       #   query-value: 'PURE'
       #   class-name: 'org.damap.base.integration.pure.PurePersonService'
-      - display-text: 'University'
-        query-value: 'UNIVERSITY'
-        class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-      - display-text: 'ORCID'
-        query-value: 'ORCID'
-        class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
+      - display-text: "University"
+        query-value: "UNIVERSITY"
+        class-name: "org.damap.base.integration.mock.MockUniversityPersonServiceImpl"
+      - display-text: "ORCID"
+        query-value: "ORCID"
+        class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
 
 invenio:
   disabled: true
@@ -192,7 +192,7 @@ rest:
   damap:
     title: "DAMAP (Testing)"
     repositories:
-      recommendation: ['r3d100010468'] # Re3Data id(s)
+      recommendation: ["r3d100010468"] # Re3Data id(s)
     elsevier-pure-endpoint-url: "http://localhost:9999/fake-pure-api"
   quarkus:
     datasource:

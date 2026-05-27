@@ -68,6 +68,9 @@ public class ConfigResource {
   @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
 
+  @ConfigProperty(name = "rest.evaluation/mp-rest/url")
+  Optional<URL> evaluationUrl;
+
   @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "")
   Optional<List<String>> tenants;
 
@@ -102,7 +105,8 @@ public class ConfigResource {
     configDO.setEnv(env);
     DamapTenantAwareConfig tenantAwareConfig = tenantConfigResolver.getTenantAwareConfig();
     configDO.setAppTitle(tenantAwareConfig.title());
-    // The ServiceConfig runtime interface proxy cannot be marshalled and sent to the frontend, so
+    // The ServiceConfig runtime interface proxy cannot be marshalled and sent to
+    // the frontend, so
     // we need a DO
     List<ServiceConfigDO> serviceConfigDOS =
         tenantAwareConfig.personServices().stream().map(ServiceConfigDO::new).toList();
@@ -110,6 +114,7 @@ public class ConfigResource {
     configDO.setProjectSearchServiceConfig(tenantAwareConfig.projectService());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(tenantAwareConfig.fields().ethicalReportEnabled());
+    configDO.setEvaluationAvailable(getEvaluationServiceAvailability());
 
     ColorTheme colorTheme = colorThemeService.getTheme();
     configDO.setColorTheme(colorTheme);
@@ -131,5 +136,9 @@ public class ConfigResource {
 
   private boolean getGotenbergServiceAvailability() {
     return gotenbergUrl.isPresent();
+  }
+
+  private boolean getEvaluationServiceAvailability() {
+    return evaluationUrl.isPresent();
   }
 }
