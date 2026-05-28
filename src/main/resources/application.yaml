@@ -1,6 +1,8 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
+  # TODO: Move under tenant-aware
+  generic-cris-api-key: 'api-key-here'
   env: DEV # override in your custom project with PROD for production deployment
   auth:
     # Scopes to request during login:
@@ -144,6 +146,7 @@ quarkus:
     oauth-client-id: ${quarkus.oidc.client-id}
 
 rest:
+  generic-cris/mp-rest/url: http://localhost:8888/
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80
   gotenberg/mp-rest/url: http://gotenberg:3000
