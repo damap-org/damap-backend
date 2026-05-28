@@ -162,6 +162,14 @@ public class RdaDmpService {
     return new RdaDmpResult(toRdaDmp(dmp), lastModified(dmp));
   }
 
+  public DMPDocument getDMPDocument(long dmpId) {
+    ensureDmpExists(dmpId);
+
+    DmpDO dmp = dmpService.getDmpById(dmpId);
+
+    return new DMPDocument().dmp(toRdaDmp(dmp).getDmp());
+  }
+
   public RdaDmpResult updateDMP(String id, DMPDocument rdaDmpDocument, String ifUnmodifiedSince) {
     String personId = getPersonId();
     long dmpId = parseId(id);
