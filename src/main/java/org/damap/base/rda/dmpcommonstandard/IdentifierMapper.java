@@ -4,8 +4,10 @@ import org.damap.base.enums.EIdentifierType;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 
 class IdentifierMapper {
-  // TODO: Add documentation about what this method is supposed to be doing - its not mapping all possible types
-  // Additionally, we should always get identifier + type as input, so we could also try to map the type first and not
+  // TODO: Add documentation about what this method is supposed to be doing - its not mapping all
+  // possible types
+  // Additionally, we should always get identifier + type as input, so we could also try to map the
+  // type first and not
   // only use the identifier string
   public static IdentifierDO getIdentifierDO(String id) {
     if (id == null || id.isBlank()) {

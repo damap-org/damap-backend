@@ -9,7 +9,8 @@ import org.damap.base.enums.EIdentifierType;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 
-// TODO: For all Mappers: Find a way to map most of the fields automatically and only handle exceptions with code
+// TODO: For all Mappers: Find a way to map most of the fields automatically and only handle
+// exceptions with code
 // This can be done by adapting DAMAPs data model or with libraries or a combination of the tqi
 
 /**
@@ -55,7 +56,9 @@ public class ContributorMapper extends AbstractMapper {
         var damapAffiliationId = new IdentifierDO();
         damapAffiliationId.setIdentifier(rdaAffiliation.getAffiliationId().getIdentifier());
         if (rdaAffiliation.getAffiliationId().getType() != null) {
-          damapAffiliationId.setType(IdentifierMapper.getIdentifierDO(rdaAffiliation.getAffiliationId().getIdentifier()).getType());
+          damapAffiliationId.setType(
+              IdentifierMapper.getIdentifierDO(rdaAffiliation.getAffiliationId().getIdentifier())
+                  .getType());
         } else {
           damapAffiliationId.setType(EIdentifierType.OTHER);
         }
@@ -94,7 +97,8 @@ public class ContributorMapper extends AbstractMapper {
 
   public Contributor convert(ContributorDO contributorDO) {
     var result = new Contributor();
-    if (contributorDO.getPersonId() != null && contributorDO.getPersonId().getIdentifier() != null) {
+    if (contributorDO.getPersonId() != null
+        && contributorDO.getPersonId().getIdentifier() != null) {
       result.setContributorId(convertContributorID(contributorDO.getPersonId()));
     } else {
       result.setContributorId(new ContributorID().identifier("not-provided").type("other"));
@@ -114,15 +118,16 @@ public class ContributorMapper extends AbstractMapper {
 
       var rdaAffiliationId = new AffiliationID();
 
-      if (contributorDO.getAffiliationId() != null && contributorDO.getAffiliationId().getIdentifier() != null) {
+      if (contributorDO.getAffiliationId() != null
+          && contributorDO.getAffiliationId().getIdentifier() != null) {
         rdaAffiliationId.setIdentifier(contributorDO.getAffiliationId().getIdentifier());
         if (contributorDO.getAffiliationId().getType() != null) {
-          rdaAffiliationId.setType(contributorDO.getAffiliationId().getType().toString().toLowerCase());
+          rdaAffiliationId.setType(
+              contributorDO.getAffiliationId().getType().toString().toLowerCase());
         } else {
           rdaAffiliationId.setType("other");
         }
-      }
-      else {
+      } else {
         rdaAffiliationId.setIdentifier("not-provided");
         rdaAffiliationId.setType("other");
       }
@@ -138,7 +143,8 @@ public class ContributorMapper extends AbstractMapper {
     result.setName(name == null || name.isBlank() ? "Unknown Contact" : name);
     String mbox = contributorDO.getMbox();
     result.setMbox(mbox == null || mbox.isBlank() ? "no-reply@example.com" : mbox);
-    if (contributorDO.getPersonId() != null && contributorDO.getPersonId().getIdentifier() != null) {
+    if (contributorDO.getPersonId() != null
+        && contributorDO.getPersonId().getIdentifier() != null) {
       result.setContactId(convertContactID(contributorDO.getPersonId()));
     } else {
       result.setContactId(new ContactID().identifier("0").type("other"));
@@ -205,12 +211,13 @@ public class ContributorMapper extends AbstractMapper {
     var result = new IdentifierDO();
     result.setIdentifier(contributorId.getIdentifier());
     // Switch on the lowercase String from RDA to get DAMAP Enum
-    result.setType(switch (contributorId.getType().toLowerCase()) {
-      case "isni" -> EIdentifierType.ISNI;
-      case "orcid" -> EIdentifierType.ORCID;
-      case "openid" -> EIdentifierType.OPENID;
-      default -> EIdentifierType.OTHER;
-    });
+    result.setType(
+        switch (contributorId.getType().toLowerCase()) {
+          case "isni" -> EIdentifierType.ISNI;
+          case "orcid" -> EIdentifierType.ORCID;
+          case "openid" -> EIdentifierType.OPENID;
+          default -> EIdentifierType.OTHER;
+        });
     return result;
   }
 
@@ -230,12 +237,13 @@ public class ContributorMapper extends AbstractMapper {
     if (contactID == null || contactID.getType() == null) return null;
     var result = new IdentifierDO();
     result.setIdentifier(contactID.getIdentifier());
-    result.setType(switch (contactID.getType().toLowerCase()) {
-      case "isni" -> EIdentifierType.ISNI;
-      case "orcid" -> EIdentifierType.ORCID;
-      case "openid" -> EIdentifierType.OPENID;
-      default -> EIdentifierType.OTHER;
-    });
+    result.setType(
+        switch (contactID.getType().toLowerCase()) {
+          case "isni" -> EIdentifierType.ISNI;
+          case "orcid" -> EIdentifierType.ORCID;
+          case "openid" -> EIdentifierType.OPENID;
+          default -> EIdentifierType.OTHER;
+        });
     return result;
   }
 }

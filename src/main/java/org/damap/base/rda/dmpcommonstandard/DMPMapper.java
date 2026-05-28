@@ -5,7 +5,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.damap.base.enums.EDataKind;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.DmpDO;
@@ -179,15 +178,14 @@ public final class DMPMapper extends AbstractMapper {
     var contributors = data.getContributor();
     if (contributors != null) {
       damapContributors.addAll(
-              contributors.stream().map(contributorMapper::convert).collect(Collectors.toList())
-      );
+          contributors.stream().map(contributorMapper::convert).collect(Collectors.toList()));
     }
 
     target.setContributors(damapContributors);
 
     if (data.getLanguage() != LanguageCode.ENG && strict) {
       throw new CommonStandardCompatibilityException(
-              "DAMAP does not support importing non-English DMPs");
+          "DAMAP does not support importing non-English DMPs");
     }
     var costs = data.getCost();
     if (costs != null) {

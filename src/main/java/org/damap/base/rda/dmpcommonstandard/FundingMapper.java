@@ -70,7 +70,8 @@ public final class FundingMapper extends AbstractMapper {
     var result = new FunderID();
     result.setIdentifier(identifier.getIdentifier());
     result.setType(identifier.getType() == EIdentifierType.FUNDREF ? "fundref" : "other");
-    if (identifier.getType() == EIdentifierType.DOI || identifier.getType() == EIdentifierType.ORCID) {
+    if (identifier.getType() == EIdentifierType.DOI
+        || identifier.getType() == EIdentifierType.ORCID) {
       result.setType("url");
     }
     return result;
@@ -102,7 +103,9 @@ public final class FundingMapper extends AbstractMapper {
   }
 
   private GrantID convertGrantId(IdentifierDO identifier) {
-    if (identifier == null || identifier.getIdentifier() == null || identifier.getIdentifier().isBlank()) {
+    if (identifier == null
+        || identifier.getIdentifier() == null
+        || identifier.getIdentifier().isBlank()) {
       return null;
     }
     var result = new GrantID();

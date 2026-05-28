@@ -70,7 +70,8 @@ public final class ProjectMapper {
 
   private void convertInto(ProjectDO project, Project result) {
     result.setAcronym(project.getAcronym());
-    result.setTitle(project.getTitle() != null && !project.getTitle().isBlank()
+    result.setTitle(
+        project.getTitle() != null && !project.getTitle().isBlank()
             ? project.getTitle()
             : "Untitled Project");
     result.setDescription(project.getDescription());

@@ -61,7 +61,10 @@ public class CostsMapper extends AbstractMapper {
   public Cost convert(CostDO costDO) {
     var result = new Cost();
     result.setDescription(costDO.getDescription());
-    result.setTitle(costDO.getTitle() != null && !costDO.getTitle().isBlank() ? costDO.getTitle() : "Cost item");
+    result.setTitle(
+        costDO.getTitle() != null && !costDO.getTitle().isBlank()
+            ? costDO.getTitle()
+            : "Cost item");
     var currencyCode = costDO.getCurrencyCode();
     if (costDO.getType() != null) {
       result.setType(costDO.getType().toString());
