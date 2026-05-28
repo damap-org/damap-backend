@@ -9,6 +9,9 @@ import org.damap.base.enums.EIdentifierType;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.IdentifierDO;
 
+// TODO: For all Mappers: Find a way to map most of the fields automatically and only handle exceptions with code
+// This can be done by adapting DAMAPs data model or with libraries or a combination of the tqi
+
 /**
  * This class implements Contributor conversion from and to the RDA DMP common standard. (See <a
  * href="https://github.com/RDA-DMP-Common/common-madmp-api">github.com/RDA-DMP-Common/common-madmp-api</a>
@@ -52,7 +55,7 @@ public class ContributorMapper extends AbstractMapper {
         var damapAffiliationId = new IdentifierDO();
         damapAffiliationId.setIdentifier(rdaAffiliation.getAffiliationId().getIdentifier());
         if (rdaAffiliation.getAffiliationId().getType() != null) {
-          damapAffiliationId.setType(IdentifierMapper.getIdentifierDO(rdaAffiliation.getAffiliationId().getType()).getType());
+          damapAffiliationId.setType(IdentifierMapper.getIdentifierDO(rdaAffiliation.getAffiliationId().getIdentifier()).getType());
         } else {
           damapAffiliationId.setType(EIdentifierType.OTHER);
         }

@@ -98,6 +98,8 @@ public class RdaDmpService {
 
         List<DmpDO> dmps = dmpService.getDmpDOListByPersonId(personId);
 
+        // TODO: This should not be in the service layer, but in the database layer instead
+        // When we get the new updated OpenAPi document, we should move all of the code to db queries
         List<DmpDO> filtered =
                 dmps.stream()
                         .filter(dmp -> matchesCreatedAfter(dmp, params.createdAfter()))
@@ -233,89 +235,6 @@ public class RdaDmpService {
         dmpService.delete(dmpId);
     }
 
-    private void validateDocument(DMPDocument document) {
-        if (document == null || document.getDmp() == null) {
-            throw new BadRequestException("Request body must contain a dmp object");
-        }
-
-        DMPData dmp = document.getDmp();
-
-        if (dmp.getTitle() == null || dmp.getTitle().isBlank()) {
-            throw new BadRequestException("dmp.title is required");
-        }
-
-        if (dmp.getCreated() == null) {
-            throw new BadRequestException("dmp.created is required");
-        }
-
-        if (dmp.getModified() == null) {
-            throw new BadRequestException("dmp.modified is required");
-        }
-
-        if (dmp.getLanguage() == null) {
-            throw new BadRequestException("dmp.language is required");
-        }
-
-        if (dmp.getEthicalIssuesExist() == null) {
-            throw new BadRequestException("dmp.ethical_issues_exist is required");
-        }
-
-        DMPID dmpId = dmp.getDmpId();
-        if (dmpId == null) {
-            throw new BadRequestException("dmp.dmp_id is required");
-        }
-
-        if (dmpId.getIdentifier() == null || dmpId.getIdentifier().isBlank()) {
-            throw new BadRequestException("dmp.dmp_id.identifier is required");
-        }
-
-        if (dmpId.getType() == null || dmpId.getType().isBlank()) {
-            throw new BadRequestException("dmp.dmp_id.type is required");
-        }
-
-        if (dmp.getContact() == null) {
-            throw new BadRequestException("dmp.contact is required");
-        }
-
-        if (dmp.getContact().getName() == null || dmp.getContact().getName().isBlank()) {
-            throw new BadRequestException("dmp.contact.name is required");
-        }
-
-        if (dmp.getDataset() == null || dmp.getDataset().isEmpty()) {
-            throw new BadRequestException("dmp.dataset must contain at least one dataset");
-        }
-
-        for (int i = 0; i < dmp.getDataset().size(); i++) {
-            Dataset dataset = dmp.getDataset().get(i);
-
-            if (dataset.getTitle() == null || dataset.getTitle().isBlank()) {
-                throw new BadRequestException("dmp.dataset[" + i + "].title is required");
-            }
-
-            if (dataset.getDatasetId() == null) {
-                throw new BadRequestException("dmp.dataset[" + i + "].dataset_id is required");
-            }
-
-            if (dataset.getDatasetId().getIdentifier() == null
-                    || dataset.getDatasetId().getIdentifier().isBlank()) {
-                throw new BadRequestException("dmp.dataset[" + i + "].dataset_id.identifier is required");
-            }
-
-            if (dataset.getDatasetId().getType() == null
-                    || dataset.getDatasetId().getType().isBlank()) {
-                throw new BadRequestException("dmp.dataset[" + i + "].dataset_id.type is required");
-            }
-
-            if (dataset.getPersonalData() == null) {
-                throw new BadRequestException("dmp.dataset[" + i + "].personal_data is required");
-            }
-
-            if (dataset.getSensitiveData() == null) {
-                throw new BadRequestException("dmp.dataset[" + i + "].sensitive_data is required");
-            }
-        }
-    }
-
     private void validatePagination(int offset, int count) {
         if (offset < 0) {
             throw new BadRequestException("offset must be greater than or equal to 0");
@@ -415,13 +334,9 @@ public class RdaDmpService {
     }
 
     private boolean matchesDmpIds(DmpDO dmp, List<String> dmpIds) {
-        if (dmpIds == null || dmpIds.isEmpty()) {
-            return true;
-        }
-
-        String internalId = String.valueOf(dmp.getId());
-
-        return dmpIds.stream().anyMatch(id -> equalsIgnoreCase(id, internalId));
+        // TODO: There is no DMP identifier in DAMAP like a DOI - therefore the search always fails
+        // add DMP Identifier into the data model to at least use when importing maDMPs
+        return false;
     }
 
     private boolean matchesQuery(DmpDO dmp, String query) {

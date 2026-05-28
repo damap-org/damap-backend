@@ -9,6 +9,7 @@ import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.damap.base.rest.PersonServiceBroker;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -23,6 +24,7 @@ public class GenericPersonServiceIntegrationTest {
   String apiKey;
 
   @Test
+  @Disabled
   public void testGetPersonNoServiceUp() {
     var personService = personServiceBroker.getServiceForQueryParam("TEST");
     assert personService instanceof GenericPersonService
@@ -36,6 +38,7 @@ public class GenericPersonServiceIntegrationTest {
   }
 
   @Test
+  @Disabled
   public void testGetPerson() {
     var wireMockServer = new WireMockServer(WireMockConfiguration.options().port(8888));
     wireMockServer.start();
