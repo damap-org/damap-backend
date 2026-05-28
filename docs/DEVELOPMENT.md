@@ -199,3 +199,7 @@ text phrases which are used in the replacement process.
 > [!IMPORTANT]
 > We also offer admins to create their own custom templates. 
 > Whenever placeholders in the Science Europe template change, the [reference manual](https://damap.org/manual/) on the website needs to be updated.
+
+
+## Error Handling
+TBD
