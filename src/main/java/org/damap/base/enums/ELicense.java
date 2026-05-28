@@ -172,4 +172,23 @@ public enum ELicense {
   public String getUrl() {
     return this.url;
   }
+
+  /**
+   * getByAcronymOrUrl.
+   *
+   * @param value a {@link java.lang.String} object
+   * @return a {@link org.damap.base.enums.ELicense} object
+   */
+  public static ELicense getByAcronymOrUrl(String value) {
+    if (value == null) {
+      return null;
+    }
+    for (ELicense eLicense : ELicense.values()) {
+      if (value.equalsIgnoreCase(eLicense.getAcronym())
+          || value.equalsIgnoreCase(eLicense.getUrl())) {
+        return eLicense;
+      }
+    }
+    return null;
+  }
 }
