@@ -2,6 +2,7 @@ package org.damap.base.rest.rda.service;
 
 import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.security.ForbiddenException;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
@@ -27,6 +28,7 @@ import org.damap.base.rda.dmpcommonstandard.DMPWithID;
 import org.damap.base.rda.dmpcommonstandard.RdaDmpSearchParams;
 import org.damap.base.repo.DmpRepo;
 import org.damap.base.rest.dmp.domain.DmpDO;
+import org.damap.base.rest.dmp.mapper.MapperService;
 import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
@@ -34,7 +36,7 @@ import org.damap.base.validation.AccessValidator;
 @ApplicationScoped
 public class RdaDmpService {
 
-  private final DMPMapper dmpMapper = new DMPMapper(false);
+  private DMPMapper dmpMapper;
 
   @Inject DmpService dmpService;
 
@@ -43,6 +45,13 @@ public class RdaDmpService {
   @Inject SecurityService securityService;
 
   @Inject AccessValidator accessValidator;
+
+  @Inject MapperService mapperService;
+
+  @PostConstruct
+  void init() {
+    this.dmpMapper = new DMPMapper(false, mapperService);
+  }
 
   public RdaDmpSearchParams createSearchParams(
       int offset,

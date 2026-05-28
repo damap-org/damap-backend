@@ -9,6 +9,7 @@ import org.damap.base.enums.EDataKind;
 import org.damap.base.rest.dmp.domain.ContributorDO;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.ProjectDO;
+import org.damap.base.rest.dmp.mapper.MapperService;
 
 /**
  * This class implements DMP conversion from and to the RDA DMP common standard. (See <a
@@ -39,12 +40,22 @@ public final class DMPMapper extends AbstractMapper {
    *     any imported data in the common format but drop data it cannot represent.
    */
   public DMPMapper(boolean strict) {
+    this(strict, (MapperService) null);
+  }
+
+  /**
+   * Initialize the mapper with strict mode plus a {@link MapperService} used by sub-mappers to
+   * resolve external references (e.g. re3data repository metadata for dataset distribution hosts).
+   * When the service is null, sub-mappers degrade gracefully (e.g. distributions without {@code
+   * host}).
+   */
+  public DMPMapper(boolean strict, MapperService mapperService) {
     this(
         strict,
         new ProjectMapper(strict),
         new ContributorMapper(strict),
         new CostsMapper(strict),
-        new DatasetMapper(strict));
+        new DatasetMapper(strict, mapperService));
   }
 
   /**
@@ -134,7 +145,8 @@ public final class DMPMapper extends AbstractMapper {
     }
 
     if (dmp.getDatasets() != null) {
-      result.setDataset(dmp.getDatasets().stream().map(datasetMapper::convert).toList());
+      result.setDataset(
+          dmp.getDatasets().stream().map(ds -> datasetMapper.convert(dmp, ds)).toList());
     } else {
       result.setDataset(new ArrayList<>());
     }
