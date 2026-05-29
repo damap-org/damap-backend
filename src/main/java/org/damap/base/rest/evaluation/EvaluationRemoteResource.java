@@ -20,9 +20,10 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.logging.Logger;
 
+// TODO: Check if there are any OpenApi or Json specifications so we can autogenerate this by pulling the specification
 /** EvaluationRemoteResource interface. */
 @RegisterRestClient(configKey = "rest.evaluation")
-@Timeout(30000)
+@Timeout(10000)
 public interface EvaluationRemoteResource {
 
   Logger log = Logger.getLogger(EvaluationRemoteResource.class);

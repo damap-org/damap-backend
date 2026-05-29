@@ -106,8 +106,7 @@ public class ConfigResource {
     DamapTenantAwareConfig tenantAwareConfig = tenantConfigResolver.getTenantAwareConfig();
     configDO.setAppTitle(tenantAwareConfig.title());
     // The ServiceConfig runtime interface proxy cannot be marshalled and sent to
-    // the frontend, so
-    // we need a DO
+    // the frontend, so we need a DO
     List<ServiceConfigDO> serviceConfigDOS =
         tenantAwareConfig.personServices().stream().map(ServiceConfigDO::new).toList();
     configDO.setPersonSearchServiceConfigs(serviceConfigDOS);

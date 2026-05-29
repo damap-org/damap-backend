@@ -19,6 +19,7 @@ import org.damap.base.rest.evaluation.service.EvaluationService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
 
+// TODO: Check if there are any OpenApi or Json specifications so we can autogenerate this by pulling the specification
 /** EvaluationResource class. */
 @Path("/api/evaluation")
 @Authenticated

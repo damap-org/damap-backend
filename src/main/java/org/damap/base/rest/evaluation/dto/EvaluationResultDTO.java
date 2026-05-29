@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Data;
 
+// TODO: Check if there are any OpenApi or Json specifications so we can autogenerate this by pulling the specification
 /** EvaluationResultDTO class. */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
