@@ -91,7 +91,10 @@ public class DatasetMapper extends AbstractMapper {
     var license = datasetDO.getLicense();
     if (license != null) {
       License rdaLicense = new License();
-      String ref = license.getAcronym();
+      String ref = license.getUrl();
+      if (ref == null || ref.isBlank()) {
+        ref = license.getAcronym();
+      }
       rdaLicense.setLicenseRef(
           ref != null && !ref.isBlank() ? ref : "https://example.org/unknown-license");
       if (datasetDO.getStartDate() != null) {
@@ -231,14 +234,19 @@ public class DatasetMapper extends AbstractMapper {
       }
       var license = distribution.getLicense();
       if (license != null && !license.isEmpty()) {
-        try {
-          result.setLicense(ELicense.valueOf(license.get(0).getLicenseRef()));
-        } catch (IllegalArgumentException e) {
-          if (strict) {
-            throw new CommonStandardCompatibilityException(
-                "unsupported license: " + license.get(0).getLicenseRef());
+        String ref = license.get(0).getLicenseRef();
+        ELicense eLicense = ELicense.getByAcronymOrUrl(ref);
+        if (eLicense != null) {
+          result.setLicense(eLicense);
+        } else {
+          try {
+            result.setLicense(ELicense.valueOf(ref));
+          } catch (IllegalArgumentException e) {
+            if (strict) {
+              throw new CommonStandardCompatibilityException("unsupported license: " + ref);
+            }
+            result.setLicense(ELicense.CUSTOM);
           }
-          result.setLicense(ELicense.CUSTOM);
         }
       }
       var dataAccess = distribution.getDataAccess();

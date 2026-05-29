@@ -65,15 +65,15 @@ damap:
     ## Set up person lookups here:
     person-services:
       ## Elsevier Pure integration:
-      # - display-text: 'Pure'
-      #   query-value: 'PURE'
-      #   class-name: 'org.damap.base.integration.pure.PurePersonService'
-      - display-text: 'University'
-        query-value: 'UNIVERSITY'
-        class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
-      - display-text: 'ORCID'
-        query-value: 'ORCID'
-        class-name: 'org.damap.base.integration.orcid.ORCIDPersonServiceImpl'
+      # - display-text: "Pure"
+      #   query-value: "PURE"
+      #   class-name: "org.damap.base.integration.pure.PurePersonService"
+      - display-text: "University"
+        query-value: "UNIVERSITY"
+        class-name: "org.damap.base.integration.mock.MockUniversityPersonServiceImpl"
+      - display-text: "ORCID"
+        query-value: "ORCID"
+        class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
 
 invenio:
   disabled: true
@@ -156,6 +156,11 @@ rest:
   openaire/mp-rest/url: http://api.openaire.eu/search/
   orcid:
     search/mp-rest/url: https://pub.orcid.org
+  # Leaving this URL empty will deactivate the feature in the frontend
+  # Right now this feature is experimental, to test it use the value https://ostrails-dmp-evaluation.arisnet.ac.at
+  # TODO: Make this compatible with multitenancy and add a specific on and off switch
+  # Maybe move it into the db so admins can configure this?
+  evaluation/mp-rest/url:
 
 "%dev":
   damap:
@@ -191,7 +196,7 @@ rest:
   damap:
     title: "DAMAP (Testing)"
     repositories:
-      recommendation: ['r3d100010468'] # Re3Data id(s)
+      recommendation: ["r3d100010468"] # Re3Data id(s)
     elsevier-pure-endpoint-url: "http://localhost:9999/fake-pure-api"
   quarkus:
     datasource:

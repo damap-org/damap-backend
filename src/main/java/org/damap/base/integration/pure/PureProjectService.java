@@ -111,7 +111,8 @@ public class PureProjectService implements ProjectServiceProvider {
   }
 
   @Override
-  // the cache key generator function uses the method name - take care when renaming
+  // the cache key generator function uses the method name - take care when
+  // renaming
   @CacheResult(cacheName = "pure-recommended", keyGenerator = PureCacheKeyGenerator.class)
   public ResultList<ProjectDO> getRecommended(Search search) {
     ResultList<ProjectDO> res = new ResultList<>();
@@ -169,7 +170,6 @@ public class PureProjectService implements ProjectServiceProvider {
   @Override
   @CacheResult(cacheName = "pure-search-projects", keyGenerator = PureCacheKeyGenerator.class)
   public ResultList<ProjectDO> search(Search query) {
-    System.out.println("muahhh");
     ResultList<ProjectDO> res = new ResultList<>();
     res.setSearch(query);
     res.setItems(

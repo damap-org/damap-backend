@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -27,6 +28,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.rda.dmpcommonstandard.DMPData;
 import org.damap.base.rda.dmpcommonstandard.DMPDocument;
 import org.damap.base.rda.dmpcommonstandard.RdaDmpSearchParams;
+import org.damap.base.rest.dmp.service.DmpService;
 import org.damap.base.rest.rda.service.RdaDmpService;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
@@ -42,6 +44,7 @@ public class RdaDmpResource {
 
   @Inject RdaDmpService rdaDmpService;
   @Inject Validator validator;
+  @Inject DmpService dmpService;
 
   @GET
   public Response listDMPs(
@@ -139,13 +142,22 @@ public class RdaDmpResource {
   @GET
   @Path("/{id}")
   public Response getDMP(@PathParam("id") String id, @Context HttpHeaders headers) {
-    log.info("Retrieving RDA DMP with id: " + id);
+
+    long dmpId;
+    try {
+      dmpId = Long.parseLong(id);
+    } catch (NumberFormatException e) {
+      throw new BadRequestException("Invalid DMP id: " + id, e);
+    }
+    String filename = dmpService.getDefaultFileName(dmpId);
 
     RdaDmpService.RdaDmpResult result = rdaDmpService.getDMP(id);
 
     return Response.ok(result.body())
         .type(resolveResponseType(headers))
         .header(HttpHeaders.LAST_MODIFIED, result.lastModified())
+        .header("Content-Disposition", "attachment; filename=" + filename + ".json")
+        .header("Access-Control-Expose-Headers", "Content-Disposition")
         .build();
   }
 

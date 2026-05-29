@@ -29,6 +29,7 @@ public class ConfigDO {
   private String projectSearchServiceConfig;
   private boolean livePreviewAvailable;
   private boolean ethicalReportEnabled;
+  private boolean evaluationAvailable;
   private String appTitle;
   private ColorTheme colorTheme;
   private List<Image> images;
