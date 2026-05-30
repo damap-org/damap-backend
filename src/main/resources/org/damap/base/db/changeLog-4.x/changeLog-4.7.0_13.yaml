@@ -11,13 +11,7 @@ databaseChangeLog:
                       'Please select a valid ISO 639-1 language code.',
                       l.active,
                       0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.appTranslations.languageCodeInvalid'
-                        AND t.language = l.language
-                    );
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
 
               - sql: |
                     INSERT INTO translation (translation_key, language, default_value, active, version)
@@ -27,29 +21,17 @@ databaseChangeLog:
                       'This language already exists.',
                       l.active,
                       0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.appTranslations.languageCodeAlreadyExists'
-                        AND t.language = l.language
-                    );
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
 
               - sql: |
                     INSERT INTO translation (translation_key, language, default_value, active, version)
                     SELECT
                       'admin.internalStorage.translation.dialog.field.languageCodeHint',
                       l.language,
-                      'Search by language name or code, for example English or EN.',
+                      'Search by language name or code, for example "English" or "en".',
                       l.active,
                       0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.internalStorage.translation.dialog.field.languageCodeHint'
-                        AND t.language = l.language
-                    );
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
 
               - sql: |
                     INSERT INTO translation (translation_key, language, default_value, active, version)
@@ -59,29 +41,7 @@ databaseChangeLog:
                       'Language code is required.',
                       l.active,
                       0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.internalStorage.translation.dialog.field.languageCodeRequired'
-                        AND t.language = l.language
-                    );
-
-              - sql: |
-                    INSERT INTO translation (translation_key, language, default_value, active, version)
-                    SELECT
-                      'admin.internalStorage.translation.dialog.field.languageCodePattern',
-                      l.language,
-                      'Please enter a two-letter language code.',
-                      l.active,
-                      0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.internalStorage.translation.dialog.field.languageCodePattern'
-                        AND t.language = l.language
-                    );
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
 
               - sql: |
                     INSERT INTO translation (translation_key, language, default_value, active, version)
@@ -91,10 +51,4 @@ databaseChangeLog:
                       'Please select a valid ISO 639-1 language code.',
                       l.active,
                       0
-                    FROM (SELECT DISTINCT language, active FROM translation) l
-                    WHERE NOT EXISTS (
-                      SELECT 1
-                      FROM translation t
-                      WHERE t.translation_key = 'admin.internalStorage.translation.dialog.field.languageCodeInvalid'
-                        AND t.language = l.language
-                    );
+                    FROM (SELECT DISTINCT language, active FROM translation) l;

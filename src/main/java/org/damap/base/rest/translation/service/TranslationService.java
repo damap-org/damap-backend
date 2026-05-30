@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.domain.Translation;
@@ -38,7 +41,7 @@ public class TranslationService {
 
     List<Translation> existing = translationRepo.findByLanguage(normalizedLanguage);
     if (!existing.isEmpty()) {
-      return existing;
+      throw new WebApplicationException("Language already exists", Response.Status.CONFLICT);
     }
 
     log.infov("Creating new language: {0}", newLanguage);
