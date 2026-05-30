@@ -9,6 +9,7 @@ import org.damap.base.domain.InternalStorage;
 import org.damap.base.domain.InternalStorageTranslation;
 import org.damap.base.repo.InternalStorageRepo;
 import org.damap.base.repo.InternalStorageTranslationRepo;
+import org.damap.base.rest.translation.service.LanguageCodeValidator;
 
 @UtilityClass
 @JBossLog
@@ -20,6 +21,8 @@ public class InternalStorageTranslationValidator {
       InternalStorageTranslationRepo internalStorageTranslationRepo)
       throws ClientErrorException {
     log.info("Validating internal storage translation for creation");
+
+    normalizeAndValidateLanguageCode(internalStorageTranslationDO);
 
     // Check if no translation for the same language exists
     if (internalStorageTranslationRepo.existsTranslationForStorageIdAndLanguageCode(
@@ -43,6 +46,8 @@ public class InternalStorageTranslationValidator {
       InternalStorageRepo internalStorageRepo)
       throws ClientErrorException {
     log.info("Validating internal storage translation for update");
+
+    normalizeAndValidateLanguageCode(internalStorageTranslationDO);
 
     InternalStorageTranslation internalStorageTranslation =
         internalStorageTranslationRepo.findById(Long.parseLong(id));
@@ -80,11 +85,25 @@ public class InternalStorageTranslationValidator {
           "No internal storage found for id " + internalStorageTranslationDO.getStorageId());
     }
 
-    // Check if language code is 'deu' or 'eng'
-    if (!internalStorageTranslationDO.getLanguageCode().equals("deu")
-        && !internalStorageTranslationDO.getLanguageCode().equals("eng")) {
+    normalizeAndValidateLanguageCode(internalStorageTranslationDO);
+  }
+
+  private void normalizeAndValidateLanguageCode(
+      InternalStorageTranslationDO internalStorageTranslationDO) {
+    String languageCode = internalStorageTranslationDO.getLanguageCode();
+
+    if (languageCode == null || languageCode.isBlank()) {
       throw new ClientErrorException(
-          "Language code must be 'deu' or 'eng'", Response.Status.BAD_REQUEST);
+          "Language code must not be empty", Response.Status.BAD_REQUEST);
     }
+
+    String normalizedLanguageCode = languageCode.trim().toLowerCase();
+
+    if (!LanguageCodeValidator.isValidIso6391Code(normalizedLanguageCode)) {
+      throw new ClientErrorException(
+          "Invalid ISO 639-1 language code: " + languageCode, Response.Status.BAD_REQUEST);
+    }
+
+    internalStorageTranslationDO.setLanguageCode(normalizedLanguageCode);
   }
 }

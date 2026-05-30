@@ -4,6 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,9 +36,11 @@ public class TranslationService {
    */
   @Transactional
   public List<Translation> createLanguage(String newLanguage) {
-    List<Translation> existing = translationRepo.findByLanguage(newLanguage);
+    String normalizedLanguage = normalizeAndValidateLanguage(newLanguage);
+
+    List<Translation> existing = translationRepo.findByLanguage(normalizedLanguage);
     if (!existing.isEmpty()) {
-      return existing;
+      throw new WebApplicationException("Language already exists", Response.Status.CONFLICT);
     }
 
     log.infov("Creating new language: {0}", newLanguage);
@@ -182,5 +186,19 @@ public class TranslationService {
     if (translationRepo.deleteByLanguage(language) == 0) {
       throw new NotFoundException("No translations found for language: " + language);
     }
+  }
+
+  private String normalizeAndValidateLanguage(String language) {
+    if (language == null || language.isBlank()) {
+      throw new BadRequestException("Language code must not be empty");
+    }
+
+    String normalizedLanguage = language.trim().toLowerCase();
+
+    if (!LanguageCodeValidator.isValidIso6391Code(normalizedLanguage)) {
+      throw new BadRequestException("Invalid ISO 639-1 language code: " + language);
+    }
+
+    return normalizedLanguage;
   }
 }

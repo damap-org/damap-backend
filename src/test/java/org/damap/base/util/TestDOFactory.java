@@ -439,7 +439,7 @@ public class TestDOFactory {
     internalStorageTranslation.setTitle("Test Storage Title ENG");
     internalStorageTranslation.setDescription(
         "Long winded yet brief description of the storage option");
-    internalStorageTranslation.setLanguageCode("eng");
+    internalStorageTranslation.setLanguageCode("en");
     internalStorageTranslation.persistAndFlush();
 
     if (generateTwo) {
@@ -448,7 +448,7 @@ public class TestDOFactory {
       internalStorageTranslation2.setTitle("Test Storage Title DEU");
       internalStorageTranslation2.setDescription(
           "Long winded yet brief description of the storage option");
-      internalStorageTranslation2.setLanguageCode("deu");
+      internalStorageTranslation2.setLanguageCode("de");
       internalStorageTranslation2.persistAndFlush();
 
       return List.of(

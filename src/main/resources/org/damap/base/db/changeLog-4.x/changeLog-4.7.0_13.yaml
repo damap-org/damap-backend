@@ -1,0 +1,54 @@
+databaseChangeLog:
+    - changeSet:
+          id: 37
+          author: Geoffrey Karnbach
+          changes:
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'admin.appTranslations.languageCodeInvalid',
+                      l.language,
+                      'Please select a valid ISO 639-1 language code.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'admin.appTranslations.languageCodeAlreadyExists',
+                      l.language,
+                      'This language already exists.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'admin.internalStorage.translation.dialog.field.languageCodeHint',
+                      l.language,
+                      'Search by language name or code, for example "English" or "en".',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'admin.internalStorage.translation.dialog.field.languageCodeRequired',
+                      l.language,
+                      'Language code is required.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'admin.internalStorage.translation.dialog.field.languageCodeInvalid',
+                      l.language,
+                      'Please select a valid ISO 639-1 language code.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
