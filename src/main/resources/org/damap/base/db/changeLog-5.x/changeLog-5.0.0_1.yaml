@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Geoffrey Karnbach
+      comment: Insert en translations for DMP import
+      changes:
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: http.error.plans.import
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: 'Failed to import DMP. '
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+        - insert:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: plans.import.dmp
+              - column:
+                  name: language
+                  value: en
+              - column:
+                  name: default_value
+                  value: IMPORT DMP
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: version
+                  valueNumeric: 0
+      rollback:
+        - delete:
+            tableName: translation
+            where: translation_key in ('http.error.plans.import', 'plans.import.dmp') and language = 'en'
