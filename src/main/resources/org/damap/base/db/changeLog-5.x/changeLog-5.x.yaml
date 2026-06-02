@@ -7,3 +7,5 @@ databaseChangeLog:
       file: org/damap/base/db/changeLog-5.x/changeLog-5.0.1_1.yaml
   - include:
       file: org/damap/base/db/changeLog-5.x/changeLog-5.0.1_2.yaml
+  - include:
+      file: org/damap/base/db/changeLog-5.x/changeLog-5.0.1_3.yaml
