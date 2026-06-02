@@ -49,11 +49,11 @@ jobs:
       # 3. Main jar: base-<version>.jar
       # 4. Pom: base-<version>.pom
       # All resulting JAR artefacts, checksums and asc signature files are then uploaded to GitHub Packages
-      - name: Publish to GitHub packages
-        run: mvn deploy --batch-mode -P deploy-github-repository
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS }}
+      # - name: Publish to GitHub packages
+      #   run: mvn deploy --batch-mode -P deploy-github-repository
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS }}
 
   container-build-publish:
     runs-on: ubuntu-latest
@@ -62,9 +62,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Change Maven version
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          VERSION=$(echo -n '${{ github.ref_name }}' | sed -e 's/v//')
+          VERSION=$(echo -n 'v5.0.0-rc.3' | sed -e 's/v//')
           sed -i "s/0.0.0-SNAPSHOT/${VERSION}/" pom.xml
 
       - name: Log in to the Container registry
@@ -81,9 +80,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
           # git tag: v1.2.3, output: 1.2.3
           tags: |
-            type=semver,pattern={{version}},enable=${{ env.is-version-tag == 'true'}}
-            type=raw,value={{branch}},enable=${{ env.is-master-branch == 'true' || env.is-next-branch == 'true' }}
-            type=raw,value=latest
+            type=raw,value=5.0.0-rc.3
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
