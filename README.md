@@ -28,14 +28,35 @@ in order to make this tool your own:
 The actively supported database is [Postgres](https://www.postgresql.org/) and to a lesser extent Oracle.
 Other databases could be used as well, but they may not be tested.
 
-## Installation
+## Deployment
 
-DAMAP supports deployment both in Docker-based containerized environments and on Kubernetes clusters.
-It can be deployed either as a standalone installation for a single institution or in a multitenant setup
-where one instance serves multiple universities or organizations.
-You can find detailed installation instructions in the [Reference Manual](https://damap.org/manual/) on our website.
+DAMAP can be deployed with Docker Compose or on Kubernetes/OpenShift with Helm.
+It can be run as a standalone installation for a single institution or in a multitenant setup where one instance serves multiple universities or organizations.
 
-For instructions on how to run the project locally, read the development guidelines in the [DEVELOPMENT.md](docs/DEVELOPMENT.md) file.
+### Docker Compose
+
+For a local development or demo setup, run:
+
+```shell
+docker compose up -d
+```
+
+The default setup works out of the box and starts DAMAP with PostgreSQL, Keycloak, API mock services, Gotenberg, backend, frontend, and nginx.
+The frontend is available at http://localhost:8085/ with the sample users `user/user` and `admin/admin`.
+
+For details, see the [development Docker setup](docker/dev/README.md) and the [production Docker setup](docker/prod/README.md).
+The default development setup does not require an environment file; [example.env](example.env) documents the supported environment variables for custom and production Docker Compose configuration.
+
+### Helm / Kubernetes
+
+For Kubernetes and OpenShift deployments, use the DAMAP Helm chart:
+
+- [damap-chart repository](https://github.com/damap-org/damap-chart)
+- [Artifact Hub package](https://artifacthub.io/packages/search?repo=damap)
+
+The chart repository contains the installation commands, configuration values, and deployment notes.
+
+For local backend development, read the development guidelines in [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Customisation
 

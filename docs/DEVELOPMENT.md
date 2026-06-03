@@ -12,14 +12,14 @@ To start the dockerized setup with PostgreSQL, please run the following commands
 docker compose up -d
 ```
 
-By default, docker pulls back and frontend images from GitHub - the docker frontend can then be reached at
+By default, Docker pulls backend and frontend images from GitHub. The Docker frontend can then be reached at
 http://localhost:8085/, use user/user for username/password.
-For more info about the docker setup, see [the section below](#run-with-docker-compose).
+For more info about the Docker setup, see [the section below](#run-with-docker-compose) and the [development Docker README](../docker/dev/README.md).
 
 The containerized DAMAP instance is useful for testing the software and demonstrating it to others, but it is not recommended for active development.
 
 For development, we recommend running local instances of the frontend and backend instead of using the fully containerized setup.
-This has the advantage of enabling automatic live reload and removes to need to rebuild images after every code change.
+This has the advantage of enabling automatic live reload and removes the need to rebuild images after every code change.
 
 As a prerequisite, the DAMAP backend requires the following:
 - Java 17
@@ -53,9 +53,9 @@ The local instances automatically connect to the services provided by the docker
 
 ## Run with docker-compose
 
-In order to set up the whole system consisting of multiple components 2 `docker-compose` files have been prepared: 
+In order to set up the whole system consisting of multiple components, two Docker Compose shortcuts have been prepared:
 
-- [`docker-compose.yaml`](../docker-compose.yaml) (for develoment purposes)
+- [`docker-compose.yaml`](../docker-compose.yaml) (for development purposes)
 - [`docker-compose.prod.yaml`](../docker-compose.prod.yaml) (for production)
 
 The full system is comprised of the following containers
@@ -77,7 +77,11 @@ If you want to test out the dockerized production environment, refer to the [spe
 ---
 
 ## Run with Kubernetes
-TBD
+
+For Kubernetes and OpenShift deployments, use the DAMAP Helm chart:
+
+- [damap-chart repository](https://github.com/damap-org/damap-chart)
+- [Artifact Hub package](https://artifacthub.io/packages/search?repo=damap)
 
 ---
 
@@ -115,17 +119,13 @@ username: admin
 password: admin
 ```
 
-The keycloak gets preconfigured by loading a [config file](../docker/sample-damap-realm-export.json).
+Keycloak gets preconfigured by loading a [config file](../docker/dev/keycloak/sample-damap-realm-export.json).
 If you want to update this config file, you can either work on the file directly, or make the changes in the Keycloak
-console and then export to a json file.
-To integrate the changes, be sure to rebuild keycloak by issuing:
+console and then export to a JSON file.
+To integrate the changes, restart Keycloak:
 
 ```shell
-# rebuild
-docker compose -f docker-compose.postgres.yaml build keycloak
-
-# restart keycloak
-docker compose -f docker-compose.postgres.yaml up -d keycloak
+docker compose up -d --force-recreate keycloak
 ```
 
 ---
@@ -139,15 +139,16 @@ To work with the databases, either use a database plugin in your IDE or connect 
 
 You can access the PostgreSQL CLI directly using the postgres container with:
 ```shell
-cd docker
-docker compose -f docker-compose.postgres.yaml exec damap-db psql -U damap damap
+docker compose exec postgres-db psql -U damap damap
 ```
 
 You can access the Oracle CLI directly using the Oracle container with:
 ```shell
-cd docker
-docker compose -f docker-compose.oracle.yaml exec damap-db sqlplus damap/pw4damap@FREEPDB1
+DAMAP_DB_KIND=oracle docker compose --profile with_oracle exec oracle-db sqlplus damap/pw4damap@FREEPDB1
 ```
+
+When using the Oracle development profile, set `DAMAP_DB_KIND=oracle`.
+The backend Docker entrypoint supports only `postgresql` and `oracle` and automatically derives the Quarkus JDBC settings from the selected kind and the `DAMAP_DB_*` variables.
 
 ---
 
