@@ -22,4 +22,5 @@ public class EvaluationResultDTO {
   private String assessmentTarget;
   private String wasGeneratedBy;
   private String outputFromTest;
+  private GuidanceDTO guidance;
 }
