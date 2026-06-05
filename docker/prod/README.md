@@ -119,6 +119,10 @@ docker compose -f docker-compose.prod.yaml \
   up -d
 ```
 
+When using the bundled Keycloak profile, Keycloak is exposed through the DAMAP hostname.
+The Keycloak admin console is available under `/admin/`, for example `https://damap.example.org/admin/`.
+Keep the trailing slash.
+
 ## Operations
 
 Check service status:
