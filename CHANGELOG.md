@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [5.0.0] - 2026-06-05
+
+### Added
+
+- Added multitenancy feature, which enables DAMAP to serve multiple universities out of one instance [#431](https://github.com/damap-org/damap-backend/pull/431),[#475](https://github.com/damap-org/damap-backend/pull/475)
+- Made OIDC integration configurable, so DAMAP can more easily connect with pre-existing OIDC-Servers (SSO) [#453](https://github.com/damap-org/damap-backend/pull/453)
+- Added .env file support to make dockerized deployments easier [#459](https://github.com/damap-org/damap-backend/pull/459)
+- Enabled admins to configure images over the UI [#426](https://github.com/damap-org/damap-backend/pull/426)
+- Enabled admins to configure recommended repositories over the UI [#426](https://github.com/damap-org/damap-backend/pull/426)
+- Enabled admins to configure color palettes over the UI [#426](https://github.com/damap-org/damap-backend/pull/426)
+- Added helm chart for easy kubernetes based deployments, charts live in their own [GitHub Repository](https://github.com/damap-org/damap-chart)
+- Enabled admins to upload their own customized templates and to disable unwanted templates over the UI [#471](https://github.com/damap-org/damap-backend/pull/471)
+- Enabled admins to deactivate consent form [#493](https://github.com/damap-org/damap-backend/pull/493)
+- Enabled admins to lock instance for non-admins [#493](https://github.com/damap-org/damap-backend/pull/493)
+- Added integration with RDA Common Standard maDMP API [#513](https://github.com/damap-org/damap-backend/pull/513)
+- Added experimental connection to a DMP evaluation service using th common maDMP API [#514](https://github.com/damap-org/damap-backend/pull/514)
+
+### Changed
+
+- Sort DMPs in the DMP table by creation date instead of id [#447](https://github.com/damap-org/damap-backend/pull/447)
+- DMP access now has to be granted to system users and not contributors - old accesses are nor affected [#454](https://github.com/damap-org/damap-backend/pull/454)
+- Unavailable external services now dont cause PDF export to fail - instead an error message is written in the document to replace missing information [#476](https://github.com/damap-org/damap-backend/pull/476)
+- External service errors are now handled better - frontend shows clearer error messages [#419](https://github.com/damap-org/damap-backend/pull/419)
+- Made deployments easier and more lightweight by replacing containerized FITS with a java library [#477](https://github.com/damap-org/damap-backend/pull/477)
+- Made PURE integration faster and more efficient [#461](https://github.com/damap-org/damap-backend/pull/461)
+- Added production grad docker setup do make containerized on-premise deployments easier [#479](https://github.com/damap-org/damap-backend/pull/479),[#449](https://github.com/damap-org/damap-backend/pull/449)
+
+### Fixed
+
+- License information is now correctly exported into the reused dataset table [#432](https://github.com/damap-org/damap-backend/pull/432)
+- Fixed a bug in the PURE integration, where getting all projects/persons lead to an endless loop [#458](https://github.com/damap-org/damap-backend/pull/458)
+
+### Templates
+
+- Changed "Produced/Reused datasets:" to "The following datasets will be produced/reused:" in all 3 templates [#448](https://github.com/damap-org/damap-backend/pull/448)
+- HE Template: Fixed font of Creative Commons License link [#448](https://github.com/damap-org/damap-backend/pull/448)
+- FWF Template: Replaced outdated term "FWF project number" with "FWF Grant-DOI" [#488](https://github.com/damap-org/damap-backend/pull/488)
+
+### Translations
+
+- Added support for admins to change texts and add translations over the UI - this will remove old customizations when migrating! [#487](https://github.com/damap-org/damap-backend/pull/487)
+
 ## [4.7.0] - 2025-12-11
 
 ### Added
