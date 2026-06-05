@@ -18,36 +18,57 @@ residing in separate source code repositories.
 1. **[damap-backend](https://github.com/damap-org/damap-backend):** maDMPs backend project
 2. **[damap-frontend](https://github.com/damap-org/damap-frontend):** maDMPs frontend project
 
-Also there are some components that you should already have at your institution that you can integrate with damap,
+Also there are some components that you should already have at your institution that you can integrate with DAMAP,
 in order to make this tool your own:
 
 1. Authentication service with OpenID support (e.g. [Keycloak](https://www.keycloak.org/))
 2. [CRIS](https://en.wikipedia.org/wiki/Current_research_information_system) system (system managing research projects)
 3. System managing researcher data
 
-The actively supported database is [Postgres](https://www.postgresql.org/). Other databases could be used as well,
-but they may not be tested.
+The actively supported database is [Postgres](https://www.postgresql.org/) and to a lesser extent Oracle.
+Other databases could be used as well, but they may not be tested.
 
-## Documentation
+## Deployment
 
-Once documentation is ready, it will be available from this repository in the `doc` folder at 
-[Documentation](doc/index.md).
+DAMAP can be deployed with Docker Compose or on Kubernetes/OpenShift with Helm.
+It can be run as a standalone installation for a single institution or in a multitenant setup where one instance serves multiple universities or organizations.
 
-## Installation
+### Docker Compose
 
-DAMAP can be installed in several ways, but since it is composed out of multiple different applications, running DAMAP
-as containers seems to be the most straight forward way. You can find detailed installation instructions in the 
-[INSTALLATION.md](INSTALLATION.md) file.
+For a local development or demo setup, run:
+
+```shell
+docker compose up -d
+```
+
+The default setup works out of the box and starts DAMAP with PostgreSQL, Keycloak, API mock services, Gotenberg, backend, frontend, and nginx.
+The frontend is available at http://localhost:8085/ with the sample users `user/user` and `admin/admin`.
+
+For details, see the [development Docker setup](docker/dev/README.md) and the [production Docker setup](docker/prod/README.md).
+The default development setup does not require an environment file; [example.env](example.env) documents the supported environment variables for custom and production Docker Compose configuration.
+
+### Helm / Kubernetes
+
+For Kubernetes and OpenShift deployments, use the DAMAP Helm chart:
+
+- [damap-chart repository](https://github.com/damap-org/damap-chart)
+- [Artifact Hub package](https://artifacthub.io/packages/search?repo=damap)
+
+The chart repository contains the installation commands, configuration values, and deployment notes.
+
+For local backend development, read the development guidelines in [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Customisation
 
 To make use of the powers of DAMAP, customisations should be added to integrate it in your system environment.
-[CUSTOMISING.md](CUSTOMISING.md) documents the steps needed in order to adapt DAMAP to your needs.
+Common customisations include CRIS systems to get up-to-date person and project data, color theme of the interface and
+DMP templates.
+Our [Reference Manual](https://damap.org/manual) documents the steps needed in order to adapt DAMAP to your needs.
 
 ## Contributing
 
 Before contributing code, please carefully read the contribution guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md) 
-file.
+file and the developer documentation in the [DEVELOPMENT.md](docs/DEVELOPMENT.md) file.
 
 ## License
 

@@ -178,7 +178,8 @@ rest:
 
     # FOR ORACLE INSTEAD USE:
     #      url: jdbc:oracle:thin:@localhost:8088/FREEPDB1
-    #      db-kind: oracle
+    #      driver: oracle-driver
+    #      db-kind: oracle.jdbc.OracleDriver
     datasource:
       jdbc:
         url: jdbc:postgresql://localhost:8088/damap
@@ -233,4 +234,5 @@ rest:
 
     config:
       # should point to a (out of classpath) config file like this /path/to/config/file.yaml
+      # TODO: currently hardcoded - add env variable to make path configurable
       locations: /opt/damap/tenants.yaml
