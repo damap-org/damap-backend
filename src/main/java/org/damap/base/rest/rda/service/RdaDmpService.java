@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import org.damap.base.r3data.RepositoriesService;
 import org.damap.base.rda.dmpcommonstandard.Booleanish;
 import org.damap.base.rda.dmpcommonstandard.CommonStandardCompatibilityException;
 import org.damap.base.rda.dmpcommonstandard.DMPDocument;
@@ -43,6 +45,8 @@ public class RdaDmpService {
   @Inject SecurityService securityService;
 
   @Inject AccessValidator accessValidator;
+
+  @Inject RepositoriesService repositoriesService;
 
   public RdaDmpSearchParams createSearchParams(
       int offset,
@@ -503,7 +507,7 @@ public class RdaDmpService {
 
   private DMPWithID toRdaDmp(DmpDO dmp) {
     try {
-      return dmpMapper.convert(dmp);
+      return dmpMapper.convert(dmp, repositoriesService);
     } catch (RuntimeException e) {
       throw new InternalServerErrorException(
           "Could not convert DAMAP DMP with id " + dmp.getId() + " to RDA format", e);
