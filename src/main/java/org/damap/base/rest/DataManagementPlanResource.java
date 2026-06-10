@@ -1,5 +1,6 @@
 package org.damap.base.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.security.ForbiddenException;
@@ -8,14 +9,20 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
+import org.damap.base.rda.dmpcommonstandard.DMPDocument;
 import org.damap.base.rest.dmp.domain.DmpDO;
 import org.damap.base.rest.dmp.domain.DmpListItemDO;
 import org.damap.base.rest.dmp.service.DmpService;
+import org.damap.base.rest.rda.service.RdaDmpService;
 import org.damap.base.security.SecurityService;
 import org.damap.base.validation.AccessValidator;
+import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.RestPath;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 /** DataManagementPlanResource class. */
 @Path("/api/dmps")
@@ -29,6 +36,10 @@ public class DataManagementPlanResource {
   @Inject AccessValidator accessValidator;
 
   @Inject DmpService dmpService;
+
+  @Inject RdaDmpService rdaDmpService;
+
+  @Inject ObjectMapper objectMapper;
 
   private final String unauthorizedMessage(long id) {
     return "Not authorized to access dmp with id " + id;
@@ -177,5 +188,28 @@ public class DataManagementPlanResource {
       throw new ForbiddenException(unauthorizedMessage(dmpId));
     }
     return dmpService.getDmpByIdAndRevision(dmpId, revision);
+  }
+
+  @POST
+  @Path("/import")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response importDMP(@RestForm("file") FileUpload file) {
+    log.info("Importing RDA DMP into DAMAP");
+
+    if (file == null) {
+      throw new BadRequestException("Missing JSON file. Upload it as multipart form field 'file'.");
+    }
+
+    DMPDocument rdaDmpDocument;
+    try {
+      rdaDmpDocument = objectMapper.readValue(file.uploadedFile().toFile(), DMPDocument.class);
+    } catch (IOException e) {
+      throw new BadRequestException("Invalid JSON file: " + e.getMessage(), e);
+    }
+
+    DmpDO createdDmp = rdaDmpService.importRdaDmp(rdaDmpDocument);
+
+    return Response.status(Response.Status.CREATED).entity(createdDmp).build();
   }
 }
