@@ -76,8 +76,11 @@ public final class DMPMapper extends AbstractMapper {
     this.datasetMapper = datasetMapper;
   }
 
-  public DMPWithID convert(DmpDO dmp, org.damap.base.r3data.RepositoriesService repositoriesService) {
-    return new DMPWithID().id(String.valueOf(dmp.getId())).dmp(convertData(dmp, repositoriesService));
+  public DMPWithID convert(
+      DmpDO dmp, org.damap.base.r3data.RepositoriesService repositoriesService) {
+    return new DMPWithID()
+        .id(String.valueOf(dmp.getId()))
+        .dmp(convertData(dmp, repositoriesService));
   }
 
   public DmpDO convert(DMPWithID dmp) {
@@ -144,10 +147,11 @@ public final class DMPMapper extends AbstractMapper {
         DatasetDO datasetDO = dmp.getDatasets().get(i);
         Dataset rdaDataset = result.getDataset().get(i);
 
-        // Pass the repositoriesService to the helper
         List<Host> rdaHosts = findAllHostsForDataset(dmp, datasetDO, repositoriesService);
 
-        if (!rdaHosts.isEmpty() && rdaDataset.getDistribution() != null && !rdaDataset.getDistribution().isEmpty()) {
+        if (!rdaHosts.isEmpty()
+            && rdaDataset.getDistribution() != null
+            && !rdaDataset.getDistribution().isEmpty()) {
           Distribution baseDist = rdaDataset.getDistribution().get(0);
           List<Distribution> distributions = new ArrayList<>();
 
@@ -155,10 +159,20 @@ public final class DMPMapper extends AbstractMapper {
             Host host = rdaHosts.get(h);
             if (h == 0) {
               baseDist.setHost(host);
+
+              if (!isRepositoryHost(host, dmp)) {
+                baseDist.setAvailableUntil(null);
+              }
+
               distributions.add(baseDist);
             } else {
               Distribution clone = cloneDistribution(baseDist);
               clone.setHost(host);
+
+              if (!isRepositoryHost(host, dmp)) {
+                clone.setAvailableUntil(null);
+              }
+
               distributions.add(clone);
             }
           }
@@ -265,9 +279,9 @@ public final class DMPMapper extends AbstractMapper {
   }
 
   private List<Host> findAllHostsForDataset(
-          DmpDO dmp,
-          DatasetDO datasetDO,
-          org.damap.base.r3data.RepositoriesService repositoriesService) {
+      DmpDO dmp,
+      DatasetDO datasetDO,
+      org.damap.base.r3data.RepositoriesService repositoriesService) {
 
     List<Host> hosts = new ArrayList<>();
     if (datasetDO == null) {
@@ -277,16 +291,14 @@ public final class DMPMapper extends AbstractMapper {
     String refHash = datasetDO.getReferenceHash();
     String idStr = datasetDO.getId() != null ? String.valueOf(datasetDO.getId()) : null;
 
-    // 1. Search Repositories (Dynamic URL Lookup!)
+    // 1. Search Repositories
     if (dmp.getRepositories() != null) {
       for (var repo : dmp.getRepositories()) {
         if (repo.getDatasets() != null) {
-          if ((refHash != null && repo.getDatasets().contains(refHash)) ||
-                  (idStr != null && repo.getDatasets().contains(idStr))) {
+          if ((refHash != null && repo.getDatasets().contains(refHash))
+              || (idStr != null && repo.getDatasets().contains(idStr))) {
 
-            String repoUrl = "https://example.org/repository"; // Default Fallback
-
-            System.out.println("DEBUG: Found matching Repository. Title: " + repo.getTitle() + " | re3data ID: " + repo.getRepositoryId());
+            String repoUrl = "https://google.com";
 
             if (repo.getRepositoryId() != null && !repo.getRepositoryId().isBlank()) {
               try {
@@ -295,23 +307,17 @@ public final class DMPMapper extends AbstractMapper {
 
                   // Get the repositoryURL from the schema
                   String url = re3Data.getRepository().get(0).getRepositoryURL();
-                  System.out.println("DEBUG: Successfully fetched re3data URL: " + url);
-
                   if (url != null && !url.isBlank()) {
                     repoUrl = url;
                   }
-                } else {
-                  System.out.println("DEBUG: re3Data object is null or empty!");
                 }
               } catch (Exception e) {
-                System.err.println("DEBUG: Failed to fetch re3data URL for ID " + repo.getRepositoryId());
-                e.printStackTrace(); // PRINT THE ACTUAL EXCEPTION TO LOGS
+                // Silent fallback
               }
-            } else {
-              System.out.println("DEBUG: Skipping re3data lookup because repositoryId is null/blank!");
             }
 
-            hosts.add(new Host()
+            hosts.add(
+                new Host()
                     .title(repo.getTitle() != null ? repo.getTitle() : "Repository")
                     .url(repoUrl));
           }
@@ -323,36 +329,68 @@ public final class DMPMapper extends AbstractMapper {
     if (dmp.getExternalStorage() != null) {
       for (var ext : dmp.getExternalStorage()) {
         if (ext.getDatasets() != null) {
-          if ((refHash != null && ext.getDatasets().contains(refHash)) ||
-                  (idStr != null && ext.getDatasets().contains(idStr))) {
-            hosts.add(new Host()
+          if ((refHash != null && ext.getDatasets().contains(refHash))
+              || (idStr != null && ext.getDatasets().contains(idStr))) {
+            hosts.add(
+                new Host()
                     .title(ext.getTitle() != null ? ext.getTitle() : "External Storage")
-                    .url(ext.getUrl() != null && !ext.getUrl().isBlank() ? ext.getUrl() : "https://example.org/external-storage"));
+                    // TODO: Map this to the real URL in the future (currently no url supported)
+                    .url(
+                        ext.getUrl() != null && !ext.getUrl().isBlank()
+                            ? ext.getUrl()
+                            : "https://google.com")
+
+                    // TODO: This is misleading but technically allowed by the RDA common standard
+                    .backupType(ext.getBackupLocation())
+                    .backupFrequency(ext.getBackupFrequency()));
           }
         }
       }
     }
 
-    // 3. Search Storage
+    // 3. Search internal Storage
     if (dmp.getStorage() != null) {
       for (var store : dmp.getStorage()) {
         if (store.getDatasets() != null) {
-          if ((refHash != null && store.getDatasets().contains(refHash)) ||
-                  (idStr != null && store.getDatasets().contains(idStr))) {
-            hosts.add(new Host()
+          if ((refHash != null && store.getDatasets().contains(refHash))
+              || (idStr != null && store.getDatasets().contains(idStr))) {
+
+            String url = "https://google.com";
+            String backupLocation = null;
+
+            if (store.getInternalStorageId() != null) {
+              try {
+                org.damap.base.domain.InternalStorage internalStore =
+                    org.damap.base.domain.InternalStorage.findById(store.getInternalStorageId());
+                if (internalStore != null) {
+                  if (internalStore.getUrl() != null && !internalStore.getUrl().isBlank()) {
+                    url = internalStore.getUrl();
+                  }
+                  if (internalStore.getBackupLocation() != null
+                      && !internalStore.getBackupLocation().isBlank()) {
+                    backupLocation = internalStore.getBackupLocation();
+                  }
+                }
+              } catch (Exception e) {
+              }
+            }
+
+            hosts.add(
+                new Host()
                     .title(store.getTitle() != null ? store.getTitle() : "Storage")
-                    .url("https://example.org/storage"));
+                    .url(url)
+                    // TODO: This is misleading but technically allowed by the RDA common standard
+                    .backupType(backupLocation));
           }
         }
       }
     }
-
 
     //  4. Fallback if empty and only 1 dataset + 1 host
     if (hosts.isEmpty() && dmp.getDatasets() != null && dmp.getDatasets().size() == 1) {
       if (dmp.getRepositories() != null && dmp.getRepositories().size() == 1) {
         var repo = dmp.getRepositories().get(0);
-        String repoUrl = "https://example.org/repository";
+        String repoUrl = "https://google.com";
         if (repo.getRepositoryId() != null) {
           try {
             var re3data = repositoriesService.getById(repo.getRepositoryId());
@@ -362,15 +400,47 @@ public final class DMPMapper extends AbstractMapper {
                 repoUrl = url;
               }
             }
-          } catch (Exception ignored) {}
+          } catch (Exception ignored) {
+          }
         }
         hosts.add(new Host().title(repo.getTitle()).url(repoUrl));
       } else if (dmp.getExternalStorage() != null && dmp.getExternalStorage().size() == 1) {
         var ext = dmp.getExternalStorage().get(0);
-        hosts.add(new Host().title(ext.getTitle()).url(ext.getUrl() != null ? ext.getUrl() : "https://example.org/external-storage"));
+        hosts.add(
+            new Host()
+                .title(ext.getTitle())
+                // TODO: Map this to the real URL in the future (currently no url supported)
+                .url(ext.getUrl() != null ? ext.getUrl() : "https://google.com")
+                .backupType(ext.getBackupLocation())
+                .backupFrequency(ext.getBackupFrequency()));
       } else if (dmp.getStorage() != null && dmp.getStorage().size() == 1) {
         var store = dmp.getStorage().get(0);
-        hosts.add(new Host().title(store.getTitle()).url("https://example.org/storage"));
+        String url = "https://google.com";
+        String backupLocation = null;
+
+        if (store.getInternalStorageId() != null) {
+          try {
+            org.damap.base.domain.InternalStorage internalStore =
+                org.damap.base.domain.InternalStorage.findById(store.getInternalStorageId());
+            if (internalStore != null) {
+              if (internalStore.getUrl() != null && !internalStore.getUrl().isBlank()) {
+                url = internalStore.getUrl();
+              }
+              if (internalStore.getBackupLocation() != null
+                  && !internalStore.getBackupLocation().isBlank()) {
+                backupLocation = internalStore.getBackupLocation();
+              }
+            }
+          } catch (Exception ignored) {
+          }
+        }
+
+        hosts.add(
+            new Host()
+                .title(store.getTitle())
+                .url(url)
+                // TODO: This is misleading but technically allowed by the RDA common standard
+                .backupType(backupLocation));
       }
     }
 
@@ -381,6 +451,7 @@ public final class DMPMapper extends AbstractMapper {
     Distribution target = new Distribution();
     target.setTitle(source.getTitle());
     target.setDataAccess(source.getDataAccess());
+    target.setAvailableUntil(source.getAvailableUntil());
     target.setByteSize(source.getByteSize());
     target.setFormat(source.getFormat());
     target.setLicense(source.getLicense());
@@ -388,7 +459,8 @@ public final class DMPMapper extends AbstractMapper {
   }
 
   private void importHost(DmpDO target, Host rdaHost, String refHash) {
-    String title = rdaHost.getTitle() != null && !rdaHost.getTitle().isBlank()
+    String title =
+        rdaHost.getTitle() != null && !rdaHost.getTitle().isBlank()
             ? rdaHost.getTitle()
             : "Imported Host";
     String url = rdaHost.getUrl();
@@ -415,6 +487,8 @@ public final class DMPMapper extends AbstractMapper {
         newExt.setTitle(title);
         newExt.setUrl(url);
         newExt.setDatasets(new ArrayList<>(List.of(refHash)));
+        newExt.setBackupFrequency(rdaHost.getBackupFrequency());
+        newExt.setBackupLocation(rdaHost.getBackupType());
         target.getExternalStorage().add(newExt);
       }
     } else {
@@ -441,5 +515,17 @@ public final class DMPMapper extends AbstractMapper {
         target.getRepositories().add(newRepo);
       }
     }
+  }
+
+  private boolean isRepositoryHost(Host host, DmpDO dmp) {
+    if (host == null || dmp.getRepositories() == null) {
+      return false;
+    }
+    for (var repo : dmp.getRepositories()) {
+      if (host.getTitle() != null && host.getTitle().equalsIgnoreCase(repo.getTitle())) {
+        return true;
+      }
+    }
+    return false;
   }
 }

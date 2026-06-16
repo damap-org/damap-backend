@@ -71,6 +71,13 @@ public class DatasetMapper extends AbstractMapper {
     if (size != null) {
       distribution.setByteSize(Math.toIntExact(size));
     }
+    if (datasetDO.getRetentionPeriod() != null) {
+      LocalDate baseDate =
+          datasetDO.getStartDate() != null
+              ? datasetDO.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+              : LocalDate.now();
+      distribution.setAvailableUntil(baseDate.plusYears(datasetDO.getRetentionPeriod()));
+    }
     result.setDescription(datasetDO.getDescription());
     var personalData = datasetDO.getPersonalData();
     if (personalData == null) {
