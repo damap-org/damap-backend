@@ -1848,6 +1848,7 @@ components:
             - "2030-06-30"
         byte_size:
           type: integer
+          format: int64
           title: Byte Size
           description: Size in bytes.
           examples:
