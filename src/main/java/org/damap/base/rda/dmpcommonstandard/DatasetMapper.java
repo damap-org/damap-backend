@@ -69,7 +69,7 @@ public class DatasetMapper extends AbstractMapper {
     }
     var size = datasetDO.getSize();
     if (size != null) {
-      distribution.setByteSize(Math.toIntExact(size));
+      distribution.setByteSize(size);
     }
     result.setDescription(datasetDO.getDescription());
     var personalData = datasetDO.getPersonalData();
