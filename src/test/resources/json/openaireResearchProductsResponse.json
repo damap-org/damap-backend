@@ -1,0 +1,40 @@
+{
+  "@context": ["https://w3id.org/skg-if/context/1.1.0/skg-if.json"],
+  "meta": {
+    "entity_type": "search_result_page",
+    "part_of": {"total_items": 1}
+  },
+  "@graph": [
+    {
+      "local_identifier": "https://api.openaire.eu/graph/skg-if/v1/products/doi_dedup___::example",
+      "entity_type": "product",
+      "product_type": "research data",
+      "identifiers": [
+        {"scheme": "doi", "value": "10.5281/zenodo.4783814"}
+      ],
+      "titles": {
+        "none": ["FIG. 12 in A survey of small mammals in the Volta Region of Ghana"]
+      },
+      "abstracts": {
+        "none": [
+          "Published as part of the related article.",
+          "Cyclops Roundleaf Bat from Shiare."
+        ]
+      },
+      "manifestations": [
+        {
+          "type": {
+            "labels": {"en": "Image"},
+            "class": "http://purl.org/coar/resource_type/c_c513"
+          },
+          "dates": {"publication": ["2021-05-20"]},
+          "licence": "CC0",
+          "access_rights": {
+            "status": "open",
+            "description": "the manifestation is freely accessible"
+          }
+        }
+      ]
+    }
+  ]
+}
