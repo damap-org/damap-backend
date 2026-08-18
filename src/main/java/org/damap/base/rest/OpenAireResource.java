@@ -30,6 +30,6 @@ public class OpenAireResource {
   @GET
   public DatasetDO search(@RestQuery String doi) {
     log.info("Search for dataset with DOI: " + doi);
-    return OpenAireMapper.mapAtoB(doi, openAireService.search(doi), new DatasetDO());
+    return OpenAireMapper.map(doi, openAireService.searchResearchProduct(doi));
   }
 }
