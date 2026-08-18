@@ -153,7 +153,7 @@ rest:
   r3data:
     repositories/mp-rest/url: https://www.re3data.org/api
     repositories/mp-rest/scope: jakarta.inject.Singleton
-  openaire/mp-rest/url: http://api.openaire.eu/search/
+  openaire/mp-rest/url: https://api.openaire.eu
   orcid:
     search/mp-rest/url: https://pub.orcid.org
   # Leaving this URL empty will deactivate the feature in the frontend
