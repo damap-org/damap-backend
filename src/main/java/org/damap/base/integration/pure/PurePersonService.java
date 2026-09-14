@@ -67,10 +67,10 @@ public class PurePersonService implements PersonService {
     if (person.getName() != null) {
       String firstName = person.getName().getFirstName();
       String lastName = person.getName().getLastName();
-      if (firstName != null && firstName.toLowerCase().contains(queryLower)) {
+      if (firstName != null && containsOrIsContained(firstName.toLowerCase(), queryLower)) {
         return true;
       }
-      if (lastName != null && lastName.toLowerCase().contains(queryLower)) {
+      if (lastName != null && containsOrIsContained(lastName.toLowerCase(), queryLower)) {
         return true;
       }
     }
@@ -80,5 +80,12 @@ public class PurePersonService implements PersonService {
     return Boolean.TRUE.equals(person.getOrcidAuthenticated())
         && person.getOrcid() != null
         && person.getOrcid().toLowerCase().contains(queryLower);
+  }
+
+  private static boolean containsOrIsContained(String str1, String str2) {
+    if (str1 == null || str2 == null) {
+      return false;
+    }
+    return str1.contains(str2) || str2.contains(str1);
   }
 }
