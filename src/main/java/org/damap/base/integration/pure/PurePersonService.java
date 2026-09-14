@@ -67,10 +67,10 @@ public class PurePersonService implements PersonService {
     if (person.getName() != null) {
       String firstName = person.getName().getFirstName();
       String lastName = person.getName().getLastName();
-      if (containsOrIsContained(firstName.toLowerCase(), queryLower)) {
+      if (firstName != null && containsOrIsContained(firstName.toLowerCase(), queryLower)) {
         return true;
       }
-      if (containsOrIsContained(lastName.toLowerCase(), queryLower)) {
+      if (lastName != null && containsOrIsContained(lastName.toLowerCase(), queryLower)) {
         return true;
       }
     }
