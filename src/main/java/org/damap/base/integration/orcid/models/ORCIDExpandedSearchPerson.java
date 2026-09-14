@@ -24,8 +24,4 @@ public class ORCIDExpandedSearchPerson {
   @JsonProperty(value = "email")
   @JsonSetter(nulls = Nulls.AS_EMPTY)
   List<String> emails = List.of();
-
-  @JsonProperty(value = "institution-name")
-  @JsonSetter(nulls = Nulls.AS_EMPTY)
-  List<String> affiliations = List.of();
 }
