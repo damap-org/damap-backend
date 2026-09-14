@@ -33,9 +33,7 @@ public class ORCIDMapper {
     String firstMail = orcidPerson.getEmails().isEmpty() ? null : orcidPerson.getEmails().get(0);
     contributorDO.setMbox(firstMail);
 
-    String firstAffiliation =
-        orcidPerson.getAffiliations().isEmpty() ? null : orcidPerson.getAffiliations().get(0);
-    contributorDO.setAffiliation(firstAffiliation);
+    // dont set affiliation, as we cant decide which is the most current without dates
 
     IdentifierDO identifierContributorDO = new IdentifierDO();
     identifierContributorDO.setIdentifier(orcidPerson.getOrcidId());
