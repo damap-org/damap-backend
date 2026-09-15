@@ -1,6 +1,5 @@
 package org.damap.base.rest.openaire;
 
-import generated.Response;
 import io.quarkus.rest.client.reactive.ClientExceptionMapper;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -10,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.damap.base.enums.EErrorCode;
 import org.damap.base.exception.DamapApiException;
 import org.damap.base.exception.ErrorDto;
+import org.damap.base.rest.openaire.domain.OpenAireSearchResponse;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -17,7 +17,7 @@ import org.jboss.logging.Logger;
 
 /** OpenAireRemoteResource interface. */
 @RegisterRestClient(configKey = "rest.openaire")
-@Produces(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_JSON)
 @Timeout(10000)
 public interface OpenAireRemoteResource {
 
@@ -26,13 +26,15 @@ public interface OpenAireRemoteResource {
   /**
    * search.
    *
-   * @param doi a {@link java.lang.String} object
-   * @return a {@link generated.Response} object
+   * @param filter SKG-IF product filter
+   * @param pageSize maximum number of matching products to return
+   * @return an OpenAIRE Graph search response
    */
   @GET
-  @Fallback(fallbackMethod = "fallback", skipOn = DamapApiException.class)
-  @Path("/datasets")
-  Response search(@QueryParam("doi") String doi);
+  @Fallback(fallbackMethod = "fallbackResearchProducts", skipOn = DamapApiException.class)
+  @Path("/graph/skg-if/v1/products")
+  OpenAireSearchResponse searchResearchProducts(
+      @QueryParam("filter") String filter, @QueryParam("page_size") int pageSize);
 
   @ClientExceptionMapper
   static DamapApiException toException(jakarta.ws.rs.core.Response response) {
@@ -60,8 +62,8 @@ public interface OpenAireRemoteResource {
     };
   }
 
-  default Response fallback(String doi) {
-    log.info("The OpenAire API did not respond and timed out");
+  default OpenAireSearchResponse fallbackResearchProducts(String filter, int pageSize) {
+    log.info("The OpenAire Graph API did not respond and timed out");
     throw new DamapApiException(
         new ErrorDto(
             EErrorCode.OPENAIRE_NOT_AVAILABLE,
