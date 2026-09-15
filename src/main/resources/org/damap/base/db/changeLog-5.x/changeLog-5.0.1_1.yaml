@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 42
+      author: Valentin Futterer
+      comment: Fix update banner button translation and replace broken legal sensitive data link
+      changes:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Save'
+            where: translation_key = 'admin.banner.dialog.button.update'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'https://commission.europa.eu/law/law-topic/data-protection/information-business-and-organisations/legal-grounds-processing-data_en#additional-rules-for-special-categories-of-personal-data-eg-health-data'
+            where: translation_key = 'dmp.steps.legal.link.sensitiveData'
+
+      rollback:
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'Edit'
+            where: translation_key = 'admin.banner.dialog.button.update'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: 'https://ec.europa.eu/info/law/law-topic/data-protection/reform/rules-business-and-organisations/legal-grounds-processing-data/sensitive-data/what-personal-data-considered-sensitive_en'
+            where: translation_key = 'dmp.steps.legal.link.sensitiveData'
