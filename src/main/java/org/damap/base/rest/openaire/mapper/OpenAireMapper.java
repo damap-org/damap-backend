@@ -33,8 +33,8 @@ public class OpenAireMapper {
 
     DatasetDO dataset = new DatasetDO();
     dataset.setSource(EDataSource.REUSED);
-    dataset.setTitle(truncate(firstLocalizedListValue(product.getTitles()), MAX_TITLE_LENGTH));
-    dataset.setDescription(joinLocalizedValues(product.getAbstracts(), " "));
+    dataset.setTitle(truncate(preferredLocalizedValue(product.getTitles()), MAX_TITLE_LENGTH));
+    dataset.setDescription(joinPreferredLocalizedValues(product.getAbstracts(), " "));
     dataset.setDatasetId(createDoiIdentifier(doi));
     dataset.setSelectedProjectMembersAccess(EAccessRight.READ);
     dataset.setOtherProjectMembersAccess(EAccessRight.READ);
@@ -59,7 +59,8 @@ public class OpenAireMapper {
       }
       if (manifestation.getType() != null) {
         addType(
-            mapType(firstLocalizedValue(manifestation.getType().getLabels())), dataset.getType());
+            mapType(preferredLocalizedLabel(manifestation.getType().getLabels())),
+            dataset.getType());
       }
       if (dataset.getLicense() == null) {
         dataset.setLicense(mapLicense(manifestation.getLicence()));
@@ -68,10 +69,11 @@ public class OpenAireMapper {
         dataset.setDataAccess(mapAccessRight(manifestation.getAccessRights()));
       }
       if (manifestation.getDates() != null) {
-        Date publicationDate = earliestDate(manifestation.getDates().getPublication());
-        if (publicationDate != null
-            && (dataset.getStartDate() == null || publicationDate.before(dataset.getStartDate()))) {
-          dataset.setStartDate(publicationDate);
+        Date manifestationDate = earliestManifestationDate(manifestation);
+        if (manifestationDate != null
+            && (dataset.getStartDate() == null
+                || manifestationDate.before(dataset.getStartDate()))) {
+          dataset.setStartDate(manifestationDate);
         }
       }
     }
@@ -84,7 +86,7 @@ public class OpenAireMapper {
     return switch (accessRights.getStatus().trim().toLowerCase(Locale.ROOT)) {
       case "open" -> EDataAccessType.OPEN;
       case "restricted", "embargo", "embargoed" -> EDataAccessType.RESTRICTED;
-      case "closed" -> EDataAccessType.CLOSED;
+      case "closed", "unavailable" -> EDataAccessType.CLOSED;
       default -> null;
     };
   }
@@ -93,7 +95,10 @@ public class OpenAireMapper {
     if (value == null || value.isBlank()) {
       return EDataType.OTHER;
     }
-    String type = value.toLowerCase(Locale.ROOT);
+    String type = value.trim().toLowerCase(Locale.ROOT);
+    if (type.equals("literature")) return EDataType.PLAIN_TEXT;
+    if (type.equals("research software")) return EDataType.SOFTWARE_APPLICATIONS;
+    if (type.equals("research data") || type.equals("other")) return EDataType.OTHER;
     if (type.contains("image")) return EDataType.IMAGES;
     if (type.contains("audio")
         || type.contains("video")
@@ -115,6 +120,7 @@ public class OpenAireMapper {
   private ELicense mapLicense(String value) {
     if (value == null || value.isBlank()) return null;
     String normalized = value.trim();
+    // OpenAIRE may return these aliases, while ELicense recognizes CC0-1.0 and its URL.
     if ("CC 0".equalsIgnoreCase(normalized) || "CC0".equalsIgnoreCase(normalized)) {
       return ELicense.CCZERO;
     }
@@ -130,6 +136,18 @@ public class OpenAireMapper {
         .orElse(null);
   }
 
+  private Date earliestManifestationDate(OpenAireManifestation manifestation) {
+    OpenAireAccessRights accessRights = manifestation.getAccessRights();
+    if (accessRights != null && accessRights.getStatus() != null) {
+      String status = accessRights.getStatus().trim().toLowerCase(Locale.ROOT);
+      if (status.equals("embargo") || status.equals("embargoed")) {
+        Date embargoDate = earliestDate(manifestation.getDates().getEmbargo());
+        if (embargoDate != null) return embargoDate;
+      }
+    }
+    return earliestDate(manifestation.getDates().getPublication());
+  }
+
   private Date parseDate(String value) {
     if (value == null || value.isBlank()) return null;
     try {
@@ -139,11 +157,10 @@ public class OpenAireMapper {
     }
   }
 
-  private String joinLocalizedValues(Map<String, List<String>> values, String delimiter) {
-    if (values == null) return null;
-    return values.values().stream()
-        .filter(Objects::nonNull)
-        .flatMap(List::stream)
+  private String joinPreferredLocalizedValues(Map<String, List<String>> values, String delimiter) {
+    List<String> localizedValues = preferredLocalizedValues(values);
+    if (localizedValues == null) return null;
+    return localizedValues.stream()
         .filter(Objects::nonNull)
         .map(String::trim)
         .filter(value -> !value.isEmpty())
@@ -152,19 +169,49 @@ public class OpenAireMapper {
         .orElse(null);
   }
 
-  private <T> T firstLocalizedValue(Map<String, T> values) {
+  private List<String> preferredLocalizedValues(Map<String, List<String>> values) {
     if (values == null || values.isEmpty()) return null;
-    T none = values.get("none");
-    return none != null
+    List<String> english = values.get("en");
+    if (firstNonBlank(english) != null) return english;
+    List<String> none = values.get("none");
+    return firstNonBlank(none) != null
         ? none
-        : values.values().stream().filter(Objects::nonNull).findFirst().orElse(null);
+        : values.values().stream()
+            .filter(localizedValues -> firstNonBlank(localizedValues) != null)
+            .findFirst()
+            .orElse(null);
   }
 
-  private String firstLocalizedListValue(Map<String, List<String>> values) {
-    List<String> localizedValues = firstLocalizedValue(values);
-    return localizedValues == null
-        ? null
-        : localizedValues.stream().filter(Objects::nonNull).findFirst().orElse(null);
+  private String preferredLocalizedLabel(Map<String, String> values) {
+    if (values == null || values.isEmpty()) return null;
+    String english = trimToNull(values.get("en"));
+    if (english != null) return english;
+    String none = trimToNull(values.get("none"));
+    return none != null
+        ? none
+        : values.values().stream()
+            .map(OpenAireMapper::trimToNull)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(null);
+  }
+
+  private String preferredLocalizedValue(Map<String, List<String>> values) {
+    return firstNonBlank(preferredLocalizedValues(values));
+  }
+
+  private String firstNonBlank(List<String> values) {
+    if (values == null) return null;
+    return values.stream()
+        .map(OpenAireMapper::trimToNull)
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(null);
+  }
+
+  private String trimToNull(String value) {
+    if (value == null || value.isBlank()) return null;
+    return value.trim();
   }
 
   private String truncate(String value, int maximumLength) {

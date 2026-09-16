@@ -9,5 +9,6 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenAireDates {
+  private List<String> embargo = new ArrayList<>();
   private List<String> publication = new ArrayList<>();
 }
