@@ -284,7 +284,13 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
       coordinatorInfos.append(joinWithComma(coordinatorProperties));
       coordinatorInfos.append(";");
 
-      this.projectCoordinatorOrInvestigatorIds.add(contributor.getUniversityId());
+      // keep null and empty out, since ORCID and manually added contributors all have null as
+      // universityId
+      if (contributor.getUniversityId() != null && !contributor.getUniversityId().isEmpty()) {
+        // also includes dynamically fetched contributors, so needs to use universityId and not db
+        // id
+        this.projectCoordinatorOrInvestigatorIds.add(contributor.getUniversityId());
+      }
     }
 
     addReplacement(replacements, "[coordinator]", coordinatorInfos.toString());
@@ -339,7 +345,8 @@ public abstract class AbstractTemplateExportScienceEuropeComponents
         contributorProperties.add(contributorAffiliationId);
       }
 
-      // Check if contributor has one of the key roles
+      // Check if contributor has one of the key roles or was fetched dynamically from an external
+      // system
       if (roles.stream().anyMatch(EContributorRole::isLeadershipRole)
           || this.projectCoordinatorOrInvestigatorIds.contains(contributor.getUniversityId())) {
         continue; // Skip adding to the list
