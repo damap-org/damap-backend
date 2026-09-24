@@ -75,6 +75,10 @@ damap:
         query-value: "ORCID"
         class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
 
+    # Leaving this URL empty will deactivate the feature in the frontend
+    # Right now this feature is experimental, to test it use the value https://ostrails-dmp-evaluation.arisnet.ac.at
+    evaluation-service-url: https://ostrails-dmp-evaluation.arisnet.ac.at
+
 invenio:
   disabled: true
   shared-secret: "thisIsAVerySecretKeyOfAtLeast32Chars"
@@ -156,11 +160,6 @@ rest:
   openaire/mp-rest/url: http://api.openaire.eu/search/
   orcid:
     search/mp-rest/url: https://pub.orcid.org
-  # Leaving this URL empty will deactivate the feature in the frontend
-  # Right now this feature is experimental, to test it use the value https://ostrails-dmp-evaluation.arisnet.ac.at
-  # TODO: Make this compatible with multitenancy and add a specific on and off switch
-  # Maybe move it into the db so admins can configure this?
-  evaluation/mp-rest/url:
 
 "%dev":
   damap:
