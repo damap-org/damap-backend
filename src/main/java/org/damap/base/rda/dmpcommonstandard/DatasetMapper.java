@@ -269,7 +269,7 @@ public class DatasetMapper extends AbstractMapper {
         }
 
         String ref = license.get(0).getLicenseRef();
-        ELicense eLicense = ELicense.getByAcronymOrUrl(ref);
+        ELicense eLicense = ELicense.getLicense(ref);
         if (eLicense != null) {
           result.setLicense(eLicense);
         } else {
