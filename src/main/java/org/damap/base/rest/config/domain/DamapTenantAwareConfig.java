@@ -2,6 +2,7 @@ package org.damap.base.rest.config.domain;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import org.damap.base.enums.EContributorRole;
 
 /** Represents all config options that need to be uniquely configured per tenant */
@@ -29,6 +30,8 @@ public interface DamapTenantAwareConfig {
   URL elsevierPureProjectsFile();
 
   URL elsevierPurePersonsFile();
+
+  Optional<String> evaluationServiceUrl();
 
   interface Fields {
     boolean ethicalReportEnabled();
