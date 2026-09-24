@@ -179,13 +179,15 @@ public enum ELicense {
    * @param value a {@link java.lang.String} object
    * @return a {@link org.damap.base.enums.ELicense} object
    */
-  public static ELicense getByAcronymOrUrl(String value) {
+  public static ELicense getLicense(String value) {
     if (value == null) {
       return null;
     }
     for (ELicense eLicense : ELicense.values()) {
       if (value.equalsIgnoreCase(eLicense.getAcronym())
-          || value.equalsIgnoreCase(eLicense.getUrl())) {
+          || value.equalsIgnoreCase(eLicense.getUrl())
+          || value.equalsIgnoreCase(eLicense.name)
+          || value.equalsIgnoreCase(eLicense.toString())) {
         return eLicense;
       }
     }
