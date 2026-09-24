@@ -40,7 +40,8 @@ public class OpenAireMapper {
 
     DatasetDO dataset = new DatasetDO();
     dataset.setSource(EDataSource.REUSED);
-    dataset.setTitle(truncate(firstNonBlank(preferredLocalizedValues(product.getTitles())), MAX_TITLE_LENGTH));
+    dataset.setTitle(
+        truncate(firstNonBlank(preferredLocalizedValues(product.getTitles())), MAX_TITLE_LENGTH));
     dataset.setDescription(joinPreferredLocalizedValues(product.getAbstracts(), " "));
     dataset.setDatasetId(createDoiIdentifier(doi));
     dataset.setSelectedProjectMembersAccess(EAccessRight.READ);
@@ -56,8 +57,8 @@ public class OpenAireMapper {
   }
 
   /**
-   * Maps manifestation metadata to the dataset, including type, license,
-   * data access, and the start date.
+   * Maps manifestation metadata to the dataset, including type, license, data access, and the start
+   * date.
    *
    * @param manifestations manifestations to map
    * @param dataset dataset to update
@@ -129,8 +130,9 @@ public class OpenAireMapper {
         || type.contains("film")
         || type.contains("sound")) return EDataType.AUDIOVISUAL_DATA;
     if (type.contains("source code")) return EDataType.SOURCE_CODE;
-    if (type.contains("software") || type.contains("application") || type.contains("research software"))
-      return EDataType.SOFTWARE_APPLICATIONS;
+    if (type.contains("software")
+        || type.contains("application")
+        || type.contains("research software")) return EDataType.SOFTWARE_APPLICATIONS;
     if (type.contains("database")) return EDataType.DATABASES;
     if (type.contains("text")
         || type.contains("article")
@@ -151,10 +153,14 @@ public class OpenAireMapper {
   private ELicense mapLicense(String value) {
     if (value == null || value.isBlank()) return null;
     String normalized = value.trim();
-    // OpenAire harmonizes licenses like described in this document https://api.openaire.eu/vocabularies/dnet:licenses
-    // The harmonization is very broad, e.g. AGPL-3.0, AGPL-3.0-only and AGPL-3.0-or-later
-    // TODO: Find out what this means for extracting the licensing information, as we will get wrong information
-    // E.g. if we get CC-BY from OpenAire, it could either mean "CC-BY 1.0" or "4.0", its impossible to say
+    // OpenAire harmonizes licenses like described in this document
+    // https://api.openaire.eu/vocabularies/dnet:licenses
+    // The harmonization is very broad, e.g. AGPL-3.0, AGPL-3.0-only and AGPL-3.0-or-later are all
+    // harmonized to AGPL
+    // TODO: Find out what this means for extracting the licensing information, as we will get wrong
+    // information
+    // E.g. if we get CC-BY from OpenAire, it could either mean "CC-BY 1.0" or "4.0", its impossible
+    // to say
 
     // Special case, as OpenAire returns "CC 0" and DAMAP has "CCZero"
     if ("CC 0".equalsIgnoreCase(normalized) || "CC0".equalsIgnoreCase(normalized)) {
@@ -184,8 +190,9 @@ public class OpenAireMapper {
   }
 
   /**
-   * Takes SKG-IF manifestations of a dataset and finds the earliest start date. First checks embargo dates
-   * and then publication dates, as {@link DatasetDO#getStartDate() startDate} is used to signify embargos in datasets.
+   * Takes SKG-IF manifestations of a dataset and finds the earliest start date. First checks
+   * embargo dates and then publication dates, as {@link DatasetDO#getStartDate() startDate} is used
+   * to signify embargos in datasets.
    *
    * @param manifestation that includes the access rights and dates to search
    * @return earliest {@link Date} mapped from embargo and publication dates
@@ -203,7 +210,6 @@ public class OpenAireMapper {
   }
 
   /**
-
    * Parses an ISO-8601 date string into a UTC {@link Date}.
    *
    * @param value date string in {@code yyyy-MM-dd} format
@@ -219,9 +225,8 @@ public class OpenAireMapper {
   }
 
   /**
-
-   * Chooses a list from the input map by invoking {@link #preferredLocalizedValues(Map)}.
-   * Then joins the values using a delimiter.
+   * Chooses a list from the input map by invoking {@link #preferredLocalizedValues(Map)}. Then
+   * joins the values using a delimiter.
    *
    * @param values localized values to process
    * @param delimiter delimiter used to join the values
@@ -240,8 +245,8 @@ public class OpenAireMapper {
   }
 
   /**
-   * Returns the preferred localized values list, prioritizing English, then the
-   * language-neutral values, and finally the first non-blank localized values.
+   * Returns the preferred localized values list, prioritizing English, then the language-neutral
+   * values, and finally the first non-blank localized values.
    *
    * @param values localized values by language
    * @return the preferred localized values, or {@code null} if none are available
@@ -260,8 +265,8 @@ public class OpenAireMapper {
   }
 
   /**
-   * Returns the preferred localized string label, prioritizing English, then the
-   * language-neutral label, and finally the first non-blank label.
+   * Returns the preferred localized string label, prioritizing English, then the language-neutral
+   * label, and finally the first non-blank label.
    *
    * @param values localized labels by language
    * @return the preferred label, or {@code null} if none is available
@@ -305,6 +310,7 @@ public class OpenAireMapper {
     if (value == null || value.isBlank()) return null;
     return value.trim();
   }
+
   /**
    * Truncates the value to the specified maximum length.
    *
