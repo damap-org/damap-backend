@@ -18,14 +18,13 @@ import org.damap.base.rest.evaluation.dto.BenchmarkDTO;
 import org.damap.base.rest.evaluation.dto.EvaluationMultipartBodyDTO;
 import org.damap.base.rest.evaluation.dto.EvaluationResultDTO;
 import org.damap.base.rest.rda.service.RdaDmpService;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 /** EvaluationService class. */
 @ApplicationScoped
 @JBossLog
 public class EvaluationService {
 
-  @Inject @RestClient EvaluationRemoteResource evaluationRemoteResource;
+  @Inject EvaluationRemoteResource evaluationRemoteResource;
 
   @Inject RdaDmpService rdaDmpService;
 
