@@ -8,7 +8,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.damap.base.rest.PersonServiceBroker;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -19,9 +18,6 @@ public class GenericPersonServiceIntegrationTest {
   private WireMockServer wireMockServer;
 
   @Inject PersonServiceBroker personServiceBroker;
-
-  @ConfigProperty(name = "damap.generic-cris-api-key")
-  String apiKey;
 
   @Test
   @Disabled

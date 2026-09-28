@@ -33,6 +33,10 @@ public interface DamapTenantAwareConfig {
 
   Optional<String> evaluationServiceUrl();
 
+  String genericCrisUrl();
+
+  String genericCrisApiKey();
+
   interface Fields {
     boolean ethicalReportEnabled();
   }
