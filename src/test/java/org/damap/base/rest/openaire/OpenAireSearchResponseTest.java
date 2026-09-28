@@ -34,7 +34,7 @@ class OpenAireSearchResponseTest {
           "2021-05-20", product.getManifestations().get(0).getDates().getPublication().get(0));
       assertEquals("open", product.getManifestations().get(0).getAccessRights().getStatus());
       assertEquals("Image", product.getManifestations().get(0).getType().getLabels().get("en"));
-      assertEquals("CC0", product.getManifestations().get(0).getLicence());
+      assertEquals("CC 0", product.getManifestations().get(0).getLicence());
     }
   }
 }

@@ -152,7 +152,7 @@ class OpenAireMapperTest {
   }
 
   @Test
-  void mapCcZeroAliases() {
+  void mapCcZeroLicense() {
     OpenAireProduct ccZeroProduct = productWithManifestation("open", null, null);
     ccZeroProduct.getManifestations().get(0).setLicence("CC 0");
 
