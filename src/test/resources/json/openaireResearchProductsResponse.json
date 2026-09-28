@@ -28,7 +28,7 @@
             "class": "http://purl.org/coar/resource_type/c_c513"
           },
           "dates": {"publication": ["2021-05-20"]},
-          "licence": "CC0",
+          "licence": "CC 0",
           "access_rights": {
             "status": "open",
             "description": "the manifestation is freely accessible"

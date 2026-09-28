@@ -174,10 +174,11 @@ public enum ELicense {
   }
 
   /**
-   * getByAcronymOrUrl.
+   * Returns a fitting {@link ELicense} object based on the input. Uses the enum name, the enum
+   * value as a string, acronym and the URL to find a license.
    *
    * @param value a {@link java.lang.String} object
-   * @return a {@link org.damap.base.enums.ELicense} object
+   * @return a {@link org.damap.base.enums.ELicense} object or null if none was found
    */
   public static ELicense getLicense(String value) {
     if (value == null) {

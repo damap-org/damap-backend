@@ -153,19 +153,57 @@ public class OpenAireMapper {
   private ELicense mapLicense(String value) {
     if (value == null || value.isBlank()) return null;
     String normalized = value.trim();
+
     // OpenAire harmonizes licenses like described in this document
     // https://api.openaire.eu/vocabularies/dnet:licenses
     // The harmonization is very broad, e.g. AGPL-3.0, AGPL-3.0-only and AGPL-3.0-or-later are all
     // harmonized to AGPL
-    // TODO: Find out what this means for extracting the licensing information, as we will get wrong
-    // information
     // E.g. if we get CC-BY from OpenAire, it could either mean "CC-BY 1.0" or "4.0", its impossible
     // to say
-
-    // Special case, as OpenAire returns "CC 0" and DAMAP has "CCZero"
-    if ("CC 0".equalsIgnoreCase(normalized) || "CC0".equalsIgnoreCase(normalized)) {
-      return ELicense.CCZERO;
+    // We are still going to use the information we are given, but it should be manually inspected
+    // by
+    // users before being used
+    switch (normalized) {
+      case "AGPL":
+        return ELicense.AGPL3PLUS;
+      case "Apache":
+        return ELicense.APACHE2;
+      case "Artistic":
+        return ELicense.ARTISTIC2;
+      case "BSD-2":
+        return ELicense.BSD2C;
+      case "BSD-3":
+        return ELicense.BSD3C;
+      case "CC 0":
+        return ELicense.CCZERO;
+      case "CC BY":
+        return ELicense.CCBY;
+      case "CC BY NC":
+        return ELicense.CCBYNC;
+      case "CC BY NC ND":
+        return ELicense.CCBYNCND;
+      case "CC BY NC SA":
+        return ELicense.CCBYNCSA;
+      case "CC BY ND":
+        return ELicense.CCBYND;
+        // case "CC BY ND SA": return ELicense.CCBYNDSA; Missing from DAMAP
+      case "CC BY SA":
+        return ELicense.CCBYSA;
+      case "CDDL":
+        return ELicense.CDDL1;
+      case "EPL":
+        return ELicense.EPL2;
+      case "GPL":
+        return ELicense.GPL3PLUS;
+      case "LGPL":
+        return ELicense.LGPL3PLUS;
+      case "MIT":
+        return ELicense.MIT;
+      case "ODC BY":
+        return ELicense.ODCBY;
     }
+
+    // try to get licenses which havent been harmonized
     ELicense returnLicense = ELicense.getLicense(normalized);
     // OpenAire returns licenses with whitespaces, like CC BY, but DAMAP enums are named like CCBY
     if (returnLicense == null) {

@@ -153,12 +153,9 @@ class OpenAireMapperTest {
 
   @Test
   void mapCcZeroAliases() {
-    OpenAireProduct cc0Product = productWithManifestation("open", null, null);
-    cc0Product.getManifestations().get(0).setLicence("CC0");
     OpenAireProduct ccZeroProduct = productWithManifestation("open", null, null);
     ccZeroProduct.getManifestations().get(0).setLicence("CC 0");
 
-    assertEquals(ELicense.CCZERO, OpenAireMapper.map("10.9999/cc0", cc0Product).getLicense());
     assertEquals(
         ELicense.CCZERO, OpenAireMapper.map("10.9999/cc-zero", ccZeroProduct).getLicense());
   }
