@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 43
+      author: Valentin Futterer
+      comment: Add text to warn users that OpenAire licenses are not 100% trustworthy
+      changes:
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'dmp.steps.data.specify.doi.warning', l.language, 'OpenAIRE license data may be approximate (e.g. missing version/variant). Please verify with the original source.', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
+      rollback:
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.data.specify.doi.warning'
