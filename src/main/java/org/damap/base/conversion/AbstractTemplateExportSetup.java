@@ -97,7 +97,7 @@ public abstract class AbstractTemplateExportSetup extends AbstractTemplateExport
   }
 
   private List<Dataset> getDeletedDatasets(List<Dataset> datasets) {
-    return datasets.stream().filter(Dataset::getDelete).toList();
+    return datasets.stream().filter(dataset -> Boolean.TRUE.equals(dataset.getDelete())).toList();
   }
 
   /**
