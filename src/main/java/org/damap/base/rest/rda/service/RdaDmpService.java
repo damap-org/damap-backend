@@ -4,6 +4,7 @@ import io.quarkus.security.AuthenticationFailedException;
 import io.quarkus.security.ForbiddenException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
@@ -131,7 +132,7 @@ public class RdaDmpService {
     String personId = getPersonId();
 
     try {
-      DMPWithID rdaInput = new DMPWithID().id("0").dmp(rdaDmpDocument.getDmp());
+      DMPWithID rdaInput = new DMPWithID().dmp(rdaDmpDocument.getDmp());
 
       DmpDO damapInput = dmpMapper.convert(rdaInput);
       damapInput.setId(null);
@@ -215,6 +216,47 @@ public class RdaDmpService {
     }
 
     dmpService.delete(dmpId);
+  }
+
+  /**
+   * Converts a RDA Common Standard {@link DMPDocument} into a DAMAP {@link DmpDO} using the common
+   * standard mappers.
+   *
+   * @param rdaDmpDocument the RDA Common Standard DMP to import
+   * @return the {@link DmpDO} resulting from the import
+   */
+  @Transactional
+  public DmpDO importRdaDmp(DMPDocument rdaDmpDocument) {
+    String personId = getPersonId();
+
+    validateImportDocument(rdaDmpDocument);
+
+    try {
+      DMPWithID rdaInput = new DMPWithID().dmp(rdaDmpDocument.getDmp());
+
+      DmpDO damapInput = dmpMapper.convert(rdaInput);
+
+      damapInput.setId(null);
+      damapInput.setCreated(null);
+      damapInput.setModified(null);
+
+      return dmpService.create(damapInput, personId);
+    } catch (CommonStandardCompatibilityException
+        | NullPointerException
+        | IndexOutOfBoundsException
+        | IllegalArgumentException e) {
+      throw new BadRequestException("Invalid RDA DMP import payload: " + e.getMessage(), e);
+    }
+  }
+
+  private void validateImportDocument(DMPDocument document) {
+    if (document == null || document.getDmp() == null) {
+      throw new BadRequestException("Request body must contain a dmp object");
+    }
+
+    if (document.getDmp().getTitle().isBlank()) {
+      throw new BadRequestException("DMP title is required");
+    }
   }
 
   private void validatePagination(int offset, int count) {
