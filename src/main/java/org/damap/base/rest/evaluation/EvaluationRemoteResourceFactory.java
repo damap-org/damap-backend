@@ -1,6 +1,7 @@
 package org.damap.base.rest.evaluation;
 
 import jakarta.annotation.Priority;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
@@ -11,6 +12,7 @@ import org.damap.base.rest.config.domain.TenantConfigResolver;
 import org.damap.base.security.SecurityService;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
+@ApplicationScoped
 public class EvaluationRemoteResourceFactory {
   @Inject TenantConfigResolver tenantConfigResolver;
 
