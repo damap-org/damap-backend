@@ -132,7 +132,7 @@ public class RdaDmpService {
     String personId = getPersonId();
 
     try {
-      DMPWithID rdaInput = new DMPWithID().id("0").dmp(rdaDmpDocument.getDmp());
+      DMPWithID rdaInput = new DMPWithID().dmp(rdaDmpDocument.getDmp());
 
       DmpDO damapInput = dmpMapper.convert(rdaInput);
       damapInput.setId(null);
@@ -218,6 +218,13 @@ public class RdaDmpService {
     dmpService.delete(dmpId);
   }
 
+  /**
+   * Converts a RDA Common Standard {@link DMPDocument} into a DAMAP {@link DmpDO} using the common
+   * standard mappers.
+   *
+   * @param rdaDmpDocument the RDA Common Standard DMP to import
+   * @return the {@link DmpDO} resulting from the import
+   */
   @Transactional
   public DmpDO importRdaDmp(DMPDocument rdaDmpDocument) {
     String personId = getPersonId();
@@ -225,7 +232,7 @@ public class RdaDmpService {
     validateImportDocument(rdaDmpDocument);
 
     try {
-      DMPWithID rdaInput = new DMPWithID().id("0").dmp(rdaDmpDocument.getDmp());
+      DMPWithID rdaInput = new DMPWithID().dmp(rdaDmpDocument.getDmp());
 
       DmpDO damapInput = dmpMapper.convert(rdaInput);
 
@@ -249,10 +256,6 @@ public class RdaDmpService {
 
     if (document.getDmp().getTitle().isBlank()) {
       throw new BadRequestException("DMP title is required");
-    }
-
-    if (document.getDmp().getDataset().isEmpty()) {
-      throw new BadRequestException("At least one dataset is required");
     }
   }
 

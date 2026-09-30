@@ -33,7 +33,7 @@ databaseChangeLog:
                   value: en
               - column:
                   name: default_value
-                  value: IMPORT DMP
+                  value: IMPORT maDMP
               - column:
                   name: active
                   valueBoolean: true
