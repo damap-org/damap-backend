@@ -30,6 +30,10 @@ public interface DamapTenantAwareConfig {
 
   URL elsevierPurePersonsFile();
 
+  String genericCrisUrl();
+
+  String genericCrisApiKey();
+
   interface Fields {
     boolean ethicalReportEnabled();
   }

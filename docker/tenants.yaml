@@ -25,6 +25,8 @@ damap:
           - display-text: 'University'
             query-value: 'UNIVERSITY'
             class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
+        generic-cris-url: "https://your-generic-cris-instance"
+        generic-cris-api-key: "api-key-here"
       tenant_2:
         title: Tenant 2 DAMAP Tool
         fields:
@@ -47,6 +49,8 @@ damap:
           - display-text: 'University'
             query-value: 'UNIVERSITY'
             class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
+        generic-cris-url: "https://your-generic-cris-instance"
+        generic-cris-api-key: "api-key-here"
 
 "%multitenant":
   quarkus:

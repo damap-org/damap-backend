@@ -1,8 +1,6 @@
 # custom config settings
 # replace these in the config of your custom project or by overriding these variables
 damap:
-  # TODO: Move under tenant-aware
-  generic-cris-api-key: 'api-key-here'
   env: DEV # override in your custom project with PROD for production deployment
   auth:
     # Scopes to request during login:
@@ -37,6 +35,10 @@ damap:
     project-service: default
     ## Elsevier Pure integration:
     # project-service: elsevier-pure
+    ## Generic Cris integration
+    # project-service: generic
+
+
     # The following settings map Pure classification URIs to DAMAP properties. Pure classification URIs start with
     # /dk/atira/pure, but are otherwise specific to the institutional setup in Pure.
 
@@ -68,12 +70,20 @@ damap:
       # - display-text: "Pure"
       #   query-value: "PURE"
       #   class-name: "org.damap.base.integration.pure.PurePersonService"
+      # - display-text: "University generic"
+      #   query-value: "GENERIC"
+      #   class-name: "org.damap.base.integration.generic.GenericPersonService"
       - display-text: "University"
         query-value: "UNIVERSITY"
         class-name: "org.damap.base.integration.mock.MockUniversityPersonServiceImpl"
       - display-text: "ORCID"
         query-value: "ORCID"
         class-name: "org.damap.base.integration.orcid.ORCIDPersonServiceImpl"
+
+    # Used to connect person/project cris systems that are not Pure based
+    # Can be ignored, if generic cris integration is not used
+    generic-cris-url: "https://your-generic-cris-instance"
+    generic-cris-api-key: "api-key-here"
 
 invenio:
   disabled: true
@@ -133,6 +143,22 @@ quarkus:
         expire-after-write: 1H
       "pure-search-persons":
         expire-after-write: 1H
+      "generic-cris-person-read":
+        expire-after-write: 12H
+      "generic-cris-person-search":
+        expire-after-write: 12H
+      "generic-cris-project-read":
+        expire-after-write: 12H
+      "generic-cris-project-search":
+        expire-after-write: 12H
+      "generic-cris-project-staff":
+        expire-after-write: 12H
+      "generic-cris-project-supplement":
+        expire-after-write: 12H
+      "generic-cris-project-leader":
+        expire-after-write: 12H
+      "generic-cris-project-recommended":
+        expire-after-write: 12H
 
   liquibase:
     migrate-at-start: true
@@ -146,7 +172,6 @@ quarkus:
     oauth-client-id: ${quarkus.oidc.client-id}
 
 rest:
-  generic-cris/mp-rest/url: http://localhost:8888/
   mock-projects/mp-rest/url: http://api-mock:80
   mock-persons/mp-rest/url: http://api-mock:80
   gotenberg/mp-rest/url: http://gotenberg:3000
