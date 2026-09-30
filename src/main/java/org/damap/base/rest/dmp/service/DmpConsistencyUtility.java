@@ -198,6 +198,7 @@ public class DmpConsistencyUtility {
 
     for (DatasetDO datasetDO : dmpDO.getDatasets()) {
       // Deletion
+      // Sets deletion to false in case it was set to true and then the dataset was set to OPEN
       if (datasetDO.getDataAccess() != EDataAccessType.CLOSED) {
         datasetDO.setDelete(false);
       }
