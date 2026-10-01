@@ -17,13 +17,12 @@ import org.damap.base.rest.evaluation.dto.EvaluationMultipartBodyDTO;
 import org.damap.base.rest.evaluation.dto.EvaluationResultDTO;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.logging.Logger;
 
 // TODO: Check if there are any OpenApi or Json specifications so we can autogenerate this by
 // pulling the specification
 /** EvaluationRemoteResource interface. */
-@RegisterRestClient(configKey = "rest.evaluation")
+@Path("")
 @Timeout(10000)
 public interface EvaluationRemoteResource {
 

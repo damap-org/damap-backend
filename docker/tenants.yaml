@@ -25,6 +25,7 @@ damap:
           - display-text: 'University'
             query-value: 'UNIVERSITY'
             class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
+        evaluation-service-url: "https://ostrails-dmp-evaluation.arisnet.ac.at"
       tenant_2:
         title: Tenant 2 DAMAP Tool
         fields:
@@ -47,6 +48,7 @@ damap:
           - display-text: 'University'
             query-value: 'UNIVERSITY'
             class-name: 'org.damap.base.integration.mock.MockUniversityPersonServiceImpl'
+        evaluation-service-url:
 
 "%multitenant":
   quarkus:

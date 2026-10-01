@@ -68,9 +68,6 @@ public class ConfigResource {
   @ConfigProperty(name = "rest.gotenberg/mp-rest/url")
   Optional<URL> gotenbergUrl;
 
-  @ConfigProperty(name = "rest.evaluation/mp-rest/url")
-  Optional<URL> evaluationUrl;
-
   @ConfigProperty(name = "damap.tenants.tenant-list", defaultValue = "")
   Optional<List<String>> tenants;
 
@@ -113,7 +110,7 @@ public class ConfigResource {
     configDO.setProjectSearchServiceConfig(tenantAwareConfig.projectService());
     configDO.setLivePreviewAvailable(getGotenbergServiceAvailability());
     configDO.setEthicalReportEnabled(tenantAwareConfig.fields().ethicalReportEnabled());
-    configDO.setEvaluationAvailable(getEvaluationServiceAvailability());
+    configDO.setEvaluationAvailable(tenantAwareConfig.evaluationServiceUrl().isPresent());
 
     ColorTheme colorTheme = colorThemeService.getTheme();
     configDO.setColorTheme(colorTheme);
@@ -136,9 +133,5 @@ public class ConfigResource {
 
   private boolean getGotenbergServiceAvailability() {
     return gotenbergUrl.isPresent();
-  }
-
-  private boolean getEvaluationServiceAvailability() {
-    return evaluationUrl.isPresent();
   }
 }
