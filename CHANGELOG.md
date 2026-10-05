@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+## [5.1.0] - 2026-10-05
+
+### Added
+
+- Added support for importing Common Standard maDMPs in JSON format [#520](https://github.com/damap-org/damap-backend/pull/520)
+
+### Changed
+
+- OpenAire integration now uses SKG-IF API and fetches licensing information [#530](https://github.com/damap-org/damap-backend/pull/530)
+- Evaluation service integration went from experimental to cloud production ready [#540](https://github.com/damap-org/damap-backend/pull/540)
+- Generic Cris integration is now cloud production ready [#541](https://github.com/damap-org/damap-backend/pull/541)
+
+### Fixed
+
+- Pure person search now allows searching for full names [#537](https://github.com/damap-org/damap-backend/pull/537)
+- ORCID affiliations are now assigned correctly following simple rules to take the newest [#539](https://github.com/damap-org/damap-backend/pull/539)
+- Fixed broken sensitive data link in legal section [#538](https://github.com/damap-org/damap-backend/pull/538/changes)
+- Fixed a bug where contributors added over ORCID or manually would block others from being exported [#536](https://github.com/damap-org/damap-backend/pull/536)
+- Fixed a bug that would cause export to crash on closed OpenAire datasets [#543](https://github.com/damap-org/damap-backend/pull/543)
+
+### Translations
+
+- Changed value of "admin.banner.dialog.button.update" from "Edit" to "Save" [#538](https://github.com/damap-org/damap-backend/pull/538/changes)
+- Added new key "dmp.steps.data.specify.doi.warning" [#542](https://github.com/damap-org/damap-backend/pull/542)
+- Added new keys "http.error.plans.import" and "plans.import.dmp" [#520](https://github.com/damap-org/damap-backend/pull/520)
+- Removed unused error translations "http.error.repositories.one" and "http.error.repositories.all" [#544](https://github.com/damap-org/damap-backend/pull/544)
+
 ## [5.0.1] - 2026-08-21
 
 ### Added
