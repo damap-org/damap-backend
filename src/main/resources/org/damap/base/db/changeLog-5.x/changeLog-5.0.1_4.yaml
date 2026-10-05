@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 45
+      author: Valentin Futterer
+      comment: Remove unused translations
+      changes:
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.error.repositories.one'
+        - delete:
+            tableName: translation
+            where: translation_key = 'http.error.repositories.all'
+      rollback:
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'http.error.repositories.one', l.language, 'Failed to load repository details.', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'http.error.repositories.all', l.language, 'Failed to load repositories.', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
