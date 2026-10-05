@@ -16,7 +16,11 @@ class ClientHeaderFactory implements ClientHeadersFactory {
       MultivaluedMap<String, String> clientOutgoingHeaders) {
     clientOutgoingHeaders.add(
         "Authorization",
-        "Bearer " + tenantConfigResolver.getTenantAwareConfig().genericCrisApiKey());
+        "Bearer "
+            + tenantConfigResolver
+                .getTenantAwareConfig()
+                .genericCrisApiKey()
+                .orElse("your-api-key-here"));
     return clientOutgoingHeaders;
   }
 }

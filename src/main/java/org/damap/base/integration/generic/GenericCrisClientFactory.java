@@ -43,7 +43,12 @@ public class GenericCrisClientFactory {
         aff,
         missingClient ->
             RestClientBuilder.newBuilder()
-                .baseUri(URI.create(tenantConfigResolver.getTenantAwareConfig().genericCrisUrl()))
+                .baseUri(
+                    URI.create(
+                        tenantConfigResolver
+                            .getTenantAwareConfig()
+                            .genericCrisUrl()
+                            .orElse("https://your-generic-cris-instance-url")))
                 .build(GenericCrisClient.class));
   }
 }

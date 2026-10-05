@@ -23,6 +23,9 @@ class GenericCrisCacheKeyGenerator implements CacheKeyGenerator {
     List<Object> key = new ArrayList<>();
     String affiliation = securityService.getAffiliation();
     key.add(affiliation != null ? affiliation : "single-tenant");
+    if ("getRecommended".equals(method.getName())) {
+      key.add(securityService.getUserId());
+    }
     Collections.addAll(key, methodParams);
     return key;
   }

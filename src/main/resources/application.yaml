@@ -82,8 +82,8 @@ damap:
 
     # Used to connect person/project cris systems that are not Pure based
     # Can be ignored, if generic cris integration is not used
-    generic-cris-url: "https://your-generic-cris-instance"
-    generic-cris-api-key: "api-key-here"
+    generic-cris-url: "https://your-generic-cris-instance-url"
+    generic-cris-api-key: "your-api-key-here"
 
     # Leaving this URL empty will deactivate the feature in the frontend
     # Right now this feature is experimental, to test it use the value https://ostrails-dmp-evaluation.arisnet.ac.at
