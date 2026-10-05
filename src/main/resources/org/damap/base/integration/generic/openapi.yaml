@@ -8,14 +8,14 @@ security:
 paths:
   /persons:
     get:
-      operationId: listPersons
+      operationId: searchPersons
       parameters:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Offset"
         - $ref: "#/components/parameters/Count"
       responses:
         "200":
-          $ref: "#/components/responses/ListPersonsResponse"
+          $ref: "#/components/responses/SearchPersonsResponse"
         "401":
           $ref: "#/components/responses/ErrorResponse"
   /persons/{systemContactID}:
@@ -37,14 +37,14 @@ paths:
           $ref: "#/components/responses/ErrorResponse"
   /projects:
     get:
-      operationId: listProjects
+      operationId: searchProjects
       parameters:
         - $ref: "#/components/parameters/Query"
         - $ref: "#/components/parameters/Offset"
         - $ref: "#/components/parameters/Count"
       responses:
         "200":
-          $ref: "#/components/responses/ListProjectsResponse"
+          $ref: "#/components/responses/SearchProjectsResponse"
         "401":
           $ref: "#/components/responses/ErrorResponse"
   /persons/{systemProjectID}:
@@ -64,9 +64,9 @@ paths:
           $ref: "#/components/responses/ErrorResponse"
         "404":
           $ref: "#/components/responses/ErrorResponse"
-  /projects/{systemProjectID}/contributors:
+  /projects/{systemProjectID}/staff:
     get:
-      operationId: listProjectContributors
+      operationId: getProjectStaff
       parameters:
         - name: systemProjectID
           in: path
@@ -74,12 +74,56 @@ paths:
           description: System project ID to fetch contributors for.
           schema:
             $ref: "#/components/schemas/SystemProjectID"
-        - $ref: "#/components/parameters/Query"
-        - $ref: "#/components/parameters/Offset"
-        - $ref: "#/components/parameters/Count"
       responses:
         "200":
-          $ref: "#/components/responses/ListProjectContributorsResponse"
+          $ref: "#/components/responses/GetProjectStaffResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
+  /projects/{systemProjectID}/leader:
+    get:
+      operationId: getProjectLeader
+      parameters:
+        - name: systemProjectID
+          in: path
+          required: true
+          description: System project ID to fetch the leader with.
+          schema:
+            $ref: "#/components/schemas/SystemProjectID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetProjectLeaderResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
+  /projects/{systemProjectID}/supplements:
+    get:
+      operationId: getProjectSupplements
+      parameters:
+        - name: systemProjectID
+          in: path
+          required: true
+          description: System project ID to fetch contributors for.
+          schema:
+            $ref: "#/components/schemas/SystemProjectID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetProjectSupplementsResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
+  /projects/recommended:
+    get:
+      operationId: getRecommendedProjects
+      parameters:
+        - $ref: "#/components/parameters/Email"
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetRecommendedProjectsResponse"
         "401":
           $ref: "#/components/responses/ErrorResponse"
 components:
@@ -106,24 +150,42 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DAMAPProject"
-    ListPersonsResponse:
+    SearchPersonsResponse:
       description: A list of persons
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ListPersonsResponseBody"
-    ListProjectsResponse:
+            $ref: "#/components/schemas/SearchPersonsResponseBody"
+    SearchProjectsResponse:
       description: A list of projects
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ListProjectsResponseBody"
-    ListProjectContributorsResponse:
+            $ref: "#/components/schemas/SearchProjectsResponseBody"
+    GetProjectStaffResponse:
       description: A list of contributors
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ListProjectContributorsResponseBody"
+            $ref: "#/components/schemas/GetProjectStaffResponseBody"
+    GetProjectLeaderResponse:
+      description: The project leader
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DAMAPContributor"
+    GetProjectSupplementsResponse:
+      description: A object containing supplemental project information
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectSupplement"
+    GetRecommendedProjectsResponse:
+      description: A list of recommended projects
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetRecommendedProjectsResponseBody"
   parameters:
     Query:
       name: q
@@ -131,6 +193,24 @@ components:
       required: false
       schema:
         description: "Query for searching items."
+        type: string
+        minLength: 0
+        maxLength: 255
+    Email:
+      name: email
+      in: query
+      required: false
+      schema:
+        description: "user email for searching recommended projects."
+        type: string
+        minLength: 0
+        maxLength: 255
+    Name:
+      name: name
+      in: query
+      required: false
+      schema:
+        description: "User name for searching recommended projects."
         type: string
         minLength: 0
         maxLength: 255
@@ -169,7 +249,7 @@ components:
             - contact_not_found
         error_message:
           type: string
-    ListProjectsResponseBody:
+    SearchProjectsResponseBody:
       type: object
       properties:
         totalItems:
@@ -179,7 +259,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DAMAPProject"
-    ListProjectContributorsResponseBody:
+    GetProjectStaffResponseBody:
       type: object
       properties:
         totalItems:
@@ -189,7 +269,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DAMAPContributor"
-    ListPersonsResponseBody:
+    SearchPersonsResponseBody:
       type: object
       properties:
         totalItems:
@@ -199,6 +279,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DAMAPContact"
+    GetRecommendedProjectsResponseBody:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          minimum: 0
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DAMAPProject"
     SystemID:
       description: "System-dependent ID"
       type: string
@@ -284,3 +374,20 @@ components:
       items:
         $ref: '#/components/schemas/DAMAPContributorRole'
       uniqueItems: true
+    ProjectSupplement:
+      type: object
+      properties:
+        personalData:
+          type: boolean
+        sensitiveData:
+          type: boolean
+        legalRestrictions:
+          type: boolean
+        humanParticipants:
+          type: boolean
+        ethicalIssuesExist:
+          type: boolean
+        committeeReviewed:
+          type: boolean
+        costsExist:
+          type: boolean

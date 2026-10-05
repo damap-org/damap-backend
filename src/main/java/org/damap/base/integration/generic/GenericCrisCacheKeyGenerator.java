@@ -1,4 +1,4 @@
-package org.damap.base.integration.pure;
+package org.damap.base.integration.generic;
 
 import io.quarkus.cache.CacheKeyGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,15 +10,11 @@ import java.util.List;
 import org.damap.base.security.SecurityService;
 
 /**
- * Cache key generator for Pure API caches. Prepends tenant ID to every key so cache entries are
- * isolated per tenant. For {@code getRecommended}, also includes the user ID since results are
- * filtered per user.
- *
- * <p>Caching is applied at the {@link PureProjectService} level rather than on the {@link PureAPI}
- * interface because Quarkus REST client proxies do not support CDI interceptors on default methods.
+ * Cache key generator for Generic Cris caches. Prepends tenant ID to every key so cache entries are
+ * isolated per tenant.
  */
 @ApplicationScoped
-class PureCacheKeyGenerator implements CacheKeyGenerator {
+class GenericCrisCacheKeyGenerator implements CacheKeyGenerator {
 
   @Inject SecurityService securityService;
 
