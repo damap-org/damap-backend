@@ -108,5 +108,5 @@ interface GenericCrisClient {
   @GET
   @ResponseStatus(200)
   GetRecommendedProjectsResponseBody getRecommendedProjects(
-      @QueryParam("email") String query, @QueryParam("name") String name);
+      @QueryParam("email") String email, @QueryParam("name") String name);
 }
