@@ -1,0 +1,52 @@
+# Temporary recovery workflow: remove after 5.1.1 is published to Maven Central.
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  maven-deploy:
+    name: Maven Central recovery (5.1.1)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Maven
+        uses: s4u/setup-maven-action@v1.12.0
+        with:
+          java-version: "17"
+          maven-version: "3.9.9"
+
+      # Build the original release source using this recovery workflow.
+      - name: Check out v5.1.1
+        uses: actions/checkout@v4
+        with:
+          ref: refs/tags/v5.1.1
+
+      - name: Set Maven version to 5.1.1
+        run: sed -i 's/0.0.0-SNAPSHOT/5.1.1/' pom.xml
+
+      # Sets up JDK17 and the GPG agent with our GPG private key and the passphrase to access its content.
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v4.2.1
+        with:
+          distribution: "temurin"
+          java-version: 17.0
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_KEY_PASS }}
+
+      # This step publishes the jar files to Maven Central and the maven-gpg-plugin automatically signs the jar files
+      # using our GPG key passed above.
+      # Maven Central needs the step above to define server-id this way. But the side effect is that a settings.xml
+      # file is created. Without specifying MAVEN_GPG_PASSPHRASE again below, maven would see that file, ignore the gpg
+      # agent and looks for a non-existent settings-security.xml to retrieve the gpg pass phrase.
+      - name: Publish package
+        run: mvn --batch-mode -P deploy-mvn-repository deploy # same profile id as specified in pom.xml for maven deployment
+        env:
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_KEY_PASS }}
