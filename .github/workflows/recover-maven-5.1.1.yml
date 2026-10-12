@@ -2,6 +2,9 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - CI/recover-5.1.1
   workflow_dispatch:
 
 permissions:
