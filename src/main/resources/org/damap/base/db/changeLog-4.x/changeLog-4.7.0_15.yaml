@@ -1,0 +1,107 @@
+databaseChangeLog:
+    - changeSet:
+          id: 39
+          author: Laura
+          comment: Insert translations for the repository step dataset/retention table (frontend PR #538)
+          changes:
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.table.header.dataset',
+                      l.language,
+                      'Dataset',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.table.header.deposit',
+                      l.language,
+                      'Deposit in repository',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.table.header.retention',
+                      l.language,
+                      'Minimum retention period (all repositories)',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.retention.assigned',
+                      l.language,
+                      'The retention period applies to this dataset across all repositories.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.retention.unassigned',
+                      l.language,
+                      'Assign this dataset to at least one repository to set a retention period.',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.search',
+                      l.language,
+                      'Search',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.recommended.headline',
+                      l.language,
+                      'Recommended Repositories',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.view.button.recommended',
+                      l.language,
+                      'Recommended Repositories',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - sql: |
+                    INSERT INTO translation (translation_key, language, default_value, active, version)
+                    SELECT
+                      'dmp.steps.repositories.view.button.other',
+                      l.language,
+                      'Search other Repositories',
+                      l.active,
+                      0
+                    FROM (SELECT DISTINCT language, active FROM translation) l;
+
+              - update:
+                    tableName: translation
+                    columns:
+                        - column:
+                              name: default_value
+                              value: 'Search other Repositories'
+                    where: translation_key = 'dmp.steps.repositories.find.other'
+
+              - delete:
+                    tableName: translation
+                    where: translation_key = 'dmp.steps.repositories.question.datasets'
