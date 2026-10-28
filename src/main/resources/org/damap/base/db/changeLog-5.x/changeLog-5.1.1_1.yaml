@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 46
+      author: Valentin Futterer
+      comment: Fix greeting bug and simplify the translation; Add translation for specified costs in summary step and rename a key;
+               Create a missing key for the summary table;
+      changes:
+        - delete:
+            tableName: translation
+            where: translation_key = 'layout.menu.greeting'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: "Hi Firstname, let's get started!"
+            where: translation_key = 'admin.dashboard.greeting'
+
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'dmp.steps.summary.costs.specified', l.language, 'cost items specified.', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
+
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: "dmp.steps.summary.costs.notspecified"
+            where: translation_key = 'dmp.steps.summary.notspecified'
+
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'dmp.steps.summary.table.step.link', l.language, 'Jump to section ', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
+
+      rollback:
+        - sql: |
+            INSERT INTO translation (translation_key, language, default_value, active, version)
+            SELECT 'layout.menu.greeting', l.language, 'Hi', l.active, 0
+            FROM (SELECT DISTINCT language, active FROM translation) l;
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: default_value
+                  value: "let's get started!"
+            where: translation_key = 'admin.dashboard.greeting'
+
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.summary.costs.specified'
+        - update:
+            tableName: translation
+            columns:
+              - column:
+                  name: translation_key
+                  value: "dmp.steps.summary.notspecified"
+            where: translation_key = 'dmp.steps.summary.costs.notspecified'
+
+        - delete:
+            tableName: translation
+            where: translation_key = 'dmp.steps.summary.table.step.link'

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] -
 
+### Fixed
+
+- Fixed a bug where the greeting didn't have a colon [#549](https://github.com/damap-org/damap-backend/pull/549)
+- Added a missing translation for specified costs in the summary [#549](https://github.com/damap-org/damap-backend/pull/549)
+- Added missing translation for tooltip in summary links [#549](https://github.com/damap-org/damap-backend/pull/549)
+
+### Translations
+
+- Removed "layout.menu.greeting", its job is now done by "admin.dashboard.greeting" [#549](https://github.com/damap-org/damap-backend/pull/549)
+- admin.dashboard.greeting default was changed to "Hi Firstname, let's get started!" [#549](https://github.com/damap-org/damap-backend/pull/549)
+- New key "dmp.steps.summary.costs.specified" was added [#549](https://github.com/damap-org/damap-backend/pull/549)
+- "dmp.steps.summary.notspecified" was updated to "dmp.steps.summary.costs.notspecified" [#549](https://github.com/damap-org/damap-backend/pull/549)
+- Added new key dmp.steps.summary.table.step.link [#549](https://github.com/damap-org/damap-backend/pull/549)
+
 ## [5.1.1] - 2026-10-07
 
 ### Fixed
