@@ -63,7 +63,7 @@ public class GenericProjectService implements ProjectServiceProvider {
       cacheName = "generic-cris-project-staff",
       keyGenerator = GenericCrisCacheKeyGenerator.class)
   public List<ContributorDO> getProjectStaff(String projectId) {
-    return genericCrisClient.getProjectStaff(projectId).getItems().stream()
+    return genericCrisClient.getProjectStaff(projectId).stream()
         .map(contributorMapper::convert)
         .toList();
   }
@@ -107,7 +107,7 @@ public class GenericProjectService implements ProjectServiceProvider {
     String email = securityService.getEmail();
     String name = securityService.getDisplayName();
     return ResultList.fromItemsAndSearch(
-        genericCrisClient.getRecommendedProjects(email, name).getItems().stream()
+        genericCrisClient.getRecommendedProjects(email, name).stream()
             .map(projectMapper::convert)
             .toList(),
         query);

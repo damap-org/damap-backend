@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import org.damap.base.rda.dmpcommonstandard.Contact;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
@@ -33,8 +34,8 @@ interface GenericCrisClient {
       @Min(0) @Max(10000) @DefaultValue("0") @QueryParam("offset") int offset,
       @Min(1) @Max(100) @DefaultValue("20") @QueryParam("count") int count);
 
-  default List<DAMAPContact> getAllPersons(@QueryParam("q") String query) {
-    var result = new ArrayList<DAMAPContact>();
+  default List<Contact> getAllPersons(@QueryParam("q") String query) {
+    var result = new ArrayList<Contact>();
     var offset = 0;
     while (true) {
       var queryResult = searchPersons(query, offset, 100);
@@ -54,7 +55,7 @@ interface GenericCrisClient {
   @Path("/persons/{systemPersonID}")
   @GET
   @ResponseStatus(200)
-  DAMAPContact getPerson(@NotNull @PathParam("systemPersonID") String systemPersonID);
+  Contact getPerson(@NotNull @PathParam("systemPersonID") String systemPersonID);
 
   @Path("/projects")
   @GET
@@ -90,7 +91,7 @@ interface GenericCrisClient {
   @Path("/projects/{systemProjectID}/staff")
   @GET
   @ResponseStatus(200)
-  GetProjectStaffResponseBody getProjectStaff(
+  List<DAMAPContributor> getProjectStaff(
       @NotNull @PathParam("systemProjectID") String systemProjectID);
 
   @Path("/projects/{systemProjectID}/supplements")
@@ -107,6 +108,6 @@ interface GenericCrisClient {
   @Path("/projects/recommended")
   @GET
   @ResponseStatus(200)
-  GetRecommendedProjectsResponseBody getRecommendedProjects(
+  List<DAMAPProject> getRecommendedProjects(
       @QueryParam("email") String email, @QueryParam("name") String name);
 }
