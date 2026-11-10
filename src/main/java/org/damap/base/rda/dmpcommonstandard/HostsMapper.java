@@ -89,8 +89,7 @@ public class HostsMapper extends AbstractMapper {
 
   /**
    * Searches for repository hosts linked to the dataset, maps them, and adds them as Distribution
-   * objects to the result list (retaining the availableUntil date). Skips the repository host if
-   * there is no URL as it is a mandatory field.
+   * objects to the result list (retaining the availableUntil date).
    */
   private void searchRepositories(
       DmpDO dmp, String refHash, String idStr, Distribution baseDist, List<Distribution> result) {
@@ -150,8 +149,7 @@ public class HostsMapper extends AbstractMapper {
    * links to any hosts (repositories, internal storage, or external storage).
    *
    * <p>If the DMP contains exactly one dataset and exactly one host across all categories, this
-   * method assumes an implicit 1-to-1 relationship and maps that single host to the dataset. If the
-   * repository host has no URL, then it is skipped since that is a mandatory field.
+   * method assumes an implicit 1-to-1 relationship and maps that single host to the dataset.
    *
    * <ul>
    *   <li>Repositories retain the 'availableUntil' retention date from the base distribution.
@@ -199,12 +197,8 @@ public class HostsMapper extends AbstractMapper {
    * <p>Converts a DAMAP Repository domain object to an RDA standard Host. Attempts to fetch the
    * official URL and Title from the re3data service when possible.
    *
-   * <p>Note: If a repository's URL cannot be resolved from re3data, this method logs a warning and
-   * returns {@code null} to skip exporting the repository host, rather than throwing a blocking
-   * error.
-   *
    * @param repo the DAMAP repository object
-   * @return the mapped RDA standard Host or {@code null} if the repository URL is missing
+   * @return the mapped RDA standard Host
    */
   private Host mapRepository(RepositoryDO repo) {
     String repoUrl = null;
@@ -217,10 +211,7 @@ public class HostsMapper extends AbstractMapper {
         Re3Data re3Data = repositoriesService.getById(repo.getRepositoryId());
         if (re3Data != null && !re3Data.getRepository().isEmpty()) {
           var firstRepo = re3Data.getRepository().get(0);
-          String url = firstRepo.getRepositoryURL();
-          if (url != null && !url.isBlank()) {
-            repoUrl = url;
-          }
+          repoUrl = firstRepo.getRepositoryURL();
           if (firstRepo.getRepositoryName() != null
               && firstRepo.getRepositoryName().getValue() != null
               && !firstRepo.getRepositoryName().getValue().isBlank()) {
@@ -242,13 +233,6 @@ public class HostsMapper extends AbstractMapper {
         log.errorv("Unexpected exception retrieving repository name for ID {0}", r3dataId, e);
         return null;
       }
-    }
-
-    if (repoUrl == null || repoUrl.isBlank()) {
-      log.warnv(
-          "Repository '{0}' (ID: {1}) has no valid URL and will be skipped in the export.",
-          repoTitle, r3dataId);
-      return null;
     }
 
     if (repoTitle == null || repoTitle.isBlank()) {
@@ -279,11 +263,10 @@ public class HostsMapper extends AbstractMapper {
   private Host mapExternalStorage(ExternalStorageDO ext) {
     return new Host()
         .title(ext.getTitle() != null ? ext.getTitle() : "External Storage")
-        // TODO: Map this to the real storage URL in the future (currently always defaults to
-        // google.com)
-        .url(ext.getUrl() != null && !ext.getUrl().isBlank() ? ext.getUrl() : "https://google.com")
-        // TODO: This is misleading but technically allowed by the RDA Common Standard
-        .backupType(ext.getBackupLocation())
+        // TODO: Map this to the real storage URL in the future
+        .url(ext.getUrl())
+        // TODO: Export backup location (requires controlled ISO 3166-1 vocabulary instead of free
+        // text)
         .backupFrequency(ext.getBackupFrequency());
   }
 
@@ -297,20 +280,13 @@ public class HostsMapper extends AbstractMapper {
    * @return the mapped RDA standard Host
    */
   private Host mapInternalStorage(StorageDO store) {
-    String url = "https://google.com"; // Placeholder
-    String backupLocation = null;
+    String url = null;
 
     if (store.getInternalStorageId() != null) {
       try {
         InternalStorage internalStore = InternalStorage.findById(store.getInternalStorageId());
         if (internalStore != null) {
-          if (internalStore.getUrl() != null && !internalStore.getUrl().isBlank()) {
-            url = internalStore.getUrl();
-          }
-          if (internalStore.getBackupLocation() != null
-              && !internalStore.getBackupLocation().isBlank()) {
-            backupLocation = internalStore.getBackupLocation();
-          }
+          url = internalStore.getUrl();
         }
       } catch (Exception e) {
         log.errorv(
@@ -319,11 +295,8 @@ public class HostsMapper extends AbstractMapper {
       }
     }
 
-    return new Host()
-        .title(store.getTitle() != null ? store.getTitle() : "Storage")
-        .url(url)
-        // TODO: This is misleading but technically allowed by the RDA Common Standard
-        .backupType(backupLocation);
+    // TODO: Export backup location (requires controlled ISO 3166-1 vocabulary instead of free text)
+    return new Host().title(store.getTitle() != null ? store.getTitle() : "Storage").url(url);
   }
 
   /**
@@ -577,7 +550,6 @@ public class HostsMapper extends AbstractMapper {
     newExt.setUrl(url);
     newExt.setDatasets(new ArrayList<>(List.of(refHash)));
     newExt.setBackupFrequency(rdaHost.getBackupFrequency());
-    newExt.setBackupLocation(rdaHost.getBackupType());
     target.getExternalStorage().add(newExt);
   }
 }
