@@ -139,7 +139,8 @@ public class DatasetMapper extends AbstractMapper {
     if (dataAccess != null) {
       distribution.setDataAccess(
           switch (dataAccess) {
-            case CLOSED, RESTRICTED -> DataAccess.CLOSED;
+            case RESTRICTED -> DataAccess.RESTRICTED;
+            case CLOSED -> DataAccess.CLOSED;
             case OPEN -> DataAccess.OPEN;
           });
     } else {
@@ -289,6 +290,8 @@ public class DatasetMapper extends AbstractMapper {
             switch (dataAccess) {
               case OPEN -> EDataAccessType.OPEN;
               case CLOSED -> EDataAccessType.CLOSED;
+              case RESTRICTED -> EDataAccessType.RESTRICTED;
+                // Deprecated: Remove when new full version of common API is released
               case SHARED -> EDataAccessType.RESTRICTED;
             });
       }
