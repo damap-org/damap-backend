@@ -35,6 +35,23 @@ paths:
           $ref: "#/components/responses/ErrorResponse"
         "404":
           $ref: "#/components/responses/ErrorResponse"
+  /projects/{systemProjectID}:
+    get:
+      operationId: getProject
+      parameters:
+        - name: systemProjectID
+          in: path
+          required: true
+          description: System project ID of the project to fetch.
+          schema:
+            $ref: "#/components/schemas/SystemProjectID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetProjectResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/ErrorResponse"
   /projects:
     get:
       operationId: searchProjects
@@ -46,23 +63,6 @@ paths:
         "200":
           $ref: "#/components/responses/SearchProjectsResponse"
         "401":
-          $ref: "#/components/responses/ErrorResponse"
-  /persons/{systemProjectID}:
-    get:
-      operationId: getProject
-      parameters:
-        - name: systemProjectID
-          in: path
-          required: true
-          description: System project ID to fetch contributors for.
-          schema:
-            $ref: "#/components/schemas/SystemProjectID"
-      responses:
-        "200":
-          $ref: "#/components/responses/GetProjectResponse"
-        "401":
-          $ref: "#/components/responses/ErrorResponse"
-        "404":
           $ref: "#/components/responses/ErrorResponse"
   /projects/{systemProjectID}/staff:
     get:
@@ -143,7 +143,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/DAMAPContact"
+            $ref: "#/components/schemas/Contact"
     GetProjectResponse:
       description: A single project
       content:
@@ -167,7 +167,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GetProjectStaffResponseBody"
+            type: array
+            items:
+              $ref: '#/components/schemas/DAMAPContributor'
     GetProjectLeaderResponse:
       description: The project leader
       content:
@@ -185,7 +187,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GetRecommendedProjectsResponseBody"
+            type: array
+            items:
+              $ref: "#/components/schemas/DAMAPProject"
   parameters:
     Query:
       name: q
@@ -259,16 +263,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DAMAPProject"
-    GetProjectStaffResponseBody:
-      type: object
-      properties:
-        totalItems:
-          type: integer
-          minimum: 0
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/DAMAPContributor"
     SearchPersonsResponseBody:
       type: object
       properties:
@@ -278,17 +272,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/DAMAPContact"
-    GetRecommendedProjectsResponseBody:
-      type: object
-      properties:
-        totalItems:
-          type: integer
-          minimum: 0
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/DAMAPProject"
+            $ref: "#/components/schemas/Contact"
     SystemID:
       description: "System-dependent ID"
       type: string
@@ -316,15 +300,6 @@ components:
     Contact:
       x-parent: true
       $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/tags/v0.2.0/openapi.yaml#/components/schemas/Contact"
-    DAMAPContact:
-      allOf:
-        - $ref: "#/components/schemas/Contact"
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              $ref: "#/components/schemas/SystemContactID"
     Contributor:
       x-parent: true
       $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/tags/v0.2.0/openapi.yaml#/components/schemas/Contributor"
