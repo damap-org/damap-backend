@@ -3,6 +3,7 @@ package org.damap.base.integration.generic;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.integration.ProjectServiceProvider;
@@ -91,7 +92,15 @@ public class GenericProjectService implements ProjectServiceProvider {
       cacheName = "generic-cris-project-leader",
       keyGenerator = GenericCrisCacheKeyGenerator.class)
   public ContributorDO getProjectLeader(String projectId) {
-    return contributorMapper.convert(genericCrisClient.getProjectLeader(projectId));
+    try {
+      return contributorMapper.convert(genericCrisClient.getProjectLeader(projectId));
+    } catch (WebApplicationException e) {
+      if (e.getResponse().getStatus() == 404) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 
   @Override

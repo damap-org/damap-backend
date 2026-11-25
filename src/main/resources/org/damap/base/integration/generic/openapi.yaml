@@ -18,16 +18,16 @@ paths:
           $ref: "#/components/responses/SearchPersonsResponse"
         "401":
           $ref: "#/components/responses/ErrorResponse"
-  /persons/{systemContactID}:
+  /persons/{systemPersonID}:
     get:
       operationId: getPerson
       parameters:
-        - name: systemContactID
+        - name: systemPersonID
           in: path
           required: true
           description: ID of the person to fetch.
           schema:
-            $ref: "#/components/schemas/SystemContactID"
+            $ref: "#/components/schemas/SystemPersonID"
       responses:
         "200":
           $ref: "#/components/responses/GetPersonResponse"
@@ -143,7 +143,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Contact"
+            $ref: "#/components/schemas/Contributor"
     GetProjectResponse:
       description: A single project
       content:
@@ -169,13 +169,13 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/DAMAPContributor'
+              $ref: "#/components/schemas/Contributor"
     GetProjectLeaderResponse:
       description: The project leader
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/DAMAPContributor"
+            $ref: "#/components/schemas/Contributor"
     GetProjectSupplementsResponse:
       description: A object containing supplemental project information
       content:
@@ -250,7 +250,7 @@ components:
           enum:
             - invalid_api_key
             - project_not_found
-            - contact_not_found
+            - contributor_not_found
         error_message:
           type: string
     SearchProjectsResponseBody:
@@ -272,7 +272,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Contact"
+            $ref: "#/components/schemas/Contributor"
     SystemID:
       description: "System-dependent ID"
       type: string
@@ -282,8 +282,8 @@ components:
     SystemProjectID:
       description: "System-dependent ID for a project"
       $ref: "#/components/schemas/SystemID"
-    SystemContactID:
-      description: "System-dependent ID for a contact"
+    SystemPersonID:
+      description: "System-dependent ID for a contributor"
       $ref: "#/components/schemas/SystemID"
     DAMAPProject:
       allOf:
@@ -297,58 +297,9 @@ components:
     Project:
       x-parent: true
       $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/tags/v0.2.0/openapi.yaml#/components/schemas/Project"
-    Contact:
-      x-parent: true
-      $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/tags/v0.2.0/openapi.yaml#/components/schemas/Contact"
     Contributor:
       x-parent: true
       $ref: "https://raw.githubusercontent.com/RDA-DMP-Common/common-madmp-api/refs/tags/v0.2.0/openapi.yaml#/components/schemas/Contributor"
-    DAMAPContributor:
-      allOf:
-        - $ref: "#/components/schemas/Contributor"
-        - type: object
-          required:
-            - id
-            - role
-          properties:
-            id:
-              $ref: "#/components/schemas/SystemContactID"
-            role:
-              $ref: "#/components/schemas/DAMAPContributorRoles"
-    DAMAPContributorRole:
-      type: string
-      title: Contributor role
-      examples:
-        - Data Collector
-        - Data Collector
-        - Data Curator
-        - Data Manager
-        - Distributor
-        - Editor
-        - Hosting Institution
-        - Producer
-        - Project Leader
-        - Project Manager
-        - Project Member
-        - Registration Agency
-        - Registration Authority
-        - Related Person
-        - Researcher
-        - Research Group
-        - Rights Holder
-        - Sponsor
-        - Supervisor
-        - Work Package Leader
-        - Principal Investigator
-        - Project Coordinator
-        - Other
-    DAMAPContributorRoles:
-      type: array
-      title: Contributor roles list
-      description: A list of roles the contributor holds.
-      items:
-        $ref: '#/components/schemas/DAMAPContributorRole'
-      uniqueItems: true
     ProjectSupplement:
       type: object
       properties:

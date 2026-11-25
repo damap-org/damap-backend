@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import org.damap.base.rda.dmpcommonstandard.Contact;
+import org.damap.base.rda.dmpcommonstandard.Contributor;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
@@ -19,10 +19,10 @@ import org.jboss.resteasy.reactive.ResponseStatus;
 interface GenericCrisClient {
   @ClientExceptionMapper
   static RuntimeException toException(Response response) {
-    if (response.getStatus() == 200) {
-      return null;
-    }
     // TODO: map structured exceptions
+    if (response.getStatus() == 404) {
+      return new NotFoundException();
+    }
     return new RuntimeException("Lookup failed: " + response.getStatus());
   }
 
@@ -34,8 +34,8 @@ interface GenericCrisClient {
       @Min(0) @Max(10000) @DefaultValue("0") @QueryParam("offset") int offset,
       @Min(1) @Max(100) @DefaultValue("20") @QueryParam("count") int count);
 
-  default List<Contact> getAllPersons(@QueryParam("q") String query) {
-    var result = new ArrayList<Contact>();
+  default List<Contributor> getAllPersons(@QueryParam("q") String query) {
+    var result = new ArrayList<Contributor>();
     var offset = 0;
     while (true) {
       var queryResult = searchPersons(query, offset, 100);
@@ -55,7 +55,7 @@ interface GenericCrisClient {
   @Path("/persons/{systemPersonID}")
   @GET
   @ResponseStatus(200)
-  Contact getPerson(@NotNull @PathParam("systemPersonID") String systemPersonID);
+  Contributor getPerson(@NotNull @PathParam("systemPersonID") String systemPersonID);
 
   @Path("/projects")
   @GET
@@ -91,8 +91,7 @@ interface GenericCrisClient {
   @Path("/projects/{systemProjectID}/staff")
   @GET
   @ResponseStatus(200)
-  List<DAMAPContributor> getProjectStaff(
-      @NotNull @PathParam("systemProjectID") String systemProjectID);
+  List<Contributor> getProjectStaff(@NotNull @PathParam("systemProjectID") String systemProjectID);
 
   @Path("/projects/{systemProjectID}/supplements")
   @GET
@@ -103,7 +102,7 @@ interface GenericCrisClient {
   @Path("/projects/{systemProjectID}/leader")
   @GET
   @ResponseStatus(200)
-  DAMAPContributor getProjectLeader(@NotNull @PathParam("systemProjectID") String systemProjectID);
+  Contributor getProjectLeader(@NotNull @PathParam("systemProjectID") String systemProjectID);
 
   @Path("/projects/recommended")
   @GET
