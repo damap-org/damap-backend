@@ -32,22 +32,43 @@ info:
     The correct MIME-type for the DMP standard used in this specification is:
 
     ```
-    application/vnd.org.rd-alliance.dmp-common.v1.2+json
+    application/vnd.org.rd-alliance.dmp-common.v1.3+json
     ```
+
+    # Supported versions of the DMP Common Standard
+
+    This specification describes version 1.3 of the RDA DMP Common Standard. Clients and servers *must* support
+    `application/vnd.org.rd-alliance.dmp-common.v1.3+json`.
+
+    Servers *may* additionally support earlier versions of the standard via content negotiation, for example
+    `application/vnd.org.rd-alliance.dmp-common.v1.2+json`. The schemas for earlier versions are not repeated in this
+    document; see the [RDA DMP Common Standard repository](https://github.com/RDA-DMP-Common/RDA-DMP-Common-Standard/tree/master/examples/JSON/JSON-schema)
+    for the respective JSON schemas. A server that supports an earlier version:
+
+    - *must* accept request bodies in that version. Since every valid 1.2 document is also a valid 1.3 document, a
+      server can process 1.2 input as 1.3.
+    - *must* return documents that are valid against that version's schema when the client requests it via `Accept`.
+      When converting 1.3 content to 1.2, the server *should* map `data_access` value `restricted` to `shared`, map
+      `pid_system` values not allowed in 1.2 to `other`, and, for a `host` without `url`, use a URL from `host_id`
+      if available or otherwise omit the `host`.
+
+    A server that does not support the requested version *must* respond with `406 Not Acceptable` (for `Accept`) or
+    `415 Unsupported Media Type` (for `Content-Type`).
 
     Client and server implementations *may* agree on a different serialization to JSON, such as XML, by specifying the
     corresponding suffix. Clients and servers *must* support JSON serialization.
 
-    # Conflict resolution
+    # Optimistic concurrency for updates
 
-    This API makes use of the `Last-Modified` headers in order to resolve conflicts. When updating a DMP, consider
-    passing the `Last-Modified` header from the response in the `If-Unmodified-Since` header in the PUT request. If the
-    DMP has been modified since you last fetched the data, the server will return a 409 header.
+    This API makes use of the `Last-Modified` header in order to detect conflicting updates. When updating a DMP,
+    consider passing the `Last-Modified` header from the response in the `If-Unmodified-Since` header in the PUT
+    request. If the DMP has been modified since you last fetched the data, the server will return a 409 Conflict
+    response (`dmp_stale`).
 
     Server implementations should always update the modified field of the DMP to the server time on PUT and return it
     in the `Last-Modified` header. On PUT, server implementations should compare the `If-Unmodified-Since` header with
     the stored modified field.
-  version: 0.1.0
+  version: 1.0.0
   license:
     name: Creative Commons Zero v1.0 Universal
     identifier: "CC0-1.0"
@@ -63,13 +84,31 @@ paths:
   /dmps:
     get:
       summary: List/search DMPs
+      externalDocs:
+        description: RDA-DMP-Common-Standard
+        url: https://github.com/RDA-DMP-Common/RDA-DMP-Common-Standard
       description: |
-        This endpoint lists all DMPs or allows for creating a filtered list. When filters are provided,
-        all filter are applied (AND relationship). For filters supporting lists, the individual values are applied
-        as an OR relationship.
+        Lists either all DMPs accessible to the user, or a filtered subset of all DMPs. When
+        multiple filter parameters are provided, all filters are applied together (AND
+        relationship). For parameters that accept multiple values, the values are applied
+        as an OR relationship, i.e., a DMP matches if it satisfies any of the listed values
+        for that parameter.
 
-        For items accepting more than one value you may pass multiple values by repeating the parameter in the
-        query string for each item.
+        Multi-value parameters are passed by repeating the parameter name in the query
+        string, for example:
+          languages[]=eng&languages[]=deu
+
+        Implementations MUST return a 400 (invalid_query_string) if a parameter value
+        does not conform to the expected format or enumeration. Implementations MUST
+        also return a 400 (invalid_query_string) if a parameter value type is not the
+        expected type for that parameter.
+
+        All date and date-time values MUST be expressed in ISO 8601 format with a
+        timezone offset. Implementations MUST treat timestamps as UTC if no timezone
+        is specified, but SHOULD reject ambiguous inputs with a 400 error.
+
+        For filters traversing array-valued fields, a DMP matches if any element in
+        the corresponding array satisfies the filter condition, unless otherwise specified.
       operationId: listDMPs
       tags:
         - DMP
@@ -77,7 +116,10 @@ paths:
         - name: offset
           in: query
           required: false
-          description: Number of items to skip from the start.
+          description: Number of items to skip from the start of the result set. Used together
+            with count for pagination. The first page is offset=0. Implementations
+            MUST return results in a stable order when paginating; the sort[] parameter
+            controls that order.
           schema:
             title: Offset
             type: integer
@@ -86,15 +128,31 @@ paths:
         - name: count
           in: query
           required: false
+          description: |
+            The maximum number of DMPs to return in this page (page size).
+            A 400 (invalid_query_string) should be returned if the requested
+            count exceeds the maximum number of DMPs allowed by the implementation.
+            Use total_count in the response body together with offset to determine
+            whether further pages exist.
           schema:
             type: integer
             minimum: 1
             maximum: 100
             default: 20
-          description: Number of items to fetch.
         - name: sort[]
           description: |
-            A list of fields to sort by with the sort order.
+            One or more sort fields with direction. When multiple values are provided,
+            sorting is applied left to right. Implementations MUST support at least
+            created,desc. Support for other values is RECOMMENDED.
+
+            Sort fields correspond to top-level DMP fields as specified in the RDA-DMP-Common-Standard:
+              - title    — dmp.title (lexicographic)
+              - created  — dmp.created (ISO 8601 date-time)
+              - modified — dmp.modified (ISO 8601 date-time)
+              - language — dmp.language (ISO 639-3 code, lexicographic)
+
+            Implementations that do not support a requested sort field MUST return a
+            400 (invalid_query_string) rather than silently falling back to a default.
           in: query
           required: false
           schema:
@@ -112,112 +170,321 @@ paths:
                 - modified,desc
                 - language,asc
                 - language,desc
-                - embargo,asc
-                - embargo,desc
-                - keyword,asc
-                - keyword,desc
         - name: created_before
           in: query
           required: false
+          description: |
+            Return only DMPs first created before this date-time (inclusive).
+            Matches against dmp.created as specified in the RDA-DMP-Common-Standard,
+            which records the date and time of the first version of the DMP and is never changed in subsequent versions.
+            Value must be an ISO 8601 date-time string including timezone, e.g.
+            2024-01-01T00:00:00Z.
           schema:
             type: string
             format: date-time
         - name: created_after
           in: query
           required: false
+          description: |
+            Return only DMPs first created after this date-time (exclusive).
+            Matches against dmp.created as specified in the RDA-DMP-Common-Standard.
+            See created_before for format requirements.
           schema:
             type: string
             format: date-time
         - name: modified_before
           in: query
           required: false
+          description: |
+            Return only DMPs last modified before this date-time (inclusive).
+            Matches against dmp.modified  as specified in the RDA-DMP-Common-Standard,
+            which is updated every time the DMP changes and serves as the version indicator.
+            See created_before for format
+            requirements.
           schema:
             type: string
             format: date-time
         - name: modified_after
           in: query
           required: false
+          description: |
+            Return only DMPs last modified after this date-time (exclusive).
+            Matches against dmp.modified as specified in the RDA-DMP-Common-Standard.
+            See created_before for format requirements.
           schema:
             type: string
             format: date-time
+        - name: dmp_alternate_identifier[]
+          in: query
+          required: false
+          description: |
+            Look up a DMP using alternate identifier values — that is, a secondary or
+            local identifier that is not the DMP's canonical persistent identifier
+            (dmp.dmp_id). Matches against dmp.alternate_identifier[].identifier as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["E-GEOD-34814", "A-FE1W-12345"]
         - name: languages[]
           in: query
           required: false
+          description: |
+            Filter by the language of the DMP itself. Values are ISO 639-3 three-letter
+            language codes.
+
+            Matches against dmp.language  as specified in the RDA-DMP-Common-Standard, which describes the language the DMP is
+            written in (not the language of the described datasets).
           schema:
             type: array
             items:
               $ref: "#/components/schemas/LanguageCode"
+            example: [ "eng", "deu" ]
         - name: contact_ids[]
           in: query
           required: false
+          description: |
+            Filter by the identifier of the DMP contact person. The contact is the
+            party who can provide information about the DMP; they are not necessarily
+            the creator.
+
+            Matches against dmp.contact.contact_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/ContactID"
+              type: string
+            example: ["0000-0000-0000-0000", "1234-5678-9101-1121"]
         - name: contributor_ids[]
           in: query
           required: false
+          description: |
+            Filter by the identifier of one or more DMP contributors. Contributors are
+            people involved in data management roles (e.g. DataManager, Researcher).
+
+            Matches against dmp.contributor[].contributor_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/ContributorID"
+              type: string
+            example: ["0000-0000-0000-0000", "1234-5678-9101-1121"]
         - name: dataset_ids[]
           in: query
           required: false
+          description: |
+            Filter by the identifier of one or more datasets described in the DMP.
+
+            Matches against dmp.dataset[].dataset_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/DatasetID"
+              type: string
+            example: ["11353/10.923628", "12345/67.891011"]
+        - name: dataset_personal_data[]
+          in: query
+          required: false
+          description: |
+            Filter by whether any dataset in the DMP contains personal data.
+
+            Matches against dmp.dataset[].personal_data as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Booleanish"
+            example: [ "yes", "unknown" ]
+        - name: dataset_sensitive_data[]
+          in: query
+          required: false
+          description: |
+            Filter by whether any dataset in the DMP contains sensitive data.
+
+            Matches against dmp.dataset[].sensitive_data as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Booleanish"
+            example: [ "yes", "unknown" ]
         - name: metadata_standard_ids[]
           in: query
           required: false
+          description: |
+            Filter by the metadata standard used to describe one or more datasets.
+
+            Matches against dmp.dataset[].metadata[].metadata_standard_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/MetadataStandardID"
+              type: string
+            example: ["http://www.dublincore.org/specifications/dublin-core/dcmi-terms/"]
+        - name: distribution_formats[]
+          in: query
+          required: false
+          description: |
+            Filter DMPs to those containing at least one distribution whose format
+            field matches any of the specified MIME types.
+
+            Matches against dmp.dataset[].distribution[].format[] as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MIMEType"
+          examples:
+            zip:
+              value: [ "application/zip" ]
+              summary: ZIP distributions (both common MIME types)
+            tabular:
+              value: [ "text/csv", "application/json" ]
+              summary: Tabular or JSON distributions
+        - name: distribution_data_access[]
+          in: query
+          required: false
+          description: |
+            Filter DMPs to those containing at least one distribution with the
+            specified data access mode.
+
+            Matches against dmp.dataset[].distribution[].data_access as specified in the RDA-DMP-Common-Standard.
+            Since the value `shared` is deprecated in favour of `restricted`, servers *should* treat both values as
+            equivalent when filtering.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DataAccess"
+            example: [ "open" ]
+        - name: host_ids[]
+          in: query
+          required: false
+          description: |
+            Filter by the persistent identifier of a host of any dataset's distribution(s).
+
+            Matches against dmp.dataset[].distribution[].host.host_id.identifier as specified in the
+            RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              type: string
+            example: [ "https://www.re3data.org/repository/r3d100010468" ]
+        - name: host_titles[]
+          in: query
+          required: false
+          description: |
+            Filter DMPs to those where at least one distribution host has a name
+            matching a string in this array.
+
+            Matches against dmp.dataset[].distribution[].host.title as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["Zenodo"]
         - name: dmp_ids[]
           in: query
           required: false
+          description: |
+            Filter by the persistent identifier of one or more DMPs.
+
+            Matches against dmp.dmp_id.identifier as specified in the RDA-DMP-Common-Standard
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/DMPID"
+              type: string
+            example: ["10.1371/journal.pcbi.1006750", "10.7891/journal.ex.5665751"]
+        - name: license_refs[]
+          in: query
+          required: false
+          description: |
+            Filter DMPs to those where at least one distribution carries a license
+            matching any of the specified license reference URLs.
+
+            Implementations SHOULD normalise trailing slashes before matching.
+
+            Matches against dmp.dataset[].distribution[].license[].license_ref as specified in the RDA-DMP-Common-Standard.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uri
+          examples:
+            cc_by:
+              value: [ "https://creativecommons.org/licenses/by/4.0/" ]
+              summary: CC BY 4.0 only
+            open:
+              value:
+                - "https://creativecommons.org/licenses/by/4.0/"
+                - "https://creativecommons.org/publicdomain/zero/1.0/"
+              summary: CC BY 4.0 or CC0 1.0
         - name: funder_ids[]
           in: query
           required: false
+          description: |
+            Filter by the identifier of one or more funders associated with projects
+            in the DMP.
+
+            Matches against dmp.project[].funding[].funder_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/FunderID"
+              type: string
+            example: ["013tf3c58", "00k4n6c32"]
         - name: grant_ids[]
           in: query
           required: false
+          description: |
+            Filter by the identifier of one or more grants associated with projects
+            in the DMP.
+
+            Matches against dmp.project[].funding[].grant_id.identifier as specified in the RDA-DMP-Common-Standard.
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/GrantID"
-        - name: query
+              type: string
+            example: ["http://example.com/grants/776242", "http://example.com/grants/123456"]
+        - name: funding_status[]
           in: query
           required: false
+          description: |
+            Filter by the funding status of any project funding entry in the DMP.
+
+            Matches against dmp.project[].funding[].funding_status as specified in the RDA-DMP-Common-Standard.
           schema:
-            type: string
-        - name: ethical_issues_exist
+            type: array
+            items:
+              $ref: "#/components/schemas/FundingStatus"
+            example: ["granted"]
+        - name: ethical_issues_exist[]
           in: query
           required: false
+          description: |
+            Filter by whether the DMP declares ethical issues.
           schema:
-            type: boolean
-        - name: embargo_before
+            type: array
+            items:
+              $ref: "#/components/schemas/Booleanish"
+            example: ["yes", "unknown"]
+        - name: query[]
           in: query
           required: false
+          description: |
+            A free-text search string matched against human-readable fields of the DMP.
+
+            Implementations MUST perform case-insensitive matching against at minimum:
+              - dmp.title
+              - dmp.description
+              - dmp.dataset[].title
+              - dmp.dataset[].description
+
+            It is recommended to also perform case-insensitive matching against:
+              - dmp.project[].title
+              - dmp.project[].description
+
+            Implementations MUST NOT use this parameter to filter on structured fields
+            such as IDs, dates, or formats — use the dedicated filter parameters for
+            that. Structured filtering via this parameter produces inconsistent results
+            across implementations.
           schema:
-            type: string
-            format: date
-        - name: embargo_after
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date
+            type: array
+            items:
+              type: string
+              maxLength: 500
+            example: ["biodiversity", "climate change"]
       responses:
         200:
           $ref: "#/components/responses/DMPListResponse"
@@ -235,13 +502,19 @@ paths:
         Create or import a DMP from a JSON-formed DMP object. The implementation may opt to allow the creation of
         draft DMPs with formally valid, but incomplete fields. Alternatively, the implementation may reject incomplete
         DMPs if it cannot store them.
+
+        Since some tools might only partially support the RDA Common Standard or may adopt a best-effort approach,
+        the cardinality of some fields in the output might deviate from what is expected. Similarly, it is possible
+        in some cases that the vocabularies expected by the tool do not match the RDA Common Standard.
+        Therefore, it is the responsibility of the client to compare the result (which corresponds to what has been
+        processed by the tool) with the request and to act accordingly if necessary.
       operationId: createDMP
       tags:
         - DMP
       requestBody:
         required: true
         content:
-          application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+          application/vnd.org.rd-alliance.dmp-common.v1.3+json:
             schema:
               $ref: "#/components/schemas/DMPDocument"
           application/json:
@@ -259,7 +532,7 @@ paths:
                 type: string
                 format: date-time
           content:
-            application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+            application/vnd.org.rd-alliance.dmp-common.v1.3+json:
               schema:
                 $ref: "#/components/schemas/DMPWithID"
             application/json:
@@ -302,7 +575,7 @@ paths:
                 type: string
                 format: date-time
           content:
-            application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+            application/vnd.org.rd-alliance.dmp-common.v1.3+json:
               schema:
                 $ref: "#/components/schemas/DMPWithID"
             application/json:
@@ -326,6 +599,12 @@ paths:
       description: |
         Completely overwrite a DMP with the specified data. The server MUST honor the If-Unmodified-Since and IF-Match
         headers if present.
+
+        Since some tools might only partially support the RDA Common Standard or may adopt a best-effort approach,
+        the cardinality of some fields in the output might deviate from what is expected. Similarly, it is possible
+        in some cases that the vocabularies expected by the tool do not match the RDA Common Standard.
+        Therefore, it is the responsibility of the client to compare the result (which corresponds to what has been
+        processed by the tool) with the request and to act accordingly if necessary.
       parameters:
         - name: id
           in: path
@@ -341,7 +620,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+          application/vnd.org.rd-alliance.dmp-common.v1.3+json:
             schema:
               $ref: "#/components/schemas/DMPDocument"
           application/json:
@@ -359,7 +638,7 @@ paths:
                 type: string
                 format: date-time
           content:
-            application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+            application/vnd.org.rd-alliance.dmp-common.v1.3+json:
               schema:
                 $ref: "#/components/schemas/DMPWithID"
             application/json:
@@ -413,7 +692,7 @@ components:
     DMPListResponse:
       description: "A list of DMPs"
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/DMPListResponseBody"
         application/json:
@@ -421,10 +700,9 @@ components:
             $ref: "#/components/schemas/DMPListResponseBody"
     AuthenticationRequiredResponse:
       description: |
-        Authentication required to delete the DMP. The implementation should always return this error code for
-        unauthenticated users as deletion always requires authentication.
+        The request could not be authenticated because authentication credentials are missing, invalid, or expired.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/AuthenticationRequiredError"
         application/json:
@@ -433,18 +711,16 @@ components:
     BadRequestResponse:
       description: Bad request
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/BadRequestError"
         application/json:
           schema:
             $ref: "#/components/schemas/BadRequestError"
     ConflictResponse:
-      description: |
-        A precondition specified in the If-Unmodified-Since or If-Match header cannot be
-        fulfilled. The client should apply the modifications again and resubmit the request.
+      description: The request conflicts with the current state of the resource.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/ConflictError"
         application/json:
@@ -452,13 +728,13 @@ components:
             $ref: "#/components/schemas/ConflictError"
     DMPNotFoundResponse:
       description: |
-        DMP not found or not enough permissions to delete the specified DMP.
+        DMP not found or not enough permissions to access the specified DMP.
         Security note: implementations may return this error code even if the DMP exists but the authenticated user
         has no permissions to view it in order to avoid leaking information about the existence of a DMP. This may
         especially be important if the DMP tool uses numeric IDs to avoid enabling an enumeration of possible DMP
         IDs.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/DMPNotFoundError"
         application/json:
@@ -467,7 +743,7 @@ components:
     GenericErrorResponse:
       description: The request failed
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/GenericError"
         application/json:
@@ -475,12 +751,12 @@ components:
             $ref: "#/components/schemas/GenericError"
     InsufficientPermissionsResponse:
       description: |
-        Insufficient permissions to delete the specified a DMP.
+        The authenticated client does not have permission to access the requested resource.
         Note: the implementation may opt to return a 404 instead to avoid leaking information about the
         existence of a DMP with the specified ID if the user has no permissions to at least view this DMP. The
         implementation SHOULD return this error code if the user has at least read permissions for this DMP.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/InsufficientPermissionsError"
         application/json:
@@ -490,7 +766,7 @@ components:
       description: |
         The server cannot produce a response that the client requested in its `Accept` header.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/NotAcceptableError"
         application/json:
@@ -501,7 +777,7 @@ components:
         The server cannot process the request the client because it does not support the DMP standard the client
         sent the document in.
       content:
-        application/vnd.org.rd-alliance.dmp-common.v1.2+json:
+        application/vnd.org.rd-alliance.dmp-common.v1.3+json:
           schema:
             $ref: "#/components/schemas/UnsupportedMediaTypeError"
         application/json:
@@ -625,21 +901,6 @@ components:
               title: Error code
               type: string
               const: "unsupported_media_type"
-    DMPAlreadyExistsError:
-      title: "DMP already exists"
-      description: |
-        The DMP system has identified this DMP to be already present in the system based on its DMP ID or other
-        characteristics. The error response SHOULD contain the existing DMP ID.
-      allOf:
-        - $ref: "#/components/schemas/Error"
-        - type: object
-          required:
-            - error_code
-          properties:
-            error_code:
-              title: Error code
-              type: string
-              const: "dmp_already_exists"
     DMPNotFoundError:
       title: "DMP not found / insufficient permissions to access DMP"
       description: |
@@ -672,9 +933,51 @@ components:
               const: "invalid_query_string"
     ConflictError:
       title: "Conflict"
+      description: "The request conflicts with the current state of the resource."
+      oneOf:
+        - $ref: "#/components/schemas/DMPAlreadyExistsError"
+        - $ref: "#/components/schemas/DMPStaleError"
+        - $ref: "#/components/schemas/GenericConflictError"
+      discriminator:
+        propertyName: error_code
+        mapping:
+          dmp_already_exists: "#/components/schemas/DMPAlreadyExistsError"
+          dmp_stale: "#/components/schemas/DMPStaleError"
+          conflict: "#/components/schemas/GenericConflictError"
+    DMPAlreadyExistsError:
+      title: "DMP already exists"
       description: |
-        The server failed to apply the patch because a JSON Patch test failed. If the patch applies successfully, but
-        results in an invalid DMP, an DMPInvalidResponse (400) is returned instead.
+        The DMP system has identified this DMP to be already present in the system based on its DMP ID or other
+        characteristics. The error response SHOULD contain the existing DMP ID.
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - type: object
+          required:
+            - error_code
+          properties:
+            error_code:
+              title: Error code
+              type: string
+              const: "dmp_already_exists"
+    DMPStaleError:
+      title: "Stale DMP"
+      description: |
+        A precondition specified in the If-Unmodified-Since or If-Match header cannot be fulfilled, for example
+        because the DMP was modified after the client last fetched it. The client should apply the modifications again
+        and resubmit the request.
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - type: object
+          required:
+            - error_code
+          properties:
+            error_code:
+              title: Error code
+              type: string
+              const: "dmp_stale"
+    GenericConflictError:
+      title: "Conflict"
+      description: "The request conflicts with the current state of the resource."
       allOf:
         - $ref: "#/components/schemas/Error"
         - type: object
@@ -1481,10 +1784,13 @@ components:
       type: string
       enum:
         - open
-        - shared
+        - restricted
         - closed
+        - shared
       title: Data Access
-      description: "Indicates access mode for data. Allowed values: open, shared, closed"
+      description: "Indicates access mode for data. Allowed values: open, restricted, closed. The value shared is
+        deprecated, use restricted instead; it will be removed in the next major version. Servers *should* treat
+        shared as equivalent to restricted."
       examples:
         - open
     Dataset:
@@ -1544,9 +1850,11 @@ components:
           description: Comments about documentation for the dataset.
         is_reused:
           type: boolean
-          title: The Dataset Is Reused Schema
+          title: Is Reused
           description: Indicates if the dataset is reused, i.e., not produced in
-            project(s) covered by this DMP.
+            project(s) covered by this DMP. To link a dataset produced in the project
+            to the reused data it is derived from, use related_identifier (e.g. with
+            relation type IsDerivedFrom).
           examples:
             - true
         issued:
@@ -1642,10 +1950,6 @@ components:
             unknown"
           examples:
             - unknown
-        target_audience:
-          type: string
-          title: Target Audience
-          description: Information about the intended audience for the dataset.
         technical_resource:
           $ref: "#/components/schemas/TechnicalResources"
         title:
@@ -1926,16 +2230,16 @@ components:
         identifier:
           type: string
           title: Identifier
-          description: "Funder ID, recommended to use CrossRef Funder Registry. See:
-            https://www.crossref.org/services/funder-registry/"
+          description: "Funder ID, recommended to use ROR (https://ror.org), which is
+            replacing the Crossref Funder Registry (https://www.crossref.org/services/funder-registry/)"
           examples:
-            - "501100002428"
+            - "013tf3c58"
         type:
           type: string
           title: Type
-          description: "Identifier type. Suggested values: fundref, url"
+          description: "Identifier type. Suggested values: ror, fundref, url"
           examples:
-            - fundref
+            - ror
       required:
         - identifier
         - type
@@ -2009,7 +2313,7 @@ components:
         backup_type:
           type: string
           title: Backup Type
-          description: Location and/or type of the backup provided by a host
+          description: Type of the backup provided by a host.
           examples:
             - tapes
         certified_with:
@@ -2023,6 +2327,10 @@ components:
           $ref: "#/components/schemas/CountryCode"
         host_id:
           type: array
+          title: Host ID
+          description: Persistent identifier of a host, e.g. its re3data identifier. It
+            identifies the host itself; use url to provide the address where the host
+            can be accessed.
           items:
             $ref: "#/components/schemas/HostID"
           minItems: 0
@@ -2031,9 +2339,9 @@ components:
         storage_type:
           type: string
           title: Storage Type
-          description: To indicate whether a host supports versioning of data distributions.
+          description: The type of storage medium or system used to store the data.
           examples:
-            - External Hard Drive
+            - object storage
         support_versioning:
           $ref: "#/components/schemas/Booleanish"
         title:
@@ -2045,12 +2353,13 @@ components:
           type: string
           format: url
           title: URL
-          description: A URL of an infrastructure hosting a distribution of a dataset
+          description: A URL where the infrastructure hosting a distribution of a dataset
+            can be accessed, e.g. the landing page of a repository. To identify the host
+            persistently, use host_id.
           examples:
             - https://zenodo.org
       required:
         - title
-        - url
     HostID:
       type: object
       title: Host ID
@@ -2058,14 +2367,15 @@ components:
         identifier:
           type: string
           title: Identifier
+          description: To indicate the specific value of an identifier for a host
           examples:
-            - http://example.org/repo
+            - https://doi.org/10.17616/R3QP53
         type:
           type: string
           title: Type
-          description: "Identifier type. Suggested values: url"
+          description: "Identifier type. Suggested values: re3data, doi, url"
           examples:
-            - url
+            - re3data
       required:
         - identifier
         - type
@@ -2343,7 +2653,7 @@ components:
     PIDSystems:
       type: array
       title: PID System
-      description: "PID system(s). Allowed values: ark, arxiv, bibcode, doi, ean13,
+      description: "PID system(s). Suggested values: ark, arxiv, bibcode, doi, ean13,
         eissn, handle, igsn, isbn, issn, istc, lissn, lsid, pmid, purl, upc, url,
         urn, other"
       items:
@@ -2351,26 +2661,9 @@ components:
     PIDSystemType:
       type: string
       title: PID System Type
-      enum:
-        - ark
-        - arxiv
-        - bibcode
-        - doi
-        - ean13
-        - eissn
-        - handle
-        - igsn
-        - isbn
-        - issn
-        - istc
-        - lissn
-        - lsid
-        - pmid
-        - purl
-        - upc
-        - url
-        - urn
-        - other
+      description: "PID system type. Suggested values: ark, arxiv, bibcode, doi, ean13,
+        eissn, handle, igsn, isbn, issn, istc, lissn, lsid, pmid, purl, upc, url,
+        urn, other"
       examples:
         - doi
     Project:

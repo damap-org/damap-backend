@@ -40,7 +40,7 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 public class RdaDmpResource {
 
   public static final String RDA_MEDIA_TYPE =
-      "application/vnd.org.rd-alliance.dmp-common.v1.2+json";
+      "application/vnd.org.rd-alliance.dmp-common.v1.3+json";
 
   @Inject RdaDmpService rdaDmpService;
   @Inject Validator validator;
