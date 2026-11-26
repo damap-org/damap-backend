@@ -3,6 +3,7 @@ package org.damap.base.integration.generic;
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 import java.util.List;
 import lombok.extern.jbosslog.JBossLog;
 import org.damap.base.integration.ProjectServiceProvider;
@@ -63,7 +64,7 @@ public class GenericProjectService implements ProjectServiceProvider {
       cacheName = "generic-cris-project-staff",
       keyGenerator = GenericCrisCacheKeyGenerator.class)
   public List<ContributorDO> getProjectStaff(String projectId) {
-    return genericCrisClient.getProjectStaff(projectId).getItems().stream()
+    return genericCrisClient.getProjectStaff(projectId).stream()
         .map(contributorMapper::convert)
         .toList();
   }
@@ -91,7 +92,15 @@ public class GenericProjectService implements ProjectServiceProvider {
       cacheName = "generic-cris-project-leader",
       keyGenerator = GenericCrisCacheKeyGenerator.class)
   public ContributorDO getProjectLeader(String projectId) {
-    return contributorMapper.convert(genericCrisClient.getProjectLeader(projectId));
+    try {
+      return contributorMapper.convert(genericCrisClient.getProjectLeader(projectId));
+    } catch (WebApplicationException e) {
+      if (e.getResponse().getStatus() == 404) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 
   @Override
@@ -107,7 +116,7 @@ public class GenericProjectService implements ProjectServiceProvider {
     String email = securityService.getEmail();
     String name = securityService.getDisplayName();
     return ResultList.fromItemsAndSearch(
-        genericCrisClient.getRecommendedProjects(email, name).getItems().stream()
+        genericCrisClient.getRecommendedProjects(email, name).stream()
             .map(projectMapper::convert)
             .toList(),
         query);

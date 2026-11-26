@@ -36,7 +36,7 @@ public class GenericPersonService implements PersonService {
       cacheName = "generic-cris-person-read",
       keyGenerator = GenericCrisCacheKeyGenerator.class)
   public ContributorDO read(String id) {
-    return contributorMapper.convertToContributor(genericCrisClient.getPerson(id));
+    return contributorMapper.convert(genericCrisClient.getPerson(id));
   }
 
   @Override
@@ -46,7 +46,7 @@ public class GenericPersonService implements PersonService {
   public ResultList<ContributorDO> search(Search query) {
     return ResultList.fromItemsAndSearch(
         genericCrisClient.getAllPersons(query.getQuery()).stream()
-            .map(contributorMapper::convertToContributor)
+            .map(contributorMapper::convert)
             .toList(),
         query);
   }
